@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (30)",
+            date: "2026-06-06",
+            changes: [
+                "Голосовые заметки теперь пишутся в файл и расшифровываются ПО ФАЙЛУ после остановки, без живого аудио-движка — это убирает краш записи/расшифровки на устройстве.",
+                "Удалён живой AVAudioEngine-tap микрофона и Speech-буфер, из-за которых приложение падало.",
+                "Аудио-сессия записи полностью деактивируется после каждой заметки."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (29)",
             date: "2026-06-06",
             changes: [

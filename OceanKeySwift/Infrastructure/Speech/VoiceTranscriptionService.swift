@@ -1,15 +1,32 @@
 import AVFoundation
+import Foundation
 import OSLog
 import Speech
 
 private enum VoiceTranscriptionError: LocalizedError {
-    case invalidInputFormat
+    case recorderUnavailable
 
     var errorDescription: String? {
         switch self {
-        case .invalidInputFormat:
-            "Микрофон не отдал аудио-формат"
+        case .recorderUnavailable:
+            "Не удалось запустить запись"
         }
+    }
+}
+
+/// Потокобезопасный однократный «затвор» для `CheckedContinuation`: гарантирует
+/// ровно один `resume`, даже если колбэк Speech придёт несколько раз или с
+/// разных потоков.
+private final class ResumeGuard: @unchecked Sendable {
+    private let lock = NSLock()
+    private var done = false
+
+    func claim() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        if done { return false }
+        done = true
+        return true
     }
 }
 
@@ -35,25 +52,28 @@ private func requestMicrophonePermission() async -> Bool {
     }
 }
 
+/// Запись голосовой заметки и расшифровка ПО ФАЙЛУ — надёжный Apple-путь:
+/// `AVAudioRecorder` пишет m4a, после остановки `SFSpeechURLRecognitionRequest`
+/// расшифровывает файл. Сознательно НЕ используется живой
+/// `AVAudioEngine`+`installTap`+live-Speech — именно живой аудио-tap c
+/// одновременным распознаванием ронял приложение на реальном устройстве.
 @MainActor
 final class VoiceTranscriptionService: VoiceTranscriptionServicing {
-    private static let logger = Logger(subsystem: "com.alex.oceankey.swift", category: "VoiceTranscription")
+    private static let logger = Logger(
+        subsystem: "com.alex.oceankey.swift",
+        category: "VoiceTranscription"
+    )
 
     private let recognizer: SFSpeechRecognizer?
-    private var audioEngine: AVAudioEngine?
-    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
-    private var recognitionTask: SFSpeechRecognitionTask?
-    private var audioPipe: SpeechAudioBufferPipe?
-    private var cleanupTask: Task<Void, Never>?
-    private var baseText = ""
+    private var recorder: AVAudioRecorder?
+    private var recordingURL: URL?
     private var activeSessionID: UUID?
-    private var hasInstalledTap = false
-    private var hasDeliveredTranscript = false
+    private var baseText = ""
     private var onTranscript: TranscriptHandler?
     private var onStatus: StatusHandler?
     private var onPhase: PhaseHandler?
 
-    private(set) var phase = VoiceCapturePhase.idle {
+    private var phase = VoiceCapturePhase.idle {
         didSet { onPhase?(phase) }
     }
 
@@ -67,8 +87,8 @@ final class VoiceTranscriptionService: VoiceTranscriptionServicing {
         onStatus: @escaping StatusHandler,
         onPhase: @escaping PhaseHandler
     ) async {
-        guard phase.canToggle, phase != .recording else { return }
-        cleanupExistingSession(cancelTask: true)
+        guard phase.canToggle, !phase.isRecording else { return }
+        cleanup(deleteFile: true)
 
         let sessionID = UUID()
         activeSessionID = sessionID
@@ -76,64 +96,32 @@ final class VoiceTranscriptionService: VoiceTranscriptionServicing {
         self.onTranscript = onTranscript
         self.onStatus = onStatus
         self.onPhase = onPhase
-        hasDeliveredTranscript = false
 
         phase = .requestingPermission
-        Self.logger.info("voice.start permission")
         onStatus("Проверяю доступ...")
 
-        let speechAllowed = await requestSpeechRecognitionPermission()
-        guard isCurrentSession(sessionID) else { return }
-        guard speechAllowed else {
+        guard await requestSpeechRecognitionPermission() else {
             fail("Нет доступа к распознаванию речи")
             return
         }
-
-        let micAllowed = await requestMicrophonePermission()
-        guard isCurrentSession(sessionID) else { return }
-        guard micAllowed else {
+        guard isCurrent(sessionID) else { return }
+        guard await requestMicrophonePermission() else {
             fail("Нет доступа к микрофону")
             return
         }
-
-        guard let recognizer else {
-            fail("Русское распознавание речи недоступно")
-            return
-        }
-        guard recognizer.isAvailable else {
-            fail("Распознавание речи недоступно")
-            return
-        }
+        guard isCurrent(sessionID) else { return }
 
         phase = .starting
-        Self.logger.info("voice.start audio")
         onStatus("Запускаю микрофон...")
-
-        let engine = AVAudioEngine()
-        let request = SFSpeechAudioBufferRecognitionRequest()
-        request.shouldReportPartialResults = true
-        request.taskHint = .dictation
-        request.addsPunctuation = true
-        let audioPipe = SpeechAudioBufferPipe(request: request)
-
-        audioEngine = engine
-        recognitionRequest = request
-        self.audioPipe = audioPipe
-
         do {
-            try configureRecordingSession()
-            try installAudioTap(on: engine, audioPipe: audioPipe)
-            recognitionTask = recognizer.recognitionTask(with: request) { [weak self] result, error in
-                Task { @MainActor in
-                    self?.handleRecognition(result: result, error: error)
-                }
+            try beginRecording()
+            guard isCurrent(sessionID) else {
+                cleanup(deleteFile: true)
+                return
             }
-            engine.prepare()
-            try engine.start()
-            guard isCurrentSession(sessionID) else { return }
             phase = .recording
-            Self.logger.info("voice.recording")
-            onStatus("Слушаю...")
+            onStatus("Идёт запись...")
+            Self.logger.info("voice.recording.file")
         } catch {
             Self.logger.error("voice.start.failed \(error.localizedDescription, privacy: .public)")
             fail("Ошибка микрофона: \(error.localizedDescription)")
@@ -143,140 +131,146 @@ final class VoiceTranscriptionService: VoiceTranscriptionServicing {
     func stop() {
         guard phase == .recording || phase == .starting else { return }
         phase = .finishing
-        Self.logger.info("voice.stop")
         onStatus?("Завершаю расшифровку...")
-        audioPipe?.finishAudio()
-        stopAudioEngine()
-        scheduleFinishingTimeout()
+
+        let url = recordingURL
+        recorder?.stop()
+        recorder = nil
+        recordingURL = nil
+        deactivateSession()
+
+        guard let url else {
+            finishIfCurrent(activeSessionID, status: "Нет записи", transcript: nil)
+            return
+        }
+        let sessionID = activeSessionID
+        Task { [weak self] in
+            await self?.transcribe(url: url, sessionID: sessionID)
+        }
     }
 
     func cancel() {
-        cleanupExistingSession(cancelTask: true)
+        cleanup(deleteFile: true)
         phase = .idle
         onStatus?("Готово к записи")
-        restoreInteractionAudioSession()
     }
 
-    private func handleRecognition(result: SFSpeechRecognitionResult?, error: Error?) {
-        guard phase == .recording || phase == .finishing || phase == .starting else { return }
+    // MARK: - Recording
 
-        if let result {
-            deliver(result.bestTranscription.formattedString)
-            onStatus?(result.isFinal ? "Готово" : "Слушаю...")
-            if result.isFinal {
-                finish(status: "Готово", cancelTask: false)
-                return
+    private func beginRecording() throws {
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(.record, mode: .default, options: [])
+        try session.setActive(true)
+
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("voice-\(UUID().uuidString).m4a")
+        let settings: [String: Any] = [
+            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+            AVSampleRateKey: 44_100,
+            AVNumberOfChannelsKey: 1,
+            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
+        ]
+        let recorder = try AVAudioRecorder(url: url, settings: settings)
+        guard recorder.record() else {
+            throw VoiceTranscriptionError.recorderUnavailable
+        }
+        self.recorder = recorder
+        recordingURL = url
+    }
+
+    // MARK: - File-based transcription
+
+    private func transcribe(url: URL, sessionID: UUID?) async {
+        defer { try? FileManager.default.removeItem(at: url) }
+        guard let recognizer, recognizer.isAvailable else {
+            finishIfCurrent(sessionID, status: "Распознавание недоступно", transcript: nil)
+            return
+        }
+        let request = SFSpeechURLRecognitionRequest(url: url)
+        request.shouldReportPartialResults = false
+        request.taskHint = .dictation
+        if #available(iOS 16.0, *) {
+            request.addsPunctuation = true
+        }
+
+        let transcript = await recognizeOnce(recognizer: recognizer, request: request)
+        finishIfCurrent(
+            sessionID,
+            status: (transcript?.isEmpty == false) ? "Готово" : "Нет распознанного текста",
+            transcript: transcript
+        )
+    }
+
+    private func recognizeOnce(
+        recognizer: SFSpeechRecognizer,
+        request: SFSpeechURLRecognitionRequest
+    ) async -> String? {
+        let resumeGuard = ResumeGuard()
+        return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
+            recognizer.recognitionTask(with: request) { result, error in
+                if let result, result.isFinal {
+                    if resumeGuard.claim() {
+                        continuation.resume(returning: result.bestTranscription.formattedString)
+                    }
+                } else if error != nil {
+                    if resumeGuard.claim() {
+                        continuation.resume(returning: nil)
+                    }
+                }
             }
         }
-
-        if let error {
-            let status = hasDeliveredTranscript
-                ? "Расшифровка сохранена"
-                : "Распознавание: \(error.localizedDescription)"
-            finish(status: status, cancelTask: true)
-        }
     }
 
+    // MARK: - Lifecycle helpers
+
     private func deliver(_ recognized: String) {
-        let cleanRecognized = recognized.trimmingCharacters(in: .whitespacesAndNewlines)
-        let combined = [baseText, cleanRecognized]
+        let clean = recognized.trimmingCharacters(in: .whitespacesAndNewlines)
+        let combined = [baseText, clean]
             .filter { !$0.isEmpty }
             .joined(separator: "\n")
         guard !combined.isEmpty else { return }
-        hasDeliveredTranscript = true
         onTranscript?(combined)
     }
 
-    private func scheduleFinishingTimeout() {
-        cleanupTask?.cancel()
-        cleanupTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(1.4))
-            await MainActor.run {
-                guard let self, self.phase == .finishing else { return }
-                self.finish(status: self.hasDeliveredTranscript ? "Расшифровка сохранена" : "Нет распознанного текста", cancelTask: false)
-            }
-        }
-    }
-
-    private func finish(status: String, cancelTask: Bool) {
-        cleanupTask?.cancel()
-        cleanupTask = nil
-        cleanupExistingSession(cancelTask: cancelTask)
+    private func finishIfCurrent(_ sessionID: UUID?, status: String, transcript: String?) {
+        guard isCurrent(sessionID) else { return }
+        if let transcript { deliver(transcript) }
+        activeSessionID = nil
         phase = .idle
-        Self.logger.info("voice.finish \(status, privacy: .public)")
         onStatus?(status)
-        restoreInteractionAudioSession()
+        Self.logger.info("voice.finish \(status, privacy: .public)")
     }
 
     private func fail(_ message: String) {
         Self.logger.error("voice.fail \(message, privacy: .public)")
-        cleanupExistingSession(cancelTask: true)
+        cleanup(deleteFile: true)
         phase = .failed(message)
         onStatus?(message)
-        restoreInteractionAudioSession()
     }
 
-    private func cleanupExistingSession(cancelTask: Bool) {
-        cleanupTask?.cancel()
-        cleanupTask = nil
-        audioPipe?.finishAudio()
-        stopAudioEngine()
-        if cancelTask {
-            recognitionTask?.cancel()
+    private func cleanup(deleteFile: Bool) {
+        recorder?.stop()
+        recorder = nil
+        if deleteFile, let url = recordingURL {
+            try? FileManager.default.removeItem(at: url)
         }
-        recognitionTask = nil
-        recognitionRequest = nil
-        audioPipe?.discard()
-        audioPipe = nil
+        recordingURL = nil
+        deactivateSession()
         activeSessionID = nil
-        hasDeliveredTranscript = false
     }
 
-    private func isCurrentSession(_ sessionID: UUID) -> Bool {
-        activeSessionID == sessionID
-    }
-
-    private func configureRecordingSession() throws {
-        let session = AVAudioSession.sharedInstance()
-        try session.setCategory(
-            .record,
-            mode: .measurement,
-            options: []
-        )
-        try session.setActive(true)
-    }
-
-    private func restoreInteractionAudioSession() {
+    private func deactivateSession() {
         do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.ambient, mode: .default, options: [.mixWithOthers])
-            try session.setActive(false, options: .notifyOthersOnDeactivation)
+            try AVAudioSession.sharedInstance().setActive(
+                false,
+                options: .notifyOthersOnDeactivation
+            )
         } catch {
-            onStatus?("Запись остановлена")
+            // Деактивация не критична: запись уже остановлена.
         }
     }
 
-    private func installAudioTap(on engine: AVAudioEngine, audioPipe: SpeechAudioBufferPipe) throws {
-        let inputNode = engine.inputNode
-        let format = inputNode.outputFormat(forBus: 0)
-        guard format.sampleRate > 0, format.channelCount > 0 else {
-            throw VoiceTranscriptionError.invalidInputFormat
-        }
-        inputNode.installTap(onBus: 0, bufferSize: 1_024, format: format) { buffer, _ in
-            audioPipe.append(buffer)
-        }
-        hasInstalledTap = true
-    }
-
-    private func stopAudioEngine() {
-        guard let engine = audioEngine else { return }
-        if engine.isRunning {
-            engine.stop()
-        }
-        if hasInstalledTap {
-            engine.inputNode.removeTap(onBus: 0)
-            hasInstalledTap = false
-        }
-        audioEngine = nil
+    private func isCurrent(_ sessionID: UUID?) -> Bool {
+        sessionID != nil && activeSessionID == sessionID
     }
 }

@@ -1,4 +1,3 @@
-import Speech
 import Testing
 @testable import OceanKeySwift
 
@@ -46,17 +45,6 @@ func voiceNoteViewModelBlocksToggleWhileStarting() async {
 
     #expect(service.startCount == 1)
     #expect(viewModel.canToggle == false)
-}
-
-@Test
-func speechAudioBufferPipeToleratesRepeatedFinishAndDiscard() {
-    let request = SFSpeechAudioBufferRecognitionRequest()
-    let pipe = SpeechAudioBufferPipe(request: request)
-
-    pipe.finishAudio()
-    pipe.finishAudio()
-    pipe.discard()
-    pipe.finishAudio()
 }
 
 @MainActor

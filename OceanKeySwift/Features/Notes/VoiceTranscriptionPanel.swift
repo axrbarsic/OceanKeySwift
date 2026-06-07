@@ -44,7 +44,7 @@ struct VoiceTranscriptionPanel: View {
             .opacity(viewModel.canToggle ? 1 : 0.68)
 
             if viewModel.isRecording {
-                Text("Говори по-русски. Текст ниже обновляется на лету.")
+                Text("Говори по-русски. Текст появится после остановки записи.")
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundStyle(OceanKeyTheme.secondaryText.opacity(0.74))
             }
