@@ -19,7 +19,11 @@ enum RoomStatus: String, CaseIterable, Codable, Sendable {
 struct RoomCell: Codable, Identifiable, Equatable, Sendable {
     let id: String
     var opened: Bool
+    var openedUpdatedAt: Date?
     var completedTasks: Set<RoomTask>
+    var strippedUpdatedAt: Date?
+    var linenUpdatedAt: Date?
+    var balconyUpdatedAt: Date?
     var isVIP: Bool
     var vipUpdatedAt: Date?
     var scheduledTime: Date? = nil
@@ -53,6 +57,17 @@ struct RoomCell: Codable, Identifiable, Equatable, Sendable {
             return .open
         }
         return .pending
+    }
+
+    mutating func markTaskStateUpdated(_ task: RoomTask, at changedAt: Date) {
+        switch task {
+        case .stripped:
+            strippedUpdatedAt = changedAt
+        case .linen:
+            linenUpdatedAt = changedAt
+        case .balcony:
+            balconyUpdatedAt = changedAt
+        }
     }
 }
 

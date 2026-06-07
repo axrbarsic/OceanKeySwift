@@ -51,6 +51,7 @@ func inMemoryCloudKitModeFallsBackToLocalStorage() throws {
 private func makePersistentTestSnapshot() -> WorkSessionSnapshot {
     let selectedAt = Date(timeIntervalSince1970: 1_801_000_000)
     let openedAt = Date(timeIntervalSince1970: 1_801_003_600)
+    let taskAt = Date(timeIntervalSince1970: 1_801_004_600)
     let noteAt = Date(timeIntervalSince1970: 1_801_007_200)
     let mediaAt = Date(timeIntervalSince1970: 1_801_010_800)
     let vipAt = Date(timeIntervalSince1970: 1_801_012_000)
@@ -66,7 +67,11 @@ private func makePersistentTestSnapshot() -> WorkSessionSnapshot {
                 RoomCell(
                     id: "303",
                     opened: true,
+                    openedUpdatedAt: openedAt,
                     completedTasks: [.stripped],
+                    strippedUpdatedAt: taskAt,
+                    linenUpdatedAt: nil,
+                    balconyUpdatedAt: nil,
                     isVIP: true,
                     vipUpdatedAt: vipAt,
                     scheduledTime: nil,
@@ -96,7 +101,11 @@ private func makePersistentTestSnapshot() -> WorkSessionSnapshot {
                 RoomCell(
                     id: "304",
                     opened: false,
+                    openedUpdatedAt: nil,
                     completedTasks: [],
+                    strippedUpdatedAt: nil,
+                    linenUpdatedAt: nil,
+                    balconyUpdatedAt: nil,
                     isVIP: false,
                     vipUpdatedAt: nil,
                     scheduledTime: Date(timeIntervalSince1970: 1_801_014_400),

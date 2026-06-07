@@ -54,6 +54,7 @@ final class WorkSessionStore {
             } else {
                 room.completedTasks.insert(task)
             }
+            room.markTaskStateUpdated(task, at: changedAt)
             room.timeline = room.timeline.updatedForTransition(
                 previousOpened: true,
                 nextOpened: true,
@@ -81,6 +82,7 @@ final class WorkSessionStore {
                 room.opened = true
                 room.scheduledTime = nil
             }
+            room.openedUpdatedAt = changedAt
             room.timeline = room.timeline.updatedForTransition(
                 previousOpened: previousOpened,
                 nextOpened: room.opened,
@@ -151,6 +153,7 @@ final class WorkSessionStore {
                 }
 
                 room.opened = true
+                room.openedUpdatedAt = now
                 room.scheduledTime = nil
                 room.scheduledUpdatedAt = now
                 room.timeline.openedAt = room.timeline.openedAt ?? now

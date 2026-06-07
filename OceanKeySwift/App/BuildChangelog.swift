@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (40)",
+            date: "2026-06-07",
+            changes: [
+                "Added field-level update timestamps for the room open state and each S/L/B task state.",
+                "Kept first-happened room milestones separate from last-updated sync metadata, so closing a room or removing a task can be merged correctly later.",
+                "Persisted the new task/open timestamps through SwiftData and covered them with regression tests."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (39)",
             date: "2026-06-07",
             changes: [

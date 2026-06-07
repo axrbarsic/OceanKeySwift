@@ -11,6 +11,7 @@ func taskToggleUpdatesRoomStatus() {
     let room = store.carts.flatMap(\.rooms).first { $0.id == "307" }
     #expect(room?.status == .inProgress)
     #expect(room?.completedTasks == [.stripped])
+    #expect(room?.strippedUpdatedAt != nil)
 }
 
 @Test
@@ -70,6 +71,7 @@ func scheduledRoomOpensAndClearsScheduleWhenDue() {
     let room = store.room(id: "401")
     #expect(openedRoomIDs == ["401"])
     #expect(room?.opened == true)
+    #expect(room?.openedUpdatedAt != nil)
     #expect(room?.scheduledTime == nil)
     #expect(room?.scheduledUpdatedAt != nil)
     #expect(room?.timeline.openedAt != nil)
@@ -169,6 +171,7 @@ func roomMutationsRecordVisualHistorySnapshots() {
     #expect(entry?.kind == .roomOpened)
     #expect(entry?.roomID == "401")
     #expect(entry?.snapshot.carts.flatMap(\.rooms).first { $0.id == "401" }?.opened == true)
+    #expect(entry?.snapshot.carts.flatMap(\.rooms).first { $0.id == "401" }?.openedUpdatedAt != nil)
 }
 
 @Test

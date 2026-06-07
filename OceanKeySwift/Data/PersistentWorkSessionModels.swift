@@ -94,7 +94,11 @@ final class PersistentRoom {
     var roomID: String
     var displayOrder: Int
     var opened: Bool
+    var openedUpdatedAt: Date?
     var completedTaskValues: String
+    var strippedUpdatedAt: Date?
+    var linenUpdatedAt: Date?
+    var balconyUpdatedAt: Date?
     var isVIP: Bool
     var vipUpdatedAt: Date?
     var scheduledTime: Date?
@@ -115,7 +119,11 @@ final class PersistentRoom {
         roomID: String,
         displayOrder: Int,
         opened: Bool,
+        openedUpdatedAt: Date? = nil,
         completedTaskValues: String,
+        strippedUpdatedAt: Date? = nil,
+        linenUpdatedAt: Date? = nil,
+        balconyUpdatedAt: Date? = nil,
         isVIP: Bool,
         vipUpdatedAt: Date? = nil,
         scheduledTime: Date? = nil,
@@ -125,7 +133,11 @@ final class PersistentRoom {
         self.roomID = roomID
         self.displayOrder = displayOrder
         self.opened = opened
+        self.openedUpdatedAt = openedUpdatedAt
         self.completedTaskValues = completedTaskValues
+        self.strippedUpdatedAt = strippedUpdatedAt
+        self.linenUpdatedAt = linenUpdatedAt
+        self.balconyUpdatedAt = balconyUpdatedAt
         self.isVIP = isVIP
         self.vipUpdatedAt = vipUpdatedAt
         self.scheduledTime = scheduledTime

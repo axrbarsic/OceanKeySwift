@@ -26,9 +26,9 @@ that. Sync may move media metadata, but not photo/video bytes.
 Every mutable domain field needs an update timestamp. Merge compares the field's
 timestamp, not only the containing cart or work-session timestamp.
 
-Current native coverage includes room VIP state and scheduled room time as
-explicit field-timestamped values, alongside existing room milestone, note,
-media, cart note, and cart consumable timestamps.
+Current native coverage includes room open state, S/L/B task state, VIP state,
+and scheduled room time as explicit field-timestamped values, alongside
+existing room milestone, note, media, cart note, and cart consumable timestamps.
 
 Default rule:
 

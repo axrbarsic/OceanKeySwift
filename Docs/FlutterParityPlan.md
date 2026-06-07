@@ -143,3 +143,5 @@ Simulator unless explicitly allowed.
 - Room VIP state and scheduled room time now carry field-level update
   timestamps and persist them through SwiftData, closing another prerequisite
   for local-first Apple sync merges.
+- Room open state and each S/L/B task state now also carry independent
+  update timestamps, separate from the visible milestone timeline.

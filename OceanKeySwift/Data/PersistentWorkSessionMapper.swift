@@ -61,7 +61,11 @@ enum PersistentWorkSessionMapper {
         RoomCell(
             id: record.roomID,
             opened: record.opened,
+            openedUpdatedAt: record.openedUpdatedAt,
             completedTasks: taskSet(from: record.completedTaskValues),
+            strippedUpdatedAt: record.strippedUpdatedAt,
+            linenUpdatedAt: record.linenUpdatedAt,
+            balconyUpdatedAt: record.balconyUpdatedAt,
             isVIP: record.isVIP,
             vipUpdatedAt: record.vipUpdatedAt,
             scheduledTime: record.scheduledTime,
@@ -203,7 +207,11 @@ enum PersistentWorkSessionMapper {
                     roomID: room.id,
                     displayOrder: index,
                     opened: room.opened,
+                    openedUpdatedAt: room.openedUpdatedAt,
                     completedTaskValues: taskValues(from: room.completedTasks),
+                    strippedUpdatedAt: room.strippedUpdatedAt,
+                    linenUpdatedAt: room.linenUpdatedAt,
+                    balconyUpdatedAt: room.balconyUpdatedAt,
                     isVIP: room.isVIP,
                     vipUpdatedAt: room.vipUpdatedAt,
                     scheduledTime: room.scheduledTime,
@@ -217,7 +225,11 @@ enum PersistentWorkSessionMapper {
             }
             record.displayOrder = index
             record.opened = room.opened
+            record.openedUpdatedAt = room.openedUpdatedAt
             record.completedTaskValues = taskValues(from: room.completedTasks)
+            record.strippedUpdatedAt = room.strippedUpdatedAt
+            record.linenUpdatedAt = room.linenUpdatedAt
+            record.balconyUpdatedAt = room.balconyUpdatedAt
             record.isVIP = room.isVIP
             record.vipUpdatedAt = room.vipUpdatedAt
             record.scheduledTime = room.scheduledTime
