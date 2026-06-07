@@ -83,6 +83,8 @@ Simulator unless explicitly allowed.
   blocked duplicate rooms, workday lock/unlock, and summary cart rebuilding.
 - Native first work setup screen now lets the user choose carts, A/B building,
   floor, and rooms before locking into the summary screen.
+- Settings can unlock the workday and return to setup editing after the summary
+  screen is already active.
 - Local persistence now writes a work-session snapshot containing selection and
   carts together, while still reading older cart-list JSON files.
 - Core room task invariants now require an open room before S/L/B changes, and

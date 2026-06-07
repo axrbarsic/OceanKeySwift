@@ -88,6 +88,12 @@ struct SettingsScreen: View {
             SettingsInfoRow(title: "Ячеек", value: "\(workSession.counts.total)", systemName: "rectangle.grid.1x2")
             SettingsInfoRow(title: "Готово", value: "\(workSession.counts.completed)", systemName: "checkmark.circle.fill")
             SettingsInfoRow(title: "Хранилище", value: persistenceStatus, systemName: "externaldrive.fill")
+            if workSession.selection.workdayLocked {
+                Button(action: unlockWorkdayForEditing) {
+                    SettingsInfoRow(title: "Рабочий список", value: "Редактировать", systemName: "square.and.pencil")
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 
@@ -105,6 +111,11 @@ struct SettingsScreen: View {
             return "Ошибка: \(error.localizedDescription)"
         }
         return "Активно"
+    }
+
+    private func unlockWorkdayForEditing() {
+        workSession.unlockWorkdayForEditing()
+        dismiss()
     }
 }
 
