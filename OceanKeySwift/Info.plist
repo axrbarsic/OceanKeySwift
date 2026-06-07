@@ -20,6 +20,10 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>OceanKey uses the camera to attach local photos and videos to carts and rooms.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>OceanKey records audio while capturing local videos.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 </dict>

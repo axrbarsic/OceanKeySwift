@@ -8,7 +8,7 @@ settings:
   base:
     SWIFT_VERSION: "6.0"
     MARKETING_VERSION: "0.2.0"
-    CURRENT_PROJECT_VERSION: "8"
+    CURRENT_PROJECT_VERSION: "9"
     DEVELOPMENT_TEAM: J6MW4855LU
 targets:
   OceanKeySwift:
@@ -33,6 +33,8 @@ targets:
         CFBundleDisplayName: OceanKey Swift
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSCameraUsageDescription: OceanKey uses the camera to attach local photos and videos to carts and rooms.
+        NSMicrophoneUsageDescription: OceanKey records audio while capturing local videos.
         UILaunchScreen: {}
   OceanKeySwiftTests:
     type: bundle.unit-test

@@ -110,11 +110,27 @@ final class WorkSessionStore {
         }
     }
 
+    func addRoomMedia(_ attachment: MediaAttachment, roomId: RoomCell.ID) {
+        mutateRoom(roomId) { room in
+            var attachments = room.mediaAttachments ?? []
+            attachments.insert(attachment, at: 0)
+            room.mediaAttachments = attachments
+        }
+    }
+
     func updateCartNote(_ text: String, cartId: CartSection.ID) {
         mutateCart(cartId) { cart in
             let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
             cart.note = trimmed.isEmpty ? nil : text
             cart.noteUpdatedAt = trimmed.isEmpty ? nil : Date()
+        }
+    }
+
+    func addCartMedia(_ attachment: MediaAttachment, cartId: CartSection.ID) {
+        mutateCart(cartId) { cart in
+            var attachments = cart.mediaAttachments ?? []
+            attachments.insert(attachment, at: 0)
+            cart.mediaAttachments = attachments
         }
     }
 

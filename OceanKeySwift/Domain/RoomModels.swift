@@ -27,6 +27,7 @@ struct RoomCell: Codable, Identifiable, Equatable {
     var textNoteUpdatedAt: Date?
     var voiceTranscript: String?
     var voiceTranscriptUpdatedAt: Date?
+    var mediaAttachments: [MediaAttachment]?
 
     var isReady: Bool {
         completedTasks.count == RoomTask.allCases.count
@@ -55,6 +56,26 @@ struct CartSection: Codable, Identifiable, Equatable {
     var rooms: [RoomCell]
     var note: String?
     var noteUpdatedAt: Date?
+    var mediaAttachments: [MediaAttachment]?
+}
+
+enum MediaKind: String, Codable, CaseIterable, Identifiable {
+    case photo
+    case video
+
+    var id: String { rawValue }
+}
+
+struct MediaAttachment: Codable, Identifiable, Equatable {
+    let id: UUID
+    let kind: MediaKind
+    let relativePath: String
+    let createdAt: Date
+    var completedAt: Date?
+
+    var isCompleted: Bool {
+        completedAt != nil
+    }
 }
 
 struct RoomTimeline: Codable, Equatable {

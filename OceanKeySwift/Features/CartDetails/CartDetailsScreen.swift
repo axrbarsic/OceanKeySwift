@@ -6,6 +6,8 @@ struct CartDetailsScreen: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var draftNote = ""
+    @State private var captureKind: MediaKind?
+    @State private var mediaError: String?
 
     var body: some View {
         ZStack {
@@ -95,14 +97,42 @@ struct CartDetailsScreen: View {
     private var mediaSection: some View {
         CartDetailsPanel(title: "Медиа") {
             HStack(spacing: 10) {
-                mediaAction(systemName: "camera.fill", title: "Фото")
-                mediaAction(systemName: "video.fill", title: "Видео")
+                mediaAction(systemName: "camera.fill", title: "Фото", kind: .photo)
+                mediaAction(systemName: "video.fill", title: "Видео", kind: .video)
             }
+
+            if let mediaError {
+                Text(mediaError)
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundStyle(OceanKeyTheme.pending)
+            }
+
+            if mediaAttachments.isEmpty {
+                Text("Фото и видео сохраняются только локально на устройстве.")
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(OceanKeyTheme.secondaryText)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(mediaAttachments) { attachment in
+                            MediaThumbnailView(attachment: attachment)
+                        }
+                    }
+                }
+            }
+        }
+        .fullScreenCover(item: $captureKind) { kind in
+            CameraCaptureView(
+                kind: kind,
+                onCapture: saveCapturedMedia,
+                onCancel: { captureKind = nil }
+            )
+            .ignoresSafeArea()
         }
     }
 
-    private func mediaAction(systemName: String, title: String) -> some View {
-        Button(action: {}) {
+    private func mediaAction(systemName: String, title: String, kind: MediaKind) -> some View {
+        Button(action: { captureKind = kind }) {
             VStack(spacing: 8) {
                 Image(systemName: systemName)
                     .font(.system(size: 26, weight: .black))
@@ -122,8 +152,23 @@ struct CartDetailsScreen: View {
         .buttonStyle(.plain)
     }
 
+    private var mediaAttachments: [MediaAttachment] {
+        workSession.cart(id: route.cartID)?.mediaAttachments ?? []
+    }
+
     private func loadDraft() {
         draftNote = workSession.cart(id: route.cartID)?.note ?? ""
+    }
+
+    private func saveCapturedMedia(_ capturedMedia: CapturedMedia) {
+        do {
+            let attachment = try LocalMediaFileStore().save(capturedMedia: capturedMedia)
+            workSession.addCartMedia(attachment, cartId: route.cartID)
+            mediaError = nil
+        } catch {
+            mediaError = error.localizedDescription
+        }
+        captureKind = nil
     }
 
     private var updatedLabel: String? {
@@ -164,4 +209,3 @@ private struct CartDetailsPanel<Content: View>: View {
     CartDetailsScreen(route: CartDetailsRoute(cartID: 7), workSession: .preview())
         .preferredColorScheme(.dark)
 }
-

@@ -62,3 +62,6 @@ Simulator unless explicitly allowed.
   persist through the local work-session repository.
 - Long press on a cart header opens a native cart details screen with persistent
   cart note, consumables placeholder, and media action slots.
+- Cart details media can capture local-only photos/videos through the native
+  camera bridge, stores files in Application Support, and shows vertical
+  thumbnail previews.
