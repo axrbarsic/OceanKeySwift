@@ -49,6 +49,9 @@ verification.
   separate from first-happened milestone facts shown in the room timeline.
 - Work setup state now has timestamp metadata for cart bindings, room
   selections, deselected-room tombstones, and workday lock changes.
+- A pure domain merge policy now covers the future Apple sync boundary before a
+  CloudKit adapter is wired: current fields use newest timestamp, milestones
+  preserve earliest facts, and history remains append-only.
 - Physical iPhone install is active through the local Apple Development profile
   for `com.alex.oceankey.swift`
 - Project generation: XcodeGen through `project.yml`

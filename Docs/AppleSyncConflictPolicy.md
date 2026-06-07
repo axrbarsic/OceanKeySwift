@@ -31,6 +31,8 @@ and scheduled room time as explicit field-timestamped values, alongside
 existing room milestone, note, media, cart note, and cart consumable timestamps.
 Setup selection coverage now includes cart binding timestamps, room selection
 timestamps, deselection tombstones, and workday lock timestamps.
+The native domain now includes `WorkSessionMergePolicy`, which exercises these
+rules before the CloudKit adapter exists.
 
 Default rule:
 

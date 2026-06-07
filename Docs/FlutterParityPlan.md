@@ -148,3 +148,6 @@ Simulator unless explicitly allowed.
 - Setup selections now carry sync metadata too: cart binding changes, selected
   rooms, deselected-room tombstones, and workday lock/unlock changes have
   timestamps and persist through SwiftData.
+- A pure domain merge policy now exists for future Apple sync: field-level
+  timestamps decide current state, milestone facts keep earliest timestamps,
+  and history entries are unioned by ID.

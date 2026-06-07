@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (42)",
+            date: "2026-06-07",
+            changes: [
+                "Added a pure domain WorkSessionMergePolicy for future Apple-first iCloud sync.",
+                "The merge policy compares field-level timestamps for room state and setup selections, keeps earlier milestone facts, and unions append-only history.",
+                "Added regression tests proving stale remote data does not overwrite newer local room state and newer deselection tombstones remove rooms from setup."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (41)",
             date: "2026-06-07",
             changes: [
