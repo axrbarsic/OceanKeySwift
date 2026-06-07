@@ -60,3 +60,26 @@ func appSettingsClampsStatusPaletteSaturation() {
     #expect(high.statusPaletteSaturation == 1.65)
     #expect(low.statusPaletteSaturation == 0.70)
 }
+
+@Test
+func appSettingsResetRestoresDefaultsAndPersistsThem() {
+    let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let settings = AppSettingsStore(userDefaults: defaults)
+    settings.roomCellGeometry = .compact
+    settings.roomTaskLongPress = false
+    settings.summaryActionMenuAllowsMultiple = true
+    settings.statusPaletteSaturation = 1.52
+    settings.matrixColorRichness = 2.2
+
+    settings.resetToDefaults()
+    let loaded = AppSettingsStore.load(userDefaults: defaults)
+
+    #expect(loaded.roomCellGeometry == .roomy)
+    #expect(loaded.roomTaskLongPress)
+    #expect(!loaded.summaryActionMenuAllowsMultiple)
+    #expect(loaded.statusPaletteSaturation == 1)
+    #expect(loaded.matrixColorRichness == MatrixRainConfiguration.default.colorRichness)
+}

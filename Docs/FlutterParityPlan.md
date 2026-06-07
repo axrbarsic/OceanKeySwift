@@ -180,3 +180,6 @@ Simulator unless explicitly allowed.
 - Settings exposes a native palette saturation slider for all room status colors
   at once, replacing the old piecemeal color controls with one immediate global
   adjustment.
+- Settings now includes a native reset-to-defaults action with confirmation,
+  restoring appearance, workflow, palette, and Matrix settings as one coherent
+  settings snapshot.

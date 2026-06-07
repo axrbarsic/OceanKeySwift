@@ -26,6 +26,9 @@ verification.
   multi-menu mode is handled through Settings and a tested presentation policy.
 - Room status palette: status fills go through a shared native theme API with a
   persisted saturation factor, instead of hardcoding final colors in each cell.
+- Settings reset: native Settings owns a reset-to-defaults action that restores
+  the current Swift settings snapshot through `AppSettingsStore`, not by
+  manually poking UI controls.
 - Interaction feedback: UIKit feedback generators plus bundled local WAV sounds
   through an ambient mixed audio session
 - Notifications: local UserNotifications for due scheduled room openings
@@ -134,6 +137,8 @@ available.
      can alter behavior without creating new gesture conflicts.
    - Keep visual palette controls routed through the shared design layer, not
      directly inside row views.
+   - Keep reset/default behavior in the settings store so future Settings
+     categories can share one authoritative default snapshot.
    - Keep background effects behind shared SpriteKit/runtime configuration;
      settings sliders must update the existing effect rather than remounting it.
    - Test on real devices before considering visual effects done.

@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (49)",
+            date: "2026-06-07",
+            changes: [
+                "Added a native reset-to-defaults action in Settings with an iOS confirmation dialog.",
+                "Reset now restores room geometry, long-press behavior, menu mode, palette saturation, and Matrix color richness.",
+                "Added a persistence regression test proving reset writes the default settings back to storage."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (48)",
             date: "2026-06-07",
             changes: [

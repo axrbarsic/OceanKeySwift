@@ -9,6 +9,7 @@ struct SettingsScreen: View {
     @Environment(\.interactionFeedback) private var feedback
     @State private var isChangelogPresented = false
     @State private var isHistoryPresented = false
+    @State private var isResetConfirmationPresented = false
 
     var body: some View {
         ZStack {
@@ -23,6 +24,7 @@ struct SettingsScreen: View {
                     backgroundSection
                     developerSection
                     storageSection
+                    settingsSection
                     migrationSection
                 }
                 .padding(.horizontal, 18)
@@ -38,6 +40,16 @@ struct SettingsScreen: View {
         .sheet(isPresented: $isHistoryPresented) {
             WorkSessionHistoryScreen(entries: workSession.history)
                 .preferredColorScheme(.dark)
+        }
+        .confirmationDialog(
+            "Сбросить настройки?",
+            isPresented: $isResetConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Сбросить", role: .destructive, action: resetSettings)
+            Button("Отмена", role: .cancel) {}
+        } message: {
+            Text("Размер ячеек, режимы меню, палитра и Matrix-настройки вернутся к значениям по умолчанию.")
         }
     }
 
@@ -170,6 +182,15 @@ struct SettingsScreen: View {
         }
     }
 
+    private var settingsSection: some View {
+        SettingsPanel(title: "Настройки") {
+            Button(action: confirmResetSettings) {
+                SettingsInfoRow(title: "Сброс", value: "По умолчанию", systemName: "arrow.counterclockwise.circle.fill")
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
     private var migrationSection: some View {
         SettingsPanel(title: "Перенос") {
             Text("Эта Swift-версия пока идёт отдельной веткой. Flutter-приложение остаётся эталоном поведения до полной готовности нативной версии.")
@@ -218,6 +239,16 @@ struct SettingsScreen: View {
     private func resetPerformanceCounters() {
         feedback.confirm()
         performanceTelemetry.resetCounters()
+    }
+
+    private func confirmResetSettings() {
+        feedback.tap()
+        isResetConfirmationPresented = true
+    }
+
+    private func resetSettings() {
+        feedback.confirm()
+        appSettings.resetToDefaults()
     }
 }
 

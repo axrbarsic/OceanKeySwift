@@ -53,6 +53,14 @@ final class AppSettingsStore {
         MatrixRainConfiguration(colorRichness: matrixColorRichness)
     }
 
+    func resetToDefaults() {
+        roomCellGeometry = .roomy
+        roomTaskLongPress = true
+        summaryActionMenuAllowsMultiple = false
+        statusPaletteSaturation = 1
+        matrixColorRichness = MatrixRainConfiguration.default.colorRichness
+    }
+
     init(
         roomCellGeometry: RoomCellGeometry = .roomy,
         roomTaskLongPress: Bool = true,
