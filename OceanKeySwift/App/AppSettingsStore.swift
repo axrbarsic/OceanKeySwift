@@ -1,19 +1,51 @@
 import Foundation
 import Observation
 
+enum AppBackgroundMode: String, CaseIterable, Identifiable, Codable {
+    case off
+    case matrixRain
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .off:
+            "Выкл"
+        case .matrixRain:
+            "Matrix"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .off:
+            "Чёрный фон"
+        case .matrixRain:
+            "Matrix Rain"
+        }
+    }
+}
+
 @Observable
 final class AppSettingsStore {
     private enum Keys {
+        static let appBackgroundMode = "appBackgroundMode"
         static let roomCellGeometry = "roomCellGeometry"
         static let roomTaskLongPress = "roomTaskLongPress"
         static let summaryActionMenuAllowsMultiple = "summaryActionMenuAllowsMultiple"
         static let statusPaletteSaturation = "statusPaletteSaturation"
-        static let matrixColorRichness = "matrixColorRichness"
+        static let matrixSpeed = "matrixSpeed"
     }
 
     @ObservationIgnored private let userDefaults: UserDefaults
     private var storedStatusPaletteSaturation: Double
-    private var storedMatrixColorRichness: Double
+    private var storedMatrixSpeed: Double
+
+    var appBackgroundMode: AppBackgroundMode {
+        didSet {
+            userDefaults.set(appBackgroundMode.rawValue, forKey: Keys.appBackgroundMode)
+        }
+    }
 
     var roomCellGeometry: RoomCellGeometry {
         didSet {
@@ -41,56 +73,62 @@ final class AppSettingsStore {
         }
     }
 
-    var matrixColorRichness: Double {
-        get { storedMatrixColorRichness }
+    var matrixSpeed: Double {
+        get { storedMatrixSpeed }
         set {
-            storedMatrixColorRichness = Self.normalizedMatrixColorRichness(newValue)
-            userDefaults.set(storedMatrixColorRichness, forKey: Keys.matrixColorRichness)
+            storedMatrixSpeed = Self.normalizedMatrixSpeed(newValue)
+            userDefaults.set(storedMatrixSpeed, forKey: Keys.matrixSpeed)
         }
     }
 
     var matrixConfiguration: MatrixRainConfiguration {
-        MatrixRainConfiguration(colorRichness: matrixColorRichness)
+        MatrixRainConfiguration(speed: matrixSpeed)
     }
 
     func resetToDefaults() {
+        appBackgroundMode = .matrixRain
         roomCellGeometry = .roomy
         roomTaskLongPress = true
         summaryActionMenuAllowsMultiple = false
         statusPaletteSaturation = 1
-        matrixColorRichness = MatrixRainConfiguration.default.colorRichness
+        matrixSpeed = MatrixRainConfiguration.default.speed
     }
 
     init(
+        appBackgroundMode: AppBackgroundMode = .matrixRain,
         roomCellGeometry: RoomCellGeometry = .roomy,
         roomTaskLongPress: Bool = true,
         summaryActionMenuAllowsMultiple: Bool = false,
         statusPaletteSaturation: Double = 1,
-        matrixColorRichness: Double = MatrixRainConfiguration.default.colorRichness,
+        matrixSpeed: Double = MatrixRainConfiguration.default.speed,
         userDefaults: UserDefaults = .standard
     ) {
+        self.appBackgroundMode = appBackgroundMode
         self.roomCellGeometry = roomCellGeometry
         self.roomTaskLongPress = roomTaskLongPress
         self.summaryActionMenuAllowsMultiple = summaryActionMenuAllowsMultiple
         self.storedStatusPaletteSaturation = Self.normalizedStatusPaletteSaturation(statusPaletteSaturation)
-        self.storedMatrixColorRichness = Self.normalizedMatrixColorRichness(matrixColorRichness)
+        self.storedMatrixSpeed = Self.normalizedMatrixSpeed(matrixSpeed)
         self.userDefaults = userDefaults
     }
 
     static func load(userDefaults: UserDefaults = .standard) -> AppSettingsStore {
+        let backgroundRawValue = userDefaults.string(forKey: Keys.appBackgroundMode)
+        let appBackgroundMode = backgroundRawValue.flatMap(AppBackgroundMode.init(rawValue:)) ?? .matrixRain
         let rawValue = userDefaults.string(forKey: Keys.roomCellGeometry)
         let geometry = rawValue.flatMap(RoomCellGeometry.init(rawValue:)) ?? .roomy
         let roomTaskLongPress = userDefaults.object(forKey: Keys.roomTaskLongPress) as? Bool ?? true
         let summaryActionMenuAllowsMultiple = userDefaults.object(forKey: Keys.summaryActionMenuAllowsMultiple) as? Bool ?? false
         let statusPaletteSaturation = userDefaults.object(forKey: Keys.statusPaletteSaturation) as? Double ?? 1
-        let matrixColorRichness = userDefaults.object(forKey: Keys.matrixColorRichness) as? Double
-            ?? MatrixRainConfiguration.default.colorRichness
+        let matrixSpeed = userDefaults.object(forKey: Keys.matrixSpeed) as? Double
+            ?? MatrixRainConfiguration.default.speed
         return AppSettingsStore(
+            appBackgroundMode: appBackgroundMode,
             roomCellGeometry: geometry,
             roomTaskLongPress: roomTaskLongPress,
             summaryActionMenuAllowsMultiple: summaryActionMenuAllowsMultiple,
             statusPaletteSaturation: statusPaletteSaturation,
-            matrixColorRichness: matrixColorRichness,
+            matrixSpeed: matrixSpeed,
             userDefaults: userDefaults
         )
     }
@@ -99,7 +137,7 @@ final class AppSettingsStore {
         min(max(value, 0.70), 1.65)
     }
 
-    static func normalizedMatrixColorRichness(_ value: Double) -> Double {
-        min(max(value, 0.65), 2.40)
+    static func normalizedMatrixSpeed(_ value: Double) -> Double {
+        min(max(value, 0.08), 3.0)
     }
 }

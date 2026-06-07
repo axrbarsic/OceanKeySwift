@@ -16,8 +16,7 @@ struct SummaryScreen: View {
 
     var body: some View {
         ZStack {
-            SpriteKitEffectView(.matrixRain)
-                .ignoresSafeArea()
+            AppBackgroundView()
 
             VStack(spacing: 18) {
                 SummaryHeader(

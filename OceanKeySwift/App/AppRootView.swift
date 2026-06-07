@@ -21,6 +21,7 @@ struct AppRootView: View {
                 )
             }
         }
+        .environment(\.appBackgroundMode, appSettings.appBackgroundMode)
         .environment(\.matrixRainConfiguration, appSettings.matrixConfiguration)
         .preferredColorScheme(.dark)
     }

@@ -3,25 +3,41 @@ import Testing
 @testable import OceanKeySwift
 
 @Test
-func appSettingsPersistsMatrixColorRichness() {
+func appSettingsPersistsMatrixSpeed() {
     let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
     let defaults = UserDefaults(suiteName: suiteName)!
     defer { defaults.removePersistentDomain(forName: suiteName) }
 
     let settings = AppSettingsStore(userDefaults: defaults)
-    settings.matrixColorRichness = 2.05
+    settings.matrixSpeed = 2.05
 
     let loaded = AppSettingsStore.load(userDefaults: defaults)
 
-    #expect(loaded.matrixColorRichness == 2.05)
-    #expect(loaded.matrixConfiguration == MatrixRainConfiguration(colorRichness: 2.05))
+    #expect(loaded.matrixSpeed == 2.05)
+    #expect(loaded.matrixConfiguration == MatrixRainConfiguration(speed: 2.05))
 }
 
 @Test
-func appSettingsClampsMatrixColorRichness() {
-    let settings = AppSettingsStore(matrixColorRichness: 9)
+func appSettingsPersistsBackgroundMode() {
+    let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
 
-    #expect(settings.matrixColorRichness == 2.40)
+    let settings = AppSettingsStore(userDefaults: defaults)
+    settings.appBackgroundMode = .off
+
+    let loaded = AppSettingsStore.load(userDefaults: defaults)
+
+    #expect(loaded.appBackgroundMode == .off)
+}
+
+@Test
+func appSettingsClampsMatrixSpeed() {
+    let settings = AppSettingsStore(matrixSpeed: 9)
+    let low = AppSettingsStore(matrixSpeed: 0)
+
+    #expect(settings.matrixSpeed == 3.0)
+    #expect(low.matrixSpeed == 0.08)
 }
 
 @Test
@@ -68,18 +84,20 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     defer { defaults.removePersistentDomain(forName: suiteName) }
 
     let settings = AppSettingsStore(userDefaults: defaults)
+    settings.appBackgroundMode = .off
     settings.roomCellGeometry = .compact
     settings.roomTaskLongPress = false
     settings.summaryActionMenuAllowsMultiple = true
     settings.statusPaletteSaturation = 1.52
-    settings.matrixColorRichness = 2.2
+    settings.matrixSpeed = 2.2
 
     settings.resetToDefaults()
     let loaded = AppSettingsStore.load(userDefaults: defaults)
 
+    #expect(loaded.appBackgroundMode == .matrixRain)
     #expect(loaded.roomCellGeometry == .roomy)
     #expect(loaded.roomTaskLongPress)
     #expect(!loaded.summaryActionMenuAllowsMultiple)
     #expect(loaded.statusPaletteSaturation == 1)
-    #expect(loaded.matrixColorRichness == MatrixRainConfiguration.default.colorRichness)
+    #expect(loaded.matrixSpeed == MatrixRainConfiguration.default.speed)
 }

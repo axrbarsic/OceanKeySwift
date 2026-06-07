@@ -11,8 +11,7 @@ struct WorkSetupScreen: View {
 
     var body: some View {
         ZStack {
-            SpriteKitEffectView(.matrixRain)
-                .ignoresSafeArea()
+            AppBackgroundView()
 
             VStack(spacing: 16) {
                 WorkSetupHeader(

@@ -172,7 +172,7 @@ Simulator unless explicitly allowed.
   iPhones can request frame rates above the system default; Matrix/SpriteKit
   and telemetry target the device maximum rather than assuming 60 Hz.
 - Settings now has a dedicated app-background section with a persisted Matrix
-  color richness slider. The slider updates the shared SpriteKit scene
+  speed slider. The slider updates the shared SpriteKit scene
   configuration instead of recreating the wallpaper engine.
 - Settings now also has a native work-behavior toggle for the summary
   swipe-menu mode. The expansion rule is tested separately from SwiftUI views so
@@ -186,3 +186,9 @@ Simulator unless explicitly allowed.
 - Settings now has native category navigation for Appearance, Work, Data, and
   Developer areas, matching the product intent of the Flutter categorized
   settings screen without copying its widget architecture.
+- App background settings now expose an explicit `Off / Matrix` mode selector,
+  and all primary Swift screens read the same background mode through a shared
+  native `AppBackgroundView`.
+- Native Matrix Rain now follows the Flutter Matrix visual contract: 80 random
+  drops, the same glyph set, dark green background, head glow, vignette, and
+  Flutter-style speed range.

@@ -14,8 +14,7 @@ struct SettingsScreen: View {
 
     var body: some View {
         ZStack {
-            SpriteKitEffectView(.matrixRain)
-                .ignoresSafeArea()
+            AppBackgroundView()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
@@ -151,15 +150,27 @@ struct SettingsScreen: View {
 
     private var backgroundSection: some View {
         SettingsPanel(title: "Фон приложения") {
-            SettingsInfoRow(title: "Заставка", value: "Matrix Rain", systemName: "grid")
+            Picker("Заставка", selection: $appSettings.appBackgroundMode) {
+                ForEach(AppBackgroundMode.allCases) { mode in
+                    Text(mode.title).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .onChange(of: appSettings.appBackgroundMode) { _, _ in
+                feedback.confirm()
+            }
+
+            SettingsInfoRow(title: "Заставка", value: appSettings.appBackgroundMode.description, systemName: "grid")
             SettingsSliderRow(
-                title: "Сочность",
-                valueLabel: "\(Int((appSettings.matrixColorRichness * 100).rounded()))%",
-                systemName: "paintpalette.fill",
-                range: 0.65...2.40,
-                defaultValue: MatrixRainConfiguration.default.colorRichness,
-                value: $appSettings.matrixColorRichness
+                title: "Скорость",
+                valueLabel: "\(String(format: "%.2f", appSettings.matrixSpeed))x",
+                systemName: "speedometer",
+                range: 0.08...3.0,
+                defaultValue: MatrixRainConfiguration.default.speed,
+                value: $appSettings.matrixSpeed
             )
+            .disabled(appSettings.appBackgroundMode != .matrixRain)
+            .opacity(appSettings.appBackgroundMode == .matrixRain ? 1 : 0.46)
         }
     }
 

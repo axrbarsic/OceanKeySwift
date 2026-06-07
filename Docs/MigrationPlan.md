@@ -20,7 +20,7 @@ verification.
 - State foundation: Observation
 - Visual effects foundation: SpriteKit + GameplayKit hosted inside SwiftUI
 - Matrix wallpaper: a single SpriteKit scene is the active native background
-  path, with persisted color-richness configuration flowing through SwiftUI
+  path, with persisted speed configuration flowing through SwiftUI
   environment into the existing `SKView`.
 - Summary action-menu behavior: one expanded menu is the default, while optional
   multi-menu mode is handled through Settings and a tested presentation policy.
@@ -32,6 +32,11 @@ verification.
 - Settings navigation: the native Settings screen is split into Appearance,
   Work, Data, and Developer categories so future parity work can land in focused
   sections instead of one mixed scroll.
+- App background mode: `Off / Matrix` is now explicit Settings state, and all
+  primary screens render through one shared `AppBackgroundView`.
+- Matrix parity: the active native Matrix scene follows the Flutter visual
+  model with 80 random drops, the same glyph set, head glow, dark green
+  background, vignette, and `0.08...3.0` speed control.
 - Interaction feedback: UIKit feedback generators plus bundled local WAV sounds
   through an ambient mixed audio session
 - Notifications: local UserNotifications for due scheduled room openings

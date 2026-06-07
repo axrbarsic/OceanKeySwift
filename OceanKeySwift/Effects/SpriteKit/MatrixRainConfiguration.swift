@@ -2,11 +2,11 @@ import CoreGraphics
 import Foundation
 
 struct MatrixRainConfiguration: Equatable, Sendable {
-    var colorRichness: Double
+    var speed: Double
 
-    static let `default` = MatrixRainConfiguration(colorRichness: 1.25)
+    static let `default` = MatrixRainConfiguration(speed: 1)
 
-    var normalizedColorRichness: CGFloat {
-        CGFloat(min(max(colorRichness, 0.65), 2.40))
+    var normalizedSpeed: CGFloat {
+        CGFloat(min(max(speed, 0.08), 3.0))
     }
 }

@@ -12,8 +12,7 @@ struct CartDetailsScreen: View {
 
     var body: some View {
         ZStack {
-            SpriteKitEffectView(.matrixRain)
-                .ignoresSafeArea()
+            AppBackgroundView()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {

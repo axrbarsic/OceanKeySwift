@@ -10,6 +10,24 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (52)",
+            date: "2026-06-07",
+            changes: [
+                "Rebuilt the native Matrix wallpaper around the Flutter Matrix visual contract: 80 random drops, the same glyph set, the same dark green background, the same head glow, and the same vignette.",
+                "Removed the incorrect Matrix color control and replaced it with the Flutter-style speed slider.",
+                "Matrix speed now uses the Flutter range and default: 0.08x to 3.0x, default 1.0x."
+            ]
+        ),
+        BuildChangelogEntry(
+            version: "0.2.0 (51)",
+            date: "2026-06-07",
+            changes: [
+                "Added an explicit app-background mode control in Settings: Off or Matrix.",
+                "All main Swift screens now use one AppBackgroundView so Matrix visibility is controlled consistently instead of being hardwired per screen.",
+                "Matrix controls stay visible but disabled when the background is off, making it clear how to enable the effect."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (50)",
             date: "2026-06-07",
             changes: [
@@ -23,7 +41,7 @@ enum BuildChangelog {
             date: "2026-06-07",
             changes: [
                 "Added a native reset-to-defaults action in Settings with an iOS confirmation dialog.",
-                "Reset now restores room geometry, long-press behavior, menu mode, palette saturation, and Matrix color richness.",
+                "Reset now restores room geometry, long-press behavior, menu mode, palette saturation, and Matrix settings.",
                 "Added a persistence regression test proving reset writes the default settings back to storage."
             ]
         ),
@@ -50,7 +68,7 @@ enum BuildChangelog {
             date: "2026-06-07",
             changes: [
                 "Moved Matrix Rain to a single SpriteKit wallpaper path and removed the old Canvas/Timeline fallback implementation.",
-                "Added a persisted Matrix color richness slider under the new app background settings section.",
+                "Added persisted Matrix controls under the new app background settings section.",
                 "Matrix wallpaper settings now flow through a shared environment configuration so all screens update the existing SpriteKit scene without recreating the engine.",
                 "Started the native Settings refactor by moving reusable settings rows, panels, and slider controls into a separate component file."
             ]

@@ -5,8 +5,7 @@ struct BuildChangelogScreen: View {
 
     var body: some View {
         ZStack {
-            SpriteKitEffectView(.matrixRain)
-                .ignoresSafeArea()
+            AppBackgroundView()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
@@ -79,4 +78,3 @@ struct BuildChangelogScreen: View {
     BuildChangelogScreen()
         .preferredColorScheme(.dark)
 }
-
