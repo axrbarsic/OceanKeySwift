@@ -8,6 +8,7 @@ struct HoldActionTarget<Content: View>: View {
     @ViewBuilder let content: Content
 
     @Environment(\.interactionFeedback) private var feedback
+    @State private var startTask: Task<Void, Never>?
     @State private var warningTask: Task<Void, Never>?
 
     var body: some View {
@@ -40,8 +41,14 @@ struct HoldActionTarget<Content: View>: View {
     private func handlePressing(_ pressing: Bool) {
         guard enabled, useLongPress else { return }
         if pressing {
-            feedback.holdStart()
+            startTask?.cancel()
             warningTask?.cancel()
+            startTask = Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(140))
+                if !Task.isCancelled {
+                    feedback.holdStart()
+                }
+            }
             warningTask = Task { @MainActor in
                 try? await Task.sleep(for: .milliseconds(330))
                 if !Task.isCancelled {
@@ -49,6 +56,8 @@ struct HoldActionTarget<Content: View>: View {
                 }
             }
         } else {
+            startTask?.cancel()
+            startTask = nil
             warningTask?.cancel()
             warningTask = nil
         }
@@ -56,6 +65,8 @@ struct HoldActionTarget<Content: View>: View {
 
     private func activateLongPress() {
         guard enabled, useLongPress else { return }
+        startTask?.cancel()
+        startTask = nil
         warningTask?.cancel()
         warningTask = nil
         feedback.holdCommit()

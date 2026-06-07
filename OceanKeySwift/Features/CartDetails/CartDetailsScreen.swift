@@ -63,6 +63,7 @@ struct CartDetailsScreen: View {
 
     private var noteSection: some View {
         CartDetailsPanel(title: "Заметка") {
+            VoiceTranscriptionPanel(title: "Надиктовать заметку", transcript: $draftNote)
             ZStack(alignment: .topLeading) {
                 TextEditor(text: $draftNote)
                     .font(.system(size: 18, weight: .semibold, design: .rounded))

@@ -24,6 +24,8 @@
 	<string>OceanKey uses the camera to attach local photos and videos to carts and rooms.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>OceanKey records audio while capturing local videos.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>OceanKey transcribes local Russian voice notes into editable text.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 </dict>

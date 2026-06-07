@@ -91,20 +91,7 @@ struct RoomDetailsScreen: View {
 
     private var voicePlaceholder: some View {
         VStack(spacing: 14) {
-            VStack(spacing: 8) {
-                Image(systemName: "mic.circle.fill")
-                    .font(.system(size: 68, weight: .black))
-                    .foregroundStyle(OceanKeyTheme.accent)
-
-                Text("Нативная запись голоса будет подключена отдельным AVFoundation-слоем. Черновик расшифровки уже сохраняется локально.")
-                    .font(.system(size: 15, weight: .bold, design: .rounded))
-                    .foregroundStyle(OceanKeyTheme.secondaryText)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 170)
-
+            VoiceTranscriptionPanel(title: "Голосовая заметка", transcript: $draftVoiceTranscript)
             textEditor(text: $draftVoiceTranscript, placeholder: "Черновик расшифровки")
         }
     }

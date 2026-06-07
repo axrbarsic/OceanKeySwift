@@ -10,6 +10,24 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (22)",
+            date: "2026-06-06",
+            changes: [
+                "Reduced gesture conflicts while scrolling the main room list.",
+                "Long-press haptics now wait briefly so a normal vertical scroll does not buzz across room cells.",
+                "Room swipe-menu arming now requires a stronger horizontal gesture before it gives feedback or toggles the menu."
+            ]
+        ),
+        BuildChangelogEntry(
+            version: "0.2.0 (21)",
+            date: "2026-06-06",
+            changes: [
+                "Added native Russian speech recognition for room voice notes.",
+                "Cart notes now use the same voice-to-text control as room notes.",
+                "Speech capture uses a shared Swift controller with microphone and speech permissions instead of a Gemini fallback."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (20)",
             date: "2026-06-06",
             changes: [

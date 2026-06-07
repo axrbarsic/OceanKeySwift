@@ -123,8 +123,13 @@ struct RoomCellView: View {
 
         let absX = abs(swipeDX)
         let absY = abs(swipeDY)
+        if absY > 18, absY > absX * 1.15 {
+            resetActionMenuDrag()
+            return
+        }
+
         if swipeDirection == 0 {
-            guard absX >= 14, absX >= absY * 1.35 else { return }
+            guard absX >= 32, absX >= absY * 2.0 else { return }
             guard swipeDX > 0 else {
                 resetActionMenuDrag()
                 return
@@ -136,15 +141,11 @@ struct RoomCellView: View {
             }
         }
 
-        let threshold: CGFloat = 72
+        let threshold: CGFloat = 82
         let armed = absX >= threshold
         if armed, !swipeArmed {
             feedback.holdCommit()
-        } else if !armed, absX > threshold * 0.55, !swipeArmed {
-            if !swipeFeedbackActive {
-                swipeFeedbackActive = true
-                feedback.holdStart()
-            }
+        } else if !armed, absX > threshold * 0.68, !swipeArmed {
             feedback.holdWarning()
         }
         swipeArmed = armed

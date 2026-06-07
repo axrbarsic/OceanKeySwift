@@ -22,6 +22,8 @@ verification.
 - Interaction feedback: UIKit feedback generators plus bundled local WAV sounds
   through an ambient mixed audio session
 - Notifications: local UserNotifications for due scheduled room openings
+- Speech: native `Speech` + `AVAudioEngine` Russian voice-to-text controller
+  for local room/cart notes
 - Physical iPhone install is active through the local Apple Development profile
   for `com.alex.oceankey.swift`
 - Project generation: XcodeGen through `project.yml`
