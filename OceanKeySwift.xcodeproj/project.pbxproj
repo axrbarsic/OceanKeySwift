@@ -1,0 +1,483 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		094272BBB8350642EA68BD69 /* SummaryHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4FA201F6199BBB1FBE6120 /* SummaryHeader.swift */; };
+		14A467CC5BC8CBF9F1AAF2E5 /* CartSummarySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD15DBDCE80476FF0F4FEC9 /* CartSummarySection.swift */; };
+		307C5468BDEA436295C95CE4 /* OceanKeySwiftApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868CBF052F1B053DB4F2FBA0 /* OceanKeySwiftApp.swift */; };
+		392929D2E5B73C033AA829A9 /* RoomModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0956CB0FF1C79B5413C7DC64 /* RoomModels.swift */; };
+		630D9BF8C070EDF39CF079C6 /* WorkSessionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C627CE3B38115F411539408 /* WorkSessionStoreTests.swift */; };
+		714CD792974E34438F3A1014 /* RoomCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868A0FE8D28575CF2B3F8304 /* RoomCellView.swift */; };
+		7372F4BC701E763F5FA24463 /* OceanKeyTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A96102C3B06D870C8E09F17 /* OceanKeyTheme.swift */; };
+		856BDD1AEC33680D598CA693 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D64ADD5F7CDDCA26155C8 /* AppRootView.swift */; };
+		BA7C18EBFE93F08708C52938 /* WorkSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 929170B7329DE71DCDD384FD /* WorkSessionStore.swift */; };
+		E27BBB154B1792023F94F34B /* VIPPulseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5C81FF97AC52C9DE7C54C2 /* VIPPulseOverlay.swift */; };
+		E2F267B30D4B9E3FCB81BFAA /* MatrixRainBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E24D2B3912DAF9638A767BD /* MatrixRainBackground.swift */; };
+		E79D1EED7C47265E97AAB005 /* SummaryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F8BBFB5474764DC44B4456 /* SummaryScreen.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6017BF2C0151ED4ECC6F439F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CFA2E23425CF12CBC20B99B7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8C083759050C2632D16BB63D;
+			remoteInfo = OceanKeySwift;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0956CB0FF1C79B5413C7DC64 /* RoomModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomModels.swift; sourceTree = "<group>"; };
+		1A96102C3B06D870C8E09F17 /* OceanKeyTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OceanKeyTheme.swift; sourceTree = "<group>"; };
+		1B5C81FF97AC52C9DE7C54C2 /* VIPPulseOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VIPPulseOverlay.swift; sourceTree = "<group>"; };
+		2E24D2B3912DAF9638A767BD /* MatrixRainBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixRainBackground.swift; sourceTree = "<group>"; };
+		4C627CE3B38115F411539408 /* WorkSessionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSessionStoreTests.swift; sourceTree = "<group>"; };
+		6CD15DBDCE80476FF0F4FEC9 /* CartSummarySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartSummarySection.swift; sourceTree = "<group>"; };
+		77F8BBFB5474764DC44B4456 /* SummaryScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryScreen.swift; sourceTree = "<group>"; };
+		868A0FE8D28575CF2B3F8304 /* RoomCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCellView.swift; sourceTree = "<group>"; };
+		868CBF052F1B053DB4F2FBA0 /* OceanKeySwiftApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OceanKeySwiftApp.swift; sourceTree = "<group>"; };
+		929170B7329DE71DCDD384FD /* WorkSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSessionStore.swift; sourceTree = "<group>"; };
+		B00D64ADD5F7CDDCA26155C8 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
+		BCAF8BEA469DB858BD47A0D4 /* OceanKeySwiftTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = OceanKeySwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE487E5E6D0AB9E9818EEF84 /* OceanKeySwift.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OceanKeySwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE4FA201F6199BBB1FBE6120 /* SummaryHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryHeader.swift; sourceTree = "<group>"; };
+		F944082CEA5BC13C9ECF514C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		36CA4C3E5465B3F3DA219801 /* OceanKeySwift */ = {
+			isa = PBXGroup;
+			children = (
+				F944082CEA5BC13C9ECF514C /* Info.plist */,
+				EB46BA9A2511009474D5840B /* App */,
+				4463822596AA3844DBFE4AB1 /* Design */,
+				EC1216ECE72E0D2A8492BCE8 /* Domain */,
+				88F39E9D0789D4CADE0851D5 /* Features */,
+			);
+			path = OceanKeySwift;
+			sourceTree = "<group>";
+		};
+		4463822596AA3844DBFE4AB1 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				1A96102C3B06D870C8E09F17 /* OceanKeyTheme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		68F7A701FAA1A43CD7D4E624 /* OceanKeySwiftTests */ = {
+			isa = PBXGroup;
+			children = (
+				4C627CE3B38115F411539408 /* WorkSessionStoreTests.swift */,
+			);
+			path = OceanKeySwiftTests;
+			sourceTree = "<group>";
+		};
+		88F39E9D0789D4CADE0851D5 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				DB4465BBE8548B26B6954744 /* Summary */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		9841CDB21F537FB7AB63D767 = {
+			isa = PBXGroup;
+			children = (
+				36CA4C3E5465B3F3DA219801 /* OceanKeySwift */,
+				68F7A701FAA1A43CD7D4E624 /* OceanKeySwiftTests */,
+				ADD15C0367B5ED3749CE048A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		ADD15C0367B5ED3749CE048A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CE487E5E6D0AB9E9818EEF84 /* OceanKeySwift.app */,
+				BCAF8BEA469DB858BD47A0D4 /* OceanKeySwiftTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DB4465BBE8548B26B6954744 /* Summary */ = {
+			isa = PBXGroup;
+			children = (
+				6CD15DBDCE80476FF0F4FEC9 /* CartSummarySection.swift */,
+				2E24D2B3912DAF9638A767BD /* MatrixRainBackground.swift */,
+				868A0FE8D28575CF2B3F8304 /* RoomCellView.swift */,
+				EE4FA201F6199BBB1FBE6120 /* SummaryHeader.swift */,
+				77F8BBFB5474764DC44B4456 /* SummaryScreen.swift */,
+				1B5C81FF97AC52C9DE7C54C2 /* VIPPulseOverlay.swift */,
+			);
+			path = Summary;
+			sourceTree = "<group>";
+		};
+		EB46BA9A2511009474D5840B /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B00D64ADD5F7CDDCA26155C8 /* AppRootView.swift */,
+				868CBF052F1B053DB4F2FBA0 /* OceanKeySwiftApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		EC1216ECE72E0D2A8492BCE8 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				0956CB0FF1C79B5413C7DC64 /* RoomModels.swift */,
+				929170B7329DE71DCDD384FD /* WorkSessionStore.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8C083759050C2632D16BB63D /* OceanKeySwift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 48007250CC733429FA6848DD /* Build configuration list for PBXNativeTarget "OceanKeySwift" */;
+			buildPhases = (
+				CF34DB72A5925B522D9A5E14 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OceanKeySwift;
+			packageProductDependencies = (
+			);
+			productName = OceanKeySwift;
+			productReference = CE487E5E6D0AB9E9818EEF84 /* OceanKeySwift.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E3354BA291B5235556ACC2E4 /* OceanKeySwiftTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3CD649095EA2F07B24CA6AD6 /* Build configuration list for PBXNativeTarget "OceanKeySwiftTests" */;
+			buildPhases = (
+				7B0FC138237619FD27EC49F6 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				48A8537FDFDEA665F1DBA8A6 /* PBXTargetDependency */,
+			);
+			name = OceanKeySwiftTests;
+			packageProductDependencies = (
+			);
+			productName = OceanKeySwiftTests;
+			productReference = BCAF8BEA469DB858BD47A0D4 /* OceanKeySwiftTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CFA2E23425CF12CBC20B99B7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					8C083759050C2632D16BB63D = {
+						DevelopmentTeam = J6MW4855LU;
+					};
+					E3354BA291B5235556ACC2E4 = {
+						DevelopmentTeam = J6MW4855LU;
+					};
+				};
+			};
+			buildConfigurationList = 7A4605A90C948C1A86544407 /* Build configuration list for PBXProject "OceanKeySwift" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 9841CDB21F537FB7AB63D767;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = ADD15C0367B5ED3749CE048A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8C083759050C2632D16BB63D /* OceanKeySwift */,
+				E3354BA291B5235556ACC2E4 /* OceanKeySwiftTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7B0FC138237619FD27EC49F6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				630D9BF8C070EDF39CF079C6 /* WorkSessionStoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CF34DB72A5925B522D9A5E14 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				856BDD1AEC33680D598CA693 /* AppRootView.swift in Sources */,
+				14A467CC5BC8CBF9F1AAF2E5 /* CartSummarySection.swift in Sources */,
+				E2F267B30D4B9E3FCB81BFAA /* MatrixRainBackground.swift in Sources */,
+				307C5468BDEA436295C95CE4 /* OceanKeySwiftApp.swift in Sources */,
+				7372F4BC701E763F5FA24463 /* OceanKeyTheme.swift in Sources */,
+				714CD792974E34438F3A1014 /* RoomCellView.swift in Sources */,
+				392929D2E5B73C033AA829A9 /* RoomModels.swift in Sources */,
+				094272BBB8350642EA68BD69 /* SummaryHeader.swift in Sources */,
+				E79D1EED7C47265E97AAB005 /* SummaryScreen.swift in Sources */,
+				E27BBB154B1792023F94F34B /* VIPPulseOverlay.swift in Sources */,
+				BA7C18EBFE93F08708C52938 /* WorkSessionStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		48A8537FDFDEA665F1DBA8A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8C083759050C2632D16BB63D /* OceanKeySwift */;
+			targetProxy = 6017BF2C0151ED4ECC6F439F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		098D998CABF1F4986A7A1814 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alex.oceankey.OceanKeySwiftTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OceanKeySwift.app/OceanKeySwift";
+			};
+			name = Release;
+		};
+		6A2821B5690BEB876572B165 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = OceanKeySwift/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "OceanKey Swift";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alex.oceankey.swift;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		70189D33CBB80F7441EDB3B6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = J6MW4855LU;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		958DBF939113EEEBA5584C65 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = J6MW4855LU;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		D4FA62E009D3669C7E9188C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = OceanKeySwift/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "OceanKey Swift";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alex.oceankey.swift;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		FFAD172824AFC52561F9203F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alex.oceankey.OceanKeySwiftTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OceanKeySwift.app/OceanKeySwift";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3CD649095EA2F07B24CA6AD6 /* Build configuration list for PBXNativeTarget "OceanKeySwiftTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FFAD172824AFC52561F9203F /* Debug */,
+				098D998CABF1F4986A7A1814 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		48007250CC733429FA6848DD /* Build configuration list for PBXNativeTarget "OceanKeySwift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4FA62E009D3669C7E9188C4 /* Debug */,
+				6A2821B5690BEB876572B165 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7A4605A90C948C1A86544407 /* Build configuration list for PBXProject "OceanKeySwift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				958DBF939113EEEBA5584C65 /* Debug */,
+				70189D33CBB80F7441EDB3B6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CFA2E23425CF12CBC20B99B7 /* Project object */;
+}
