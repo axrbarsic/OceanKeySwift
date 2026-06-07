@@ -10,6 +10,16 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (26)",
+            date: "2026-06-06",
+            changes: [
+                "Started the native-migration refactor pass: Flutter is now treated as product behavior reference, not an architecture template.",
+                "Rebuilt voice notes around an iOS-native Speech service plus a small SwiftUI ViewModel instead of a UI-owned recorder controller.",
+                "Voice stop now waits briefly for final Speech results so transcripts are not discarded during cleanup.",
+                "Made the SpriteKit coordinator explicitly MainActor to match UIKit and SpriteKit lifecycle rules."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (25)",
             date: "2026-06-06",
             changes: [

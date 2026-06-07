@@ -27,6 +27,10 @@ verification.
 - Physical iPhone install is active through the local Apple Development profile
   for `com.alex.oceankey.swift`
 - Project generation: XcodeGen through `project.yml`
+- Migration rule: Flutter is a product and behavior reference, not an
+  architecture template. Native Swift work should preserve the user-visible
+  idea and domain rules while using Apple-native lifecycle, services, ViewModel
+  boundaries, and platform APIs.
 
 The bundle identifier is intentionally different from the existing Flutter app
 so the native app can be installed side by side when a provisioning profile is
@@ -63,6 +67,9 @@ available.
    - Port voice notes with transcription.
    - Port photo and video capture with native AVFoundation/PhotosUI paths.
    - Build thumbnail and full-screen preview flows for vertical media first.
+   - Keep recorder and capture lifecycles in native services; SwiftUI panels
+     should render state and call small ViewModel actions, not own low-level
+     audio/video engines.
 
 6. Diagnostics and performance
    - Keep frame/performance telemetry from the start.

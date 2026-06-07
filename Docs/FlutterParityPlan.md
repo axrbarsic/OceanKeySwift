@@ -49,6 +49,10 @@ Simulator unless explicitly allowed.
 
 ## Current Native Checkpoint
 
+- Native migration rule is now explicit: copy the product idea, workflow,
+  domain rules, and visual contract from Flutter, but implement each feature
+  using professional Swift/iOS architecture rather than mirroring Flutter widget
+  structure or lifecycle.
 - SpriteKit/GameplayKit effect host exists.
 - Main screen uses a SpriteKit Matrix background.
 - Room cells now use the Flutter status palette.
@@ -109,5 +113,8 @@ Simulator unless explicitly allowed.
 - Repeated voice recordings now run through an explicit capture state machine
   with a fresh `AVAudioEngine` per session, preventing overlapping input taps
   during rapid start/stop cycles.
+- Voice transcription is now split into an iOS-native `VoiceTranscriptionService`
+  and `VoiceNoteViewModel`; the SwiftUI panel no longer owns AVFoundation or
+  Speech lifecycle directly.
 - Sync direction is Apple-first for the native rewrite. Firebase should not be
   used as the architecture reference for Swift sync.

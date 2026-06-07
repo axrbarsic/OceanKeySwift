@@ -32,6 +32,7 @@ struct SpriteKitEffectView: UIViewRepresentable {
         view.resizeScene()
     }
 
+    @MainActor
     final class Coordinator {
         let scene: SKScene
 
