@@ -11,7 +11,7 @@ struct CartSummarySection: View {
     let onScheduleToggle: (RoomCell.ID) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline) {
                 Label("Тележка \(cart.id)", systemImage: "circle.fill")
                     .labelStyle(.titleAndIcon)
@@ -44,7 +44,7 @@ struct CartSummarySection: View {
                 )
             }
         }
-        .padding(.horizontal, 5)
+        .padding(.horizontal, 6)
     }
 }
 

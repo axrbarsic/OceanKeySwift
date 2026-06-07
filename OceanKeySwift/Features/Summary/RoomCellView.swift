@@ -43,7 +43,7 @@ struct RoomCellView: View {
     }
 
     private var tileBody: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 18) {
             Button(action: onOpenToggle) {
                 Text(room.id)
                     .font(.system(size: 46, weight: .black, design: .rounded))
@@ -56,9 +56,8 @@ struct RoomCellView: View {
 
             ForEach(RoomTask.allCases) { taskButton($0) }
         }
-        .padding(.leading, 14)
-        .padding(.trailing, 8)
-        .frame(height: 66)
+        .padding(.horizontal, 20)
+        .frame(height: 76)
         .foregroundStyle(OceanKeyTheme.roomForeground)
         .background(cellBackground)
         .clipShape(tileShape)
@@ -105,15 +104,15 @@ struct RoomCellView: View {
     private var cellBackground: some View {
         tileShape
             .fill(OceanKeyTheme.fill(for: room.status))
-            .shadow(color: .black.opacity(0.23), radius: 5, x: 0, y: 4)
+            .shadow(color: .black.opacity(0.25), radius: 5, x: 0, y: 4)
     }
 
     private var tileShape: UnevenRoundedRectangle {
         UnevenRoundedRectangle(
-            topLeadingRadius: 13,
-            bottomLeadingRadius: isActionMenuExpanded ? 0 : 13,
-            bottomTrailingRadius: isActionMenuExpanded ? 0 : 13,
-            topTrailingRadius: 13,
+            topLeadingRadius: 14,
+            bottomLeadingRadius: isActionMenuExpanded ? 0 : 14,
+            bottomTrailingRadius: isActionMenuExpanded ? 0 : 14,
+            topTrailingRadius: 14,
             style: .continuous
         )
     }

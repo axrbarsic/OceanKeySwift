@@ -10,9 +10,10 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
-            version: "0.2.0 (11)",
+            version: "0.2.0 (12)",
             date: "2026-06-06",
             changes: [
+                "Restored the taller first-test room-cell geometry as a deliberate Swift-only visual exception.",
                 "Native Swift rewrite runs on physical iPhone with SpriteKit Matrix background.",
                 "Main screen has cart sections, room cells, S/L/B actions, VIP, schedule, and one-open swipe menu.",
                 "Room and cart state now persists locally through Application Support JSON storage.",
@@ -23,4 +24,3 @@ enum BuildChangelog {
         )
     ]
 }
-

@@ -69,3 +69,6 @@ Simulator unless explicitly allowed.
   photo/video attachments.
 - Settings now includes an in-app build changelog so installed builds can be
   identified without reading Git history.
+- Deliberate visual exception: native Swift room cells use the taller first-test
+  geometry (`76pt` tile height and wider `10pt` inter-cell spacing) because it
+  looked better on iPhone than the tighter Flutter parity geometry.
