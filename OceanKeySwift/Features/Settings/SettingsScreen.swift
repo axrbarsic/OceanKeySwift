@@ -4,6 +4,7 @@ struct SettingsScreen: View {
     @Bindable var workSession: WorkSessionStore
 
     @Environment(\.dismiss) private var dismiss
+    @State private var isChangelogPresented = false
 
     var body: some View {
         ZStack {
@@ -22,6 +23,10 @@ struct SettingsScreen: View {
                 .padding(.bottom, 28)
             }
             .scrollIndicators(.hidden)
+        }
+        .sheet(isPresented: $isChangelogPresented) {
+            BuildChangelogScreen()
+                .preferredColorScheme(.dark)
         }
     }
 
@@ -48,6 +53,10 @@ struct SettingsScreen: View {
     private var developerSection: some View {
         SettingsPanel(title: "Разработчик") {
             SettingsInfoRow(title: "Версия", value: AppBuildInfo.versionLabel, systemName: "number")
+            Button(action: { isChangelogPresented = true }) {
+                SettingsInfoRow(title: "Что изменилось", value: "Открыть", systemName: "list.bullet.clipboard.fill")
+            }
+            .buttonStyle(.plain)
             SettingsInfoRow(title: "Движок", value: "SpriteKit + SwiftUI", systemName: "sparkles")
             SettingsInfoRow(title: "Цель", value: "Физический iPhone", systemName: "iphone")
         }
@@ -136,4 +145,3 @@ private struct SettingsInfoRow: View {
     SettingsScreen(workSession: .preview())
         .preferredColorScheme(.dark)
 }
-

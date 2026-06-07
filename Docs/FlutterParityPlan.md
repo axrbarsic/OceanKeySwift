@@ -67,3 +67,5 @@ Simulator unless explicitly allowed.
   thumbnail previews.
 - Room swipe menu now opens the same native local media capture flow for room
   photo/video attachments.
+- Settings now includes an in-app build changelog so installed builds can be
+  identified without reading Git history.
