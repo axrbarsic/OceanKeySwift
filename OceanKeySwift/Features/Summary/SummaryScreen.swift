@@ -5,6 +5,7 @@ struct SummaryScreen: View {
 
     @Bindable var workSession: WorkSessionStore
     @Bindable var appSettings: AppSettingsStore
+    @Environment(\.interactionFeedback) private var feedback
     @State private var expandedActionMenuRoomID: RoomCell.ID?
     @State private var roomDetailsRoute: RoomDetailsRoute?
     @State private var cartDetailsRoute: CartDetailsRoute?
@@ -18,7 +19,7 @@ struct SummaryScreen: View {
             VStack(spacing: 18) {
                 SummaryHeader(
                     counts: workSession.counts,
-                    onOpenSettings: { isSettingsPresented = true }
+                    onOpenSettings: openSettings
                 )
 
                 ScrollView {
@@ -27,6 +28,7 @@ struct SummaryScreen: View {
                             CartSummarySection(
                                 cart: $cart,
                                 geometry: appSettings.roomCellGeometry,
+                                taskControlsUseLongPress: appSettings.roomTaskLongPress,
                                 expandedActionMenuRoomID: $expandedActionMenuRoomID,
                                 onOpenCartDetails: { cartID in
                                     expandedActionMenuRoomID = nil
@@ -68,6 +70,11 @@ struct SummaryScreen: View {
         .onReceive(scheduleTimer) { date in
             workSession.advanceScheduledRooms(now: date)
         }
+    }
+
+    private func openSettings() {
+        feedback.tap()
+        isSettingsPresented = true
     }
 }
 

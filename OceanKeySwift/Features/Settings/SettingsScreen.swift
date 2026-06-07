@@ -5,6 +5,7 @@ struct SettingsScreen: View {
     @Bindable var appSettings: AppSettingsStore
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.interactionFeedback) private var feedback
     @State private var isChangelogPresented = false
 
     var body: some View {
@@ -55,7 +56,7 @@ struct SettingsScreen: View {
     private var developerSection: some View {
         SettingsPanel(title: "Разработчик") {
             SettingsInfoRow(title: "Версия", value: AppBuildInfo.versionLabel, systemName: "number")
-            Button(action: { isChangelogPresented = true }) {
+            Button(action: openChangelog) {
                 SettingsInfoRow(title: "Что изменилось", value: "Открыть", systemName: "list.bullet.clipboard.fill")
             }
             .buttonStyle(.plain)
@@ -79,6 +80,18 @@ struct SettingsScreen: View {
                     value: appSettings.roomCellGeometry.description,
                     systemName: "rectangle.roundedtop.fill"
                 )
+
+                Toggle(isOn: $appSettings.roomTaskLongPress) {
+                    SettingsInfoRow(
+                        title: "Долгий тап",
+                        value: appSettings.roomTaskLongPress ? "Включен" : "Быстрый",
+                        systemName: "hand.tap.fill"
+                    )
+                }
+                .tint(OceanKeyTheme.accent)
+                .onChange(of: appSettings.roomTaskLongPress) { _, _ in
+                    feedback.confirm()
+                }
             }
         }
     }
@@ -114,8 +127,14 @@ struct SettingsScreen: View {
     }
 
     private func unlockWorkdayForEditing() {
+        feedback.confirm()
         workSession.unlockWorkdayForEditing()
         dismiss()
+    }
+
+    private func openChangelog() {
+        feedback.tap()
+        isChangelogPresented = true
     }
 }
 

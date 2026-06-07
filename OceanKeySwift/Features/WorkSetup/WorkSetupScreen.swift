@@ -3,6 +3,7 @@ import SwiftUI
 struct WorkSetupScreen: View {
     @Bindable var workSession: WorkSessionStore
     @Bindable var appSettings: AppSettingsStore
+    @Environment(\.interactionFeedback) private var feedback
 
     @State private var selectedCartNumber = 1
     @State private var isSettingsPresented = false
@@ -16,8 +17,8 @@ struct WorkSetupScreen: View {
                 WorkSetupHeader(
                     selectedCount: workSession.selection.selectedRooms.count,
                     canStart: workSession.selection.hasSelectedRooms,
-                    onOpenSettings: { isSettingsPresented = true },
-                    onStart: { workSession.lockWorkday() }
+                    onOpenSettings: openSettings,
+                    onStart: startWorkday
                 )
 
                 ScrollView {
@@ -37,10 +38,12 @@ struct WorkSetupScreen: View {
                                 isFocused: selectedCartNumber == cartNumber,
                                 onFocus: { selectedCartNumber = cartNumber },
                                 onTerritoryChanged: { territory in
+                                    feedback.confirm()
                                     selectedCartNumber = cartNumber
                                     workSession.setCartBinding(cartNumber: cartNumber, territory: territory)
                                 },
                                 onRoomToggle: { room in
+                                    playRoomSelectionFeedback(cartNumber: cartNumber, room: room)
                                     selectedCartNumber = cartNumber
                                     workSession.toggleRoomSelection(cartNumber: cartNumber, room: room)
                                 }
@@ -65,8 +68,31 @@ struct WorkSetupScreen: View {
     }
 
     private func toggleCart(_ cartNumber: Int) {
+        if workSession.selectedCartNumbers.contains(cartNumber) {
+            feedback.deselect()
+        } else {
+            feedback.select()
+        }
         selectedCartNumber = cartNumber
         workSession.toggleCartSelection(cartNumber)
+    }
+
+    private func openSettings() {
+        feedback.tap()
+        isSettingsPresented = true
+    }
+
+    private func startWorkday() {
+        feedback.confirm()
+        workSession.lockWorkday()
+    }
+
+    private func playRoomSelectionFeedback(cartNumber: Int, room: RoomID) {
+        if workSession.selectedRooms(forCart: cartNumber).contains(room) {
+            feedback.deselect()
+        } else {
+            feedback.select()
+        }
     }
 
     private func effectiveTerritory(forCart cartNumber: Int) -> Territory {

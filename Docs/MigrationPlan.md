@@ -19,6 +19,8 @@ verification.
 - UI foundation: SwiftUI
 - State foundation: Observation
 - Visual effects foundation: SpriteKit + GameplayKit hosted inside SwiftUI
+- Interaction feedback: UIKit feedback generators plus bundled local WAV sounds
+  through an ambient mixed audio session
 - Project generation: XcodeGen through `project.yml`
 
 The bundle identifier is intentionally different from the existing Flutter app
@@ -37,6 +39,8 @@ available.
    - Port room status, task buttons, VIP state, timers, cart sections, and room
      history as domain data before adding complex UI.
    - Keep domain logic testable without SwiftUI.
+   - Keep tactile/audio interaction behavior behind a shared native feedback
+     service, not scattered across SwiftUI views.
 
 3. Local-first persistence
    - Add a local repository as the source of truth.

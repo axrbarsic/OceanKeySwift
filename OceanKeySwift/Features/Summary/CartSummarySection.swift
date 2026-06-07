@@ -1,8 +1,11 @@
 import SwiftUI
 
 struct CartSummarySection: View {
+    @Environment(\.interactionFeedback) private var feedback
+
     @Binding var cart: CartSection
     let geometry: RoomCellGeometry
+    let taskControlsUseLongPress: Bool
     @Binding var expandedActionMenuRoomID: RoomCell.ID?
     let onOpenCartDetails: (CartSection.ID) -> Void
     let onOpenDetails: (RoomCell.ID, RoomDetailsMode) -> Void
@@ -25,6 +28,7 @@ struct CartSummarySection: View {
             .padding(.bottom, 3)
             .contentShape(Rectangle())
             .onLongPressGesture {
+                feedback.longPress()
                 onOpenCartDetails(cart.id)
             }
 
@@ -32,6 +36,7 @@ struct CartSummarySection: View {
                 RoomCellView(
                     room: $room,
                     geometry: geometry,
+                    taskControlsUseLongPress: taskControlsUseLongPress,
                     isActionMenuExpanded: expandedActionMenuRoomID == room.id,
                     onActionMenuToggle: {
                         expandedActionMenuRoomID = expandedActionMenuRoomID == room.id ? nil : room.id
@@ -56,6 +61,7 @@ struct CartSummarySection: View {
     return CartSummarySection(
         cart: $cart,
         geometry: .roomy,
+        taskControlsUseLongPress: true,
         expandedActionMenuRoomID: $expanded,
         onOpenCartDetails: { _ in },
         onOpenDetails: { _, _ in },

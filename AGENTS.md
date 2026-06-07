@@ -43,14 +43,14 @@ critical path automatically.
 - Use the physical iPhone by default. Do not use the iOS Simulator unless Alex
   explicitly allows it.
 - Current physical device target:
-  `85E776B1-9069-5E68-BC3A-3BCAA4AAB870`.
+  `00008140-001248C20298801C`.
 - For build/install checks, use:
 
 ```sh
 xcodegen generate
 xcodebuild -project OceanKeySwift.xcodeproj -scheme OceanKeySwift -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath .build/DerivedDataDevice -allowProvisioningUpdates build
-xcrun devicectl device install app --device 85E776B1-9069-5E68-BC3A-3BCAA4AAB870 .build/DerivedDataDevice/Build/Products/Debug-iphoneos/OceanKeySwift.app
-xcrun devicectl device process launch --device 85E776B1-9069-5E68-BC3A-3BCAA4AAB870 com.alex.oceankey.swift
+xcrun devicectl device install app --device 00008140-001248C20298801C .build/DerivedDataDevice/Build/Products/Debug-iphoneos/OceanKeySwift.app
+xcrun devicectl device process launch --device 00008140-001248C20298801C com.alex.oceankey.swift
 ```
 
 ## Build Number Discipline
@@ -84,4 +84,3 @@ similar, interpret that as:
 4. Build and install on the physical iPhone when app code changed.
 5. Commit the checkpoint.
 6. Continue to the next migration gap if no blocker or explicit pause exists.
-

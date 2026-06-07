@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SummaryRoomActionMenu: View {
+    @Environment(\.interactionFeedback) private var feedback
+
     let room: RoomCell
     let onNotes: () -> Void
     let onVoice: () -> Void
@@ -68,7 +70,10 @@ struct SummaryRoomActionMenu: View {
         enabled: Bool = true,
         action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
+        Button(action: {
+            playButtonFeedback(selected: selected, enabled: enabled)
+            action()
+        }) {
             VStack(spacing: 3) {
                 Image(systemName: systemName)
                     .font(.system(size: 22, weight: .black))
@@ -91,6 +96,18 @@ struct SummaryRoomActionMenu: View {
         }
         .buttonStyle(.plain)
         .disabled(!enabled)
+    }
+
+    private func playButtonFeedback(selected: Bool, enabled: Bool) {
+        guard enabled else {
+            feedback.invalid()
+            return
+        }
+        if selected {
+            feedback.deselect()
+        } else {
+            feedback.tap()
+        }
     }
 }
 

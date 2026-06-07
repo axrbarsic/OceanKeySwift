@@ -10,6 +10,18 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (18)",
+            date: "2026-06-06",
+            changes: [
+                "Ported the Flutter interaction feedback foundation to native Swift: UIKit haptics plus bundled click/pressed WAV sounds.",
+                "Interaction sounds now use an ambient mixed audio session so they do not take over other playback.",
+                "Room number and S/L/B actions now use the Flutter-style protected long-press interaction by default.",
+                "Added a Settings toggle to switch room actions between long-press and quick-tap mode.",
+                "Right-swipe room menus now give one clean haptic response when the horizontal gesture is recognized and committed.",
+                "Removed the conflicting whole-cell VIP long press; VIP stays in the swipe action menu."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (17)",
             date: "2026-06-06",
             changes: [

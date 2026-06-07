@@ -1,8 +1,11 @@
 import SwiftUI
 
 struct RoomCellView: View {
+    @Environment(\.interactionFeedback) private var feedback
+
     @Binding var room: RoomCell
     let geometry: RoomCellGeometry
+    let taskControlsUseLongPress: Bool
     let isActionMenuExpanded: Bool
     let onActionMenuToggle: () -> Void
     let onOpenNotes: () -> Void
@@ -12,6 +15,7 @@ struct RoomCellView: View {
     let onTaskToggle: (RoomTask) -> Void
     let onVIPToggle: () -> Void
     let onScheduleToggle: () -> Void
+    @State private var swipeFeedbackActive = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -30,30 +34,25 @@ struct RoomCellView: View {
             }
         }
         .animation(.smooth(duration: 0.26), value: isActionMenuExpanded)
-        .gesture(
-            DragGesture(minimumDistance: 24, coordinateSpace: .local)
-                .onEnded { value in
-                    guard abs(value.translation.width) > abs(value.translation.height) * 1.35 else { return }
-                    if value.translation.width > 56 {
-                        onActionMenuToggle()
-                    }
-                }
-        )
+        .simultaneousGesture(actionMenuDragGesture)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Room \(room.id)")
     }
 
     private var tileBody: some View {
         HStack(spacing: geometry.taskSpacing) {
-            Button(action: onOpenToggle) {
+            HoldActionTarget(
+                enabled: true,
+                useLongPress: taskControlsUseLongPress,
+                semanticLabel: "Room \(room.id)",
+                onActivate: activateOpenToggle
+            ) {
                 Text(room.id)
                     .font(.system(size: 46, weight: .black, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(OceanKeyTheme.roomForeground)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
 
             ForEach(RoomTask.allCases) { taskButton($0) }
         }
@@ -88,19 +87,62 @@ struct RoomCellView: View {
                     )
             }
         }
-        .onLongPressGesture(perform: onVIPToggle)
     }
 
     private func taskButton(_ task: RoomTask) -> some View {
-        Button(action: { onTaskToggle(task) }) {
+        HoldActionTarget(
+            enabled: room.opened,
+            useLongPress: taskControlsUseLongPress,
+            semanticLabel: "Room \(room.id) task \(task.rawValue)",
+            onActivate: { activateTask(task) }
+        ) {
             Text(task.rawValue)
                 .font(.system(size: 40, weight: .black, design: .rounded))
                 .foregroundStyle(taskColor(task))
                 .frame(width: 50, height: 54)
-                .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
-        .disabled(!room.opened)
+    }
+
+    private var actionMenuDragGesture: some Gesture {
+        DragGesture(minimumDistance: 18, coordinateSpace: .local)
+            .onChanged { value in
+                guard isHorizontalActionSwipe(value) else { return }
+                guard value.translation.width > 18 else { return }
+                if !swipeFeedbackActive {
+                    swipeFeedbackActive = true
+                    feedback.holdStart()
+                }
+            }
+            .onEnded { value in
+                defer { swipeFeedbackActive = false }
+                guard isHorizontalActionSwipe(value) else { return }
+                if value.translation.width > 56 {
+                    feedback.confirm()
+                    onActionMenuToggle()
+                }
+            }
+    }
+
+    private func isHorizontalActionSwipe(_ value: DragGesture.Value) -> Bool {
+        abs(value.translation.width) > abs(value.translation.height) * 1.35
+    }
+
+    private func activateOpenToggle() {
+        if !taskControlsUseLongPress {
+            feedback.confirm()
+        }
+        onOpenToggle()
+    }
+
+    private func activateTask(_ task: RoomTask) {
+        if !taskControlsUseLongPress {
+            if room.completedTasks.contains(task) {
+                feedback.deselect()
+            } else {
+                feedback.select()
+            }
+        }
+        onTaskToggle(task)
     }
 
     private var cellBackground: some View {
@@ -140,6 +182,7 @@ private extension RoomCell {
     return RoomCellView(
         room: $room,
         geometry: .roomy,
+        taskControlsUseLongPress: true,
         isActionMenuExpanded: true,
         onActionMenuToggle: {},
         onOpenNotes: {},

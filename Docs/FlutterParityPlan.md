@@ -89,5 +89,8 @@ Simulator unless explicitly allowed.
   carts together, while still reading older cart-list JSON files.
 - Core room task invariants now require an open room before S/L/B changes, and
   ready status requires open plus all tasks.
+- Native interaction feedback now mirrors the Flutter foundation: UIKit haptics,
+  bundled click/pressed WAV sounds, ambient mixed audio, protected long-press
+  room controls by default, and clean haptic feedback for right-swipe menus.
 - Sync direction is Apple-first for the native rewrite. Firebase should not be
   used as the architecture reference for Swift sync.
