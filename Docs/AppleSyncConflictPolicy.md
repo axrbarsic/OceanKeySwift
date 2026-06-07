@@ -29,6 +29,8 @@ timestamp, not only the containing cart or work-session timestamp.
 Current native coverage includes room open state, S/L/B task state, VIP state,
 and scheduled room time as explicit field-timestamped values, alongside
 existing room milestone, note, media, cart note, and cart consumable timestamps.
+Setup selection coverage now includes cart binding timestamps, room selection
+timestamps, deselection tombstones, and workday lock timestamps.
 
 Default rule:
 

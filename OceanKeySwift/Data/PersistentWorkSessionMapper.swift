@@ -22,26 +22,51 @@ enum PersistentWorkSessionMapper {
         session.schemaVersion = snapshot.schemaVersion
         session.updatedAt = snapshot.updatedAt
         session.workdayLocked = snapshot.selection.workdayLocked
-        syncCartBindings(snapshot.selection.cartBindings, session: session, context: context)
-        syncRoomSelections(snapshot.selection.cartRoomSelections, session: session, context: context)
+        session.workdayLockUpdatedAt = snapshot.selection.workdayLockUpdatedAt
+        syncCartBindings(snapshot.selection, session: session, context: context)
+        syncRoomSelections(
+            snapshot.selection.cartRoomSelections,
+            metadata: snapshot.selection.roomSelectionUpdatedAt,
+            session: session,
+            context: context
+        )
         syncCarts(snapshot.carts, session: session, context: context)
         try syncHistory(snapshot.history, session: session, context: context)
     }
 
     private static func selection(from session: PersistentWorkSession) -> WorkSessionSelectionState {
         var bindings: [Int: WorkSessionCartBinding] = [:]
+        var bindingUpdatedAt: [Int: Date] = [:]
         for binding in session.cartBindings ?? [] {
-            bindings[binding.cartNumber] = WorkSessionCartBinding(
-                cartNumber: binding.cartNumber,
-                territoryID: binding.territoryID
-            )
+            if let updatedAt = binding.updatedAt {
+                bindingUpdatedAt[binding.cartNumber] = updatedAt
+            }
+            if binding.isSelected, !binding.territoryID.isEmpty {
+                bindings[binding.cartNumber] = WorkSessionCartBinding(
+                    cartNumber: binding.cartNumber,
+                    territoryID: binding.territoryID
+                )
+            }
         }
-        let groupedRooms = Dictionary(grouping: session.roomSelections ?? [], by: \.cartNumber)
-            .mapValues { Set($0.map(\.roomID)) }
+        var groupedRooms: [Int: Set<RoomID>] = [:]
+        var roomUpdatedAt: [Int: [RoomID: Date]] = [:]
+        for selection in session.roomSelections ?? [] {
+            if selection.isSelected {
+                groupedRooms[selection.cartNumber, default: []].insert(selection.roomID)
+            }
+            if let updatedAt = selection.updatedAt {
+                var roomMetadata = roomUpdatedAt[selection.cartNumber] ?? [:]
+                roomMetadata[selection.roomID] = updatedAt
+                roomUpdatedAt[selection.cartNumber] = roomMetadata
+            }
+        }
         return WorkSessionSelectionState(
             cartBindings: bindings,
+            cartBindingUpdatedAt: bindingUpdatedAt,
             cartRoomSelections: groupedRooms,
-            workdayLocked: session.workdayLocked
+            roomSelectionUpdatedAt: roomUpdatedAt,
+            workdayLocked: session.workdayLocked,
+            workdayLockUpdatedAt: session.workdayLockUpdatedAt
         )
     }
 
@@ -116,28 +141,52 @@ enum PersistentWorkSessionMapper {
     }
 
     private static func syncCartBindings(
-        _ bindings: [Int: WorkSessionCartBinding],
+        _ selection: WorkSessionSelectionState,
         session: PersistentWorkSession,
         context: ModelContext
     ) {
         (session.cartBindings ?? []).forEach { context.delete($0) }
-        session.cartBindings = bindings.values
-            .sorted { $0.cartNumber < $1.cartNumber }
-            .map { PersistentCartBinding(cartNumber: $0.cartNumber, territoryID: $0.territoryID) }
+        let cartNumbers = Set(selection.cartBindings.keys).union(selection.cartBindingUpdatedAt.keys)
+        session.cartBindings = cartNumbers.sorted().compactMap { cartNumber in
+            if let binding = selection.cartBindings[cartNumber] {
+                return PersistentCartBinding(
+                    cartNumber: cartNumber,
+                    territoryID: binding.territoryID,
+                    isSelected: true,
+                    updatedAt: selection.cartBindingUpdatedAt[cartNumber]
+                )
+            }
+            return PersistentCartBinding(
+                cartNumber: cartNumber,
+                territoryID: "",
+                isSelected: false,
+                updatedAt: selection.cartBindingUpdatedAt[cartNumber]
+            )
+        }
     }
 
     private static func syncRoomSelections(
         _ selections: [Int: Set<RoomID>],
+        metadata: [Int: [RoomID: Date]],
         session: PersistentWorkSession,
         context: ModelContext
     ) {
         (session.roomSelections ?? []).forEach { context.delete($0) }
-        session.roomSelections = selections.keys.sorted().flatMap { cartNumber in
-            selections[cartNumber, default: []].sorted(by: RoomCatalog.compareRoomIDs).map {
-                PersistentRoomSelection(cartNumber: cartNumber, roomID: $0)
+        let cartNumbers = Set(selections.keys).union(metadata.keys)
+        session.roomSelections = cartNumbers.sorted().flatMap { cartNumber in
+            let activeRooms = selections[cartNumber, default: []]
+            let metadataRooms = Set(metadata[cartNumber, default: [:]].keys)
+            return activeRooms.union(metadataRooms).sorted(by: RoomCatalog.compareRoomIDs).map { room in
+                PersistentRoomSelection(
+                    cartNumber: cartNumber,
+                    roomID: room,
+                    isSelected: activeRooms.contains(room),
+                    updatedAt: metadata[cartNumber]?[room]
+                )
             }
         }
     }
+
 
     private static func syncCarts(
         _ carts: [CartSection],

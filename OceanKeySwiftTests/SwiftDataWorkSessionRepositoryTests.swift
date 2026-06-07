@@ -56,6 +56,8 @@ private func makePersistentTestSnapshot() -> WorkSessionSnapshot {
     let mediaAt = Date(timeIntervalSince1970: 1_801_010_800)
     let vipAt = Date(timeIntervalSince1970: 1_801_012_000)
     let scheduleAt = Date(timeIntervalSince1970: 1_801_013_000)
+    let selectionAt = Date(timeIntervalSince1970: 1_801_016_000)
+    let removedSelectionAt = Date(timeIntervalSince1970: 1_801_017_000)
     let roomMediaID = UUID(uuidString: "11111111-1111-1111-1111-111111111111")!
     let cartMediaID = UUID(uuidString: "22222222-2222-2222-2222-222222222222")!
 
@@ -159,10 +161,22 @@ private func makePersistentTestSnapshot() -> WorkSessionSnapshot {
             cartBindings: [
                 7: WorkSessionCartBinding(cartNumber: 7, territoryID: "A3")
             ],
+            cartBindingUpdatedAt: [
+                7: selectionAt,
+                9: removedSelectionAt
+            ],
             cartRoomSelections: [
                 7: ["303", "304"]
             ],
-            workdayLocked: true
+            roomSelectionUpdatedAt: [
+                7: [
+                    "303": selectionAt,
+                    "304": selectionAt,
+                    "305": removedSelectionAt
+                ]
+            ],
+            workdayLocked: true,
+            workdayLockUpdatedAt: selectionAt
         ),
         carts: carts,
         history: history,

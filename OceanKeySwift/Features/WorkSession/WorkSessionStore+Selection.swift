@@ -19,39 +19,46 @@ extension WorkSessionStore {
 
     @discardableResult
     func toggleCartSelection(_ cartNumber: Int) -> WorkSessionSelectionCommandResult {
-        let result = selection.toggleCart(cartNumber)
+        let changedAt = Date()
+        let result = selection.toggleCart(cartNumber, changedAt: changedAt)
         reconcileCartsAfterSelectionChange(
             result,
-            title: "Тележка \(cartNumber): выбор изменен"
+            title: "Тележка \(cartNumber): выбор изменен",
+            happenedAt: changedAt
         )
         return result
     }
 
     @discardableResult
     func setCartBinding(cartNumber: Int, territory: Territory) -> WorkSessionSelectionCommandResult {
-        let result = selection.setCartBinding(cartNumber: cartNumber, territory: territory)
+        let changedAt = Date()
+        let result = selection.setCartBinding(cartNumber: cartNumber, territory: territory, changedAt: changedAt)
         reconcileCartsAfterSelectionChange(
             result,
-            title: "Тележка \(cartNumber): зона \(territory.id)"
+            title: "Тележка \(cartNumber): зона \(territory.id)",
+            happenedAt: changedAt
         )
         return result
     }
 
     @discardableResult
     func toggleRoomSelection(cartNumber: Int, room: RoomID) -> WorkSessionSelectionCommandResult {
-        let result = selection.toggleRoom(cartNumber: cartNumber, room: room)
+        let changedAt = Date()
+        let result = selection.toggleRoom(cartNumber: cartNumber, room: room, changedAt: changedAt)
         reconcileCartsAfterSelectionChange(
             result,
-            title: "\(room): выбор комнаты изменен"
+            title: "\(room): выбор комнаты изменен",
+            happenedAt: changedAt
         )
         return result
     }
 
     @discardableResult
     func lockWorkday() -> WorkSessionSelectionCommandResult {
-        let result = selection.lockWorkday()
+        let changedAt = Date()
+        let result = selection.lockWorkday(changedAt: changedAt)
         if result == .changed {
-            appendHistory(kind: .workdayLocked, title: "Рабочий день зафиксирован")
+            appendHistory(kind: .workdayLocked, title: "Рабочий день зафиксирован", happenedAt: changedAt)
             persist()
         }
         return result
@@ -59,9 +66,10 @@ extension WorkSessionStore {
 
     @discardableResult
     func unlockWorkdayForEditing() -> WorkSessionSelectionCommandResult {
-        let result = selection.unlockWorkdayForEditing()
+        let changedAt = Date()
+        let result = selection.unlockWorkdayForEditing(changedAt: changedAt)
         if result == .changed {
-            appendHistory(kind: .workdayUnlocked, title: "Рабочий день открыт для редактирования")
+            appendHistory(kind: .workdayUnlocked, title: "Рабочий день открыт для редактирования", happenedAt: changedAt)
             persist()
         }
         return result
@@ -91,14 +99,15 @@ extension WorkSessionStore {
 
     private func reconcileCartsAfterSelectionChange(
         _ result: WorkSessionSelectionCommandResult,
-        title: String
+        title: String,
+        happenedAt: Date
     ) {
         guard result == .changed else { return }
         carts = WorkSessionBuilder.makeCarts(
             from: selection,
             preserving: carts.flatMap(\.rooms)
         )
-        appendHistory(kind: .selectionChanged, title: title)
+        appendHistory(kind: .selectionChanged, title: title, happenedAt: happenedAt)
         persist()
     }
 }

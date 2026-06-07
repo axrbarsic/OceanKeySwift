@@ -9,6 +9,7 @@ final class PersistentWorkSession {
     var schemaVersion: Int
     var updatedAt: Date
     var workdayLocked: Bool
+    var workdayLockUpdatedAt: Date?
     @Relationship(deleteRule: .cascade) var cartBindings: [PersistentCartBinding]?
     @Relationship(deleteRule: .cascade) var roomSelections: [PersistentRoomSelection]?
     @Relationship(deleteRule: .cascade) var carts: [PersistentCart]?
@@ -19,6 +20,7 @@ final class PersistentWorkSession {
         schemaVersion: Int = 1,
         updatedAt: Date = Date(),
         workdayLocked: Bool = false,
+        workdayLockUpdatedAt: Date? = nil,
         cartBindings: [PersistentCartBinding] = [],
         roomSelections: [PersistentRoomSelection] = [],
         carts: [PersistentCart] = [],
@@ -28,6 +30,7 @@ final class PersistentWorkSession {
         self.schemaVersion = schemaVersion
         self.updatedAt = updatedAt
         self.workdayLocked = workdayLocked
+        self.workdayLockUpdatedAt = workdayLockUpdatedAt
         self.cartBindings = cartBindings
         self.roomSelections = roomSelections
         self.carts = carts
@@ -39,10 +42,19 @@ final class PersistentWorkSession {
 final class PersistentCartBinding {
     var cartNumber: Int
     var territoryID: String
+    var isSelected: Bool
+    var updatedAt: Date?
 
-    init(cartNumber: Int, territoryID: String) {
+    init(
+        cartNumber: Int,
+        territoryID: String,
+        isSelected: Bool = true,
+        updatedAt: Date? = nil
+    ) {
         self.cartNumber = cartNumber
         self.territoryID = territoryID
+        self.isSelected = isSelected
+        self.updatedAt = updatedAt
     }
 }
 
@@ -50,10 +62,19 @@ final class PersistentCartBinding {
 final class PersistentRoomSelection {
     var cartNumber: Int
     var roomID: String
+    var isSelected: Bool
+    var updatedAt: Date?
 
-    init(cartNumber: Int, roomID: String) {
+    init(
+        cartNumber: Int,
+        roomID: String,
+        isSelected: Bool = true,
+        updatedAt: Date? = nil
+    ) {
         self.cartNumber = cartNumber
         self.roomID = roomID
+        self.isSelected = isSelected
+        self.updatedAt = updatedAt
     }
 }
 

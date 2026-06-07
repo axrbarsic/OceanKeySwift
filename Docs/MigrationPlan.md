@@ -47,6 +47,8 @@ verification.
   CloudKit conflict resolution can merge individual fields.
 - Room open state and each S/L/B task state also carry last-updated timestamps,
   separate from first-happened milestone facts shown in the room timeline.
+- Work setup state now has timestamp metadata for cart bindings, room
+  selections, deselected-room tombstones, and workday lock changes.
 - Physical iPhone install is active through the local Apple Development profile
   for `com.alex.oceankey.swift`
 - Project generation: XcodeGen through `project.yml`

@@ -11,8 +11,11 @@ struct WorkSessionCartBinding: Codable, Equatable, Hashable, Sendable {
 
 struct WorkSessionSelectionState: Codable, Equatable, Sendable {
     var cartBindings: [Int: WorkSessionCartBinding] = [:]
+    var cartBindingUpdatedAt: [Int: Date] = [:]
     var cartRoomSelections: [Int: Set<RoomID>] = [:]
+    var roomSelectionUpdatedAt: [Int: [RoomID: Date]] = [:]
     var workdayLocked = false
+    var workdayLockUpdatedAt: Date?
 
     var selectedCartNumbers: [Int] {
         cartBindings.keys.sorted()
@@ -104,11 +107,14 @@ enum WorkSessionSelectionCommandResult: Equatable, Sendable {
 
 extension WorkSessionSelectionState {
     @discardableResult
-    mutating func toggleCart(_ cartNumber: Int) -> WorkSessionSelectionCommandResult {
+    mutating func toggleCart(
+        _ cartNumber: Int,
+        changedAt: Date = Date()
+    ) -> WorkSessionSelectionCommandResult {
         guard !workdayLocked else { return .ignored }
         let cart = WorkSessionSelectionRules.clampedCartNumber(cartNumber)
         if cartBindings[cart] != nil {
-            removeCart(cart)
+            removeCart(cart, changedAt: changedAt)
             return .changed
         }
 
@@ -117,23 +123,38 @@ extension WorkSessionSelectionState {
             existingBindings: cartBindings
         )
         cartBindings[cart] = WorkSessionCartBinding(cartNumber: cart, territoryID: territory.id)
+        cartBindingUpdatedAt[cart] = changedAt
         return .changed
     }
 
     @discardableResult
-    mutating func setCartBinding(cartNumber: Int, territory: Territory) -> WorkSessionSelectionCommandResult {
+    mutating func setCartBinding(
+        cartNumber: Int,
+        territory: Territory,
+        changedAt: Date = Date()
+    ) -> WorkSessionSelectionCommandResult {
         guard !workdayLocked else { return .ignored }
         let cart = WorkSessionSelectionRules.clampedCartNumber(cartNumber)
         cartBindings[cart] = WorkSessionCartBinding(cartNumber: cart, territoryID: territory.id)
+        cartBindingUpdatedAt[cart] = changedAt
         if let rooms = cartRoomSelections[cart] {
-            cartRoomSelections[cart] = rooms.filter { territory.rooms.contains($0) }
+            let keptRooms = rooms.filter { territory.rooms.contains($0) }
+            let removedRooms = rooms.subtracting(keptRooms)
+            for room in removedRooms {
+                markRoomSelection(cart: cart, room: room, changedAt: changedAt)
+            }
+            cartRoomSelections[cart] = keptRooms
         }
         trimEmptyRoomSelections()
         return .changed
     }
 
     @discardableResult
-    mutating func toggleRoom(cartNumber: Int, room rawRoom: RoomID) -> WorkSessionSelectionCommandResult {
+    mutating func toggleRoom(
+        cartNumber: Int,
+        room rawRoom: RoomID,
+        changedAt: Date = Date()
+    ) -> WorkSessionSelectionCommandResult {
         guard !workdayLocked else { return .ignored }
         guard let room = RoomCatalog.normalizeRoomID(rawRoom) else { return .ignored }
         let cart = WorkSessionSelectionRules.clampedCartNumber(cartNumber)
@@ -145,43 +166,63 @@ extension WorkSessionSelectionState {
         if cartRooms.contains(room) {
             cartRooms.remove(room)
             cartRoomSelections[cart] = cartRooms
+            markRoomSelection(cart: cart, room: room, changedAt: changedAt)
             trimEmptyRoomSelections()
             return .changed
         }
 
         cartRooms.insert(room)
         cartRoomSelections[cart] = cartRooms
+        markRoomSelection(cart: cart, room: room, changedAt: changedAt)
         for otherCart in cartRoomSelections.keys where otherCart != cart {
-            cartRoomSelections[otherCart]?.remove(room)
+            if cartRoomSelections[otherCart]?.remove(room) != nil {
+                markRoomSelection(cart: otherCart, room: room, changedAt: changedAt)
+            }
         }
         trimEmptyRoomSelections()
         return .changed
     }
 
     @discardableResult
-    mutating func lockWorkday() -> WorkSessionSelectionCommandResult {
+    mutating func lockWorkday(changedAt: Date = Date()) -> WorkSessionSelectionCommandResult {
         guard !workdayLocked, hasSelectedRooms else { return .ignored }
         workdayLocked = true
+        workdayLockUpdatedAt = changedAt
         return .changed
     }
 
     @discardableResult
-    mutating func unlockWorkdayForEditing() -> WorkSessionSelectionCommandResult {
+    mutating func unlockWorkdayForEditing(changedAt: Date = Date()) -> WorkSessionSelectionCommandResult {
         guard workdayLocked else { return .ignored }
         workdayLocked = false
+        workdayLockUpdatedAt = changedAt
         return .changed
     }
 
-    mutating func removeRooms(_ rooms: Set<RoomID>) {
+    mutating func removeRooms(_ rooms: Set<RoomID>, changedAt: Date = Date()) {
         for cart in cartRoomSelections.keys {
+            let removed = cartRoomSelections[cart]?.intersection(rooms) ?? []
             cartRoomSelections[cart]?.subtract(rooms)
+            for room in removed {
+                markRoomSelection(cart: cart, room: room, changedAt: changedAt)
+            }
         }
         trimEmptyRoomSelections()
     }
 
-    private mutating func removeCart(_ cart: Int) {
+    private mutating func removeCart(_ cart: Int, changedAt: Date) {
+        for room in cartRoomSelections[cart] ?? [] {
+            markRoomSelection(cart: cart, room: room, changedAt: changedAt)
+        }
         cartBindings.removeValue(forKey: cart)
+        cartBindingUpdatedAt[cart] = changedAt
         cartRoomSelections.removeValue(forKey: cart)
+    }
+
+    private mutating func markRoomSelection(cart: Int, room: RoomID, changedAt: Date) {
+        var metadata = roomSelectionUpdatedAt[cart] ?? [:]
+        metadata[room] = changedAt
+        roomSelectionUpdatedAt[cart] = metadata
     }
 
     private mutating func trimEmptyRoomSelections() {

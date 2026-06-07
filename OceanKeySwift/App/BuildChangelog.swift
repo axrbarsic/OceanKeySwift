@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (41)",
+            date: "2026-06-07",
+            changes: [
+                "Added sync metadata for setup selections: cart bindings, room selections, room deselection tombstones, and workday lock changes now carry timestamps.",
+                "SwiftData now persists setup selection records with selected/deselected state instead of only storing the currently visible room set.",
+                "Added regression coverage so removed room selections survive persistence as timestamped tombstones for future local-first iCloud merges."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (40)",
             date: "2026-06-07",
             changes: [

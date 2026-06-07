@@ -135,6 +135,28 @@ func roomSelectionPreventsCrossCartDuplicates() {
 }
 
 @Test
+func selectionMutationsRecordSyncMetadata() {
+    let cartAt = Date(timeIntervalSince1970: 1_802_000_000)
+    let roomAddAt = Date(timeIntervalSince1970: 1_802_000_100)
+    let roomRemoveAt = Date(timeIntervalSince1970: 1_802_000_200)
+    let lockAt = Date(timeIntervalSince1970: 1_802_000_300)
+    var selection = WorkSessionSelectionState()
+
+    selection.toggleCart(7, changedAt: cartAt)
+    selection.toggleRoom(cartNumber: 7, room: "303", changedAt: roomAddAt)
+    selection.toggleRoom(cartNumber: 7, room: "303", changedAt: roomRemoveAt)
+    selection.toggleRoom(cartNumber: 7, room: "304", changedAt: roomAddAt)
+    selection.lockWorkday(changedAt: lockAt)
+
+    #expect(selection.cartBindingUpdatedAt[7] == cartAt)
+    #expect(!selection.rooms(forCart: 7).contains("303"))
+    #expect(selection.roomSelectionUpdatedAt[7]?["303"] == roomRemoveAt)
+    #expect(selection.roomSelectionUpdatedAt[7]?["304"] == roomAddAt)
+    #expect(selection.workdayLocked == true)
+    #expect(selection.workdayLockUpdatedAt == lockAt)
+}
+
+@Test
 func storeSelectionRebuildsCartsWhilePreservingRoomState() {
     let store = WorkSessionStore(carts: [])
     store.toggleCartSelection(7)

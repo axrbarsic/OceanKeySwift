@@ -145,3 +145,6 @@ Simulator unless explicitly allowed.
   for local-first Apple sync merges.
 - Room open state and each S/L/B task state now also carry independent
   update timestamps, separate from the visible milestone timeline.
+- Setup selections now carry sync metadata too: cart binding changes, selected
+  rooms, deselected-room tombstones, and workday lock/unlock changes have
+  timestamps and persist through SwiftData.
