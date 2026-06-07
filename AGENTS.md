@@ -72,6 +72,39 @@ xcrun devicectl device process launch --device 00008140-001248C20298801C com.ale
   local edits with stale remote snapshots.
 - Media files are local-only by default unless Alex explicitly changes that.
 
+## Port The Idea, Not The Code (Flutter → Swift)
+
+The Flutter app is a reference for BEHAVIOR and domain rules (what the user sees
+and does), NOT a code or architecture template. Port the idea; implement it the
+idiomatic Swift/iOS way. A literal Flutter port is technical debt and must be
+re-thought, not copied.
+
+For every node ask "how is this done correctly in Swift/iOS", not "how was it in
+Flutter". Concrete port anti-patterns → native replacement:
+
+- State: do NOT recreate ChangeNotifier/setState or manual notify — use
+  Observation (`@Observable`/`@Bindable`).
+- Storage: do NOT mirror SharedPreferences + a hand-rolled JSON snapshot
+  rewritten in full on every change — use SwiftData (incremental, off-main);
+  settings via `@AppStorage` or an idiomatic store.
+- Concurrency: do NOT port Future/completion chains — use async/await + Swift
+  Concurrency; no blocking IO on the main thread.
+- Callbacks: do NOT reproduce Flutter callback-hell (dozens of onX closures
+  threaded through layers) — use small `@Observable` ViewModels with actions and
+  Environment.
+- Audio/camera/speech: do NOT host low-level engines inside views — use native
+  services; for record/transcribe prefer the file path (`AVAudioRecorder` →
+  `SFSpeechURLRecognitionRequest`), not a live `AVAudioEngine` tap.
+- Models: value types (`struct`) for the domain; UI geometry/style lives in
+  presentation, not in domain models.
+- Sync: do NOT model it after Firebase — Apple-first (CloudKit), local-first,
+  idempotent.
+- Effects: go through the shared runtime/service (SpriteKit host), not ad hoc per
+  view.
+
+If a node was already ported literally, re-think it by these rules while keeping
+user-visible behavior and domain parity, and cover it with tests.
+
 ## Current Intent
 
 When the user says "continue", "go to the final goal", "do everything", or
