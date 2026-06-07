@@ -3,6 +3,7 @@ import SwiftUI
 struct CartSummarySection: View {
     @Binding var cart: CartSection
     @Binding var expandedActionMenuRoomID: RoomCell.ID?
+    let onOpenDetails: (RoomCell.ID, RoomDetailsMode) -> Void
     let onOpenToggle: (RoomCell.ID) -> Void
     let onTaskToggle: (RoomTask, RoomCell.ID) -> Void
     let onVIPToggle: (RoomCell.ID) -> Void
@@ -28,6 +29,8 @@ struct CartSummarySection: View {
                     onActionMenuToggle: {
                         expandedActionMenuRoomID = expandedActionMenuRoomID == room.id ? nil : room.id
                     },
+                    onOpenNotes: { onOpenDetails(room.id, .text) },
+                    onOpenVoice: { onOpenDetails(room.id, .voice) },
                     onOpenToggle: { onOpenToggle(room.id) },
                     onTaskToggle: { task in onTaskToggle(task, room.id) },
                     onVIPToggle: { onVIPToggle(room.id) },
@@ -45,6 +48,7 @@ struct CartSummarySection: View {
     return CartSummarySection(
         cart: $cart,
         expandedActionMenuRoomID: $expanded,
+        onOpenDetails: { _, _ in },
         onOpenToggle: { _ in },
         onTaskToggle: { _, _ in },
         onVIPToggle: { _ in },

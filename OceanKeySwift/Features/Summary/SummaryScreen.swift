@@ -3,6 +3,7 @@ import SwiftUI
 struct SummaryScreen: View {
     @Bindable var workSession: WorkSessionStore
     @State private var expandedActionMenuRoomID: RoomCell.ID?
+    @State private var roomDetailsRoute: RoomDetailsRoute?
 
     var body: some View {
         ZStack {
@@ -18,6 +19,10 @@ struct SummaryScreen: View {
                             CartSummarySection(
                                 cart: $cart,
                                 expandedActionMenuRoomID: $expandedActionMenuRoomID,
+                                onOpenDetails: { roomID, mode in
+                                    expandedActionMenuRoomID = nil
+                                    roomDetailsRoute = RoomDetailsRoute(roomID: roomID, mode: mode)
+                                },
                                 onOpenToggle: workSession.toggleOpen,
                                 onTaskToggle: workSession.toggleTask,
                                 onVIPToggle: workSession.toggleVIP,
@@ -31,6 +36,10 @@ struct SummaryScreen: View {
                 .scrollIndicators(.hidden)
             }
             .padding(.top, 18)
+        }
+        .sheet(item: $roomDetailsRoute) { route in
+            RoomDetailsScreen(route: route)
+                .preferredColorScheme(.dark)
         }
     }
 }

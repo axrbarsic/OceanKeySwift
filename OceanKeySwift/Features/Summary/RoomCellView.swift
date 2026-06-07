@@ -4,6 +4,8 @@ struct RoomCellView: View {
     @Binding var room: RoomCell
     let isActionMenuExpanded: Bool
     let onActionMenuToggle: () -> Void
+    let onOpenNotes: () -> Void
+    let onOpenVoice: () -> Void
     let onOpenToggle: () -> Void
     let onTaskToggle: (RoomTask) -> Void
     let onVIPToggle: () -> Void
@@ -16,8 +18,8 @@ struct RoomCellView: View {
             if isActionMenuExpanded {
                 SummaryRoomActionMenu(
                     room: room,
-                    onNotes: {},
-                    onVoice: {},
+                    onNotes: onOpenNotes,
+                    onVoice: onOpenVoice,
                     onVIPToggle: onVIPToggle,
                     onScheduleToggle: onScheduleToggle
                 )
@@ -136,6 +138,8 @@ private extension RoomCell {
         room: $room,
         isActionMenuExpanded: true,
         onActionMenuToggle: {},
+        onOpenNotes: {},
+        onOpenVoice: {},
         onOpenToggle: {},
         onTaskToggle: { _ in },
         onVIPToggle: {},
