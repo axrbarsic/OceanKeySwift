@@ -3,6 +3,11 @@ import OSLog
 import SwiftData
 
 final class SwiftDataWorkSessionRepository: WorkSessionRepository, @unchecked Sendable {
+    enum SyncMode: Sendable {
+        case localOnly
+        case privateCloudKit(containerIdentifier: String)
+    }
+
     private static let logger = Logger(
         subsystem: "com.alex.oceankey.swift",
         category: "SwiftDataWorkSessionRepository"
@@ -73,7 +78,11 @@ final class SwiftDataWorkSessionRepository: WorkSessionRepository, @unchecked Se
             PersistentRoom.self,
             PersistentMediaAttachment.self
         ])
-        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
+        let configuration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: inMemory,
+            cloudKitDatabase: .none
+        )
         return try ModelContainer(for: schema, configurations: [configuration])
     }
 }

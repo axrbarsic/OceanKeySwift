@@ -6,7 +6,7 @@ enum PersistentWorkSessionMapper {
         WorkSessionSnapshot(
             schemaVersion: session.schemaVersion,
             selection: selection(from: session),
-            carts: session.carts
+            carts: (session.carts ?? [])
                 .sorted { $0.displayOrder < $1.displayOrder }
                 .map(cart(from:)),
             updatedAt: session.updatedAt
@@ -28,13 +28,13 @@ enum PersistentWorkSessionMapper {
 
     private static func selection(from session: PersistentWorkSession) -> WorkSessionSelectionState {
         var bindings: [Int: WorkSessionCartBinding] = [:]
-        for binding in session.cartBindings {
+        for binding in session.cartBindings ?? [] {
             bindings[binding.cartNumber] = WorkSessionCartBinding(
                 cartNumber: binding.cartNumber,
                 territoryID: binding.territoryID
             )
         }
-        let groupedRooms = Dictionary(grouping: session.roomSelections, by: \.cartNumber)
+        let groupedRooms = Dictionary(grouping: session.roomSelections ?? [], by: \.cartNumber)
             .mapValues { Set($0.map(\.roomID)) }
         return WorkSessionSelectionState(
             cartBindings: bindings,
@@ -47,10 +47,10 @@ enum PersistentWorkSessionMapper {
         CartSection(
             id: record.cartNumber,
             building: record.building,
-            rooms: record.rooms.sorted { $0.displayOrder < $1.displayOrder }.map(room(from:)),
+            rooms: (record.rooms ?? []).sorted { $0.displayOrder < $1.displayOrder }.map(room(from:)),
             note: record.note,
             noteUpdatedAt: record.noteUpdatedAt,
-            mediaAttachments: media(from: record.mediaAttachments)
+            mediaAttachments: media(from: record.mediaAttachments ?? [])
         )
     }
 
@@ -73,7 +73,7 @@ enum PersistentWorkSessionMapper {
             textNoteUpdatedAt: record.textNoteUpdatedAt,
             voiceTranscript: record.voiceTranscript,
             voiceTranscriptUpdatedAt: record.voiceTranscriptUpdatedAt,
-            mediaAttachments: media(from: record.mediaAttachments)
+            mediaAttachments: media(from: record.mediaAttachments ?? [])
         )
     }
 
@@ -111,7 +111,7 @@ enum PersistentWorkSessionMapper {
         session: PersistentWorkSession,
         context: ModelContext
     ) {
-        session.cartBindings.forEach { context.delete($0) }
+        (session.cartBindings ?? []).forEach { context.delete($0) }
         session.cartBindings = bindings.values
             .sorted { $0.cartNumber < $1.cartNumber }
             .map { PersistentCartBinding(cartNumber: $0.cartNumber, territoryID: $0.territoryID) }
@@ -122,7 +122,7 @@ enum PersistentWorkSessionMapper {
         session: PersistentWorkSession,
         context: ModelContext
     ) {
-        session.roomSelections.forEach { context.delete($0) }
+        (session.roomSelections ?? []).forEach { context.delete($0) }
         session.roomSelections = selections.keys.sorted().flatMap { cartNumber in
             selections[cartNumber, default: []].sorted(by: RoomCatalog.compareRoomIDs).map {
                 PersistentRoomSelection(cartNumber: cartNumber, roomID: $0)
@@ -136,13 +136,14 @@ enum PersistentWorkSessionMapper {
         context: ModelContext
     ) {
         let desiredCartNumbers = Set(carts.map(\.id))
-        session.carts.filter { !desiredCartNumbers.contains($0.cartNumber) }
+        (session.carts ?? []).filter { !desiredCartNumbers.contains($0.cartNumber) }
             .forEach { context.delete($0) }
 
         var existing: [Int: PersistentCart] = [:]
-        for record in session.carts {
+        for record in session.carts ?? [] {
             existing[record.cartNumber] = record
         }
+        var nextCarts = (session.carts ?? []).filter { desiredCartNumbers.contains($0.cartNumber) }
         for (index, cart) in carts.enumerated() {
             let record: PersistentCart
             if existing[cart.id] == nil {
@@ -153,7 +154,7 @@ enum PersistentWorkSessionMapper {
                 )
                 context.insert(record)
                 existing[cart.id] = record
-                session.carts.append(record)
+                nextCarts.append(record)
             } else {
                 record = existing[cart.id]!
             }
@@ -168,6 +169,7 @@ enum PersistentWorkSessionMapper {
                 context: context
             )
         }
+        session.carts = nextCarts
     }
 
     private static func syncRooms(
@@ -176,13 +178,14 @@ enum PersistentWorkSessionMapper {
         context: ModelContext
     ) {
         let desiredRoomIDs = Set(rooms.map(\.id))
-        cart.rooms.filter { !desiredRoomIDs.contains($0.roomID) }
+        (cart.rooms ?? []).filter { !desiredRoomIDs.contains($0.roomID) }
             .forEach { context.delete($0) }
 
         var existing: [RoomID: PersistentRoom] = [:]
-        for record in cart.rooms {
+        for record in cart.rooms ?? [] {
             existing[record.roomID] = record
         }
+        var nextRooms = (cart.rooms ?? []).filter { desiredRoomIDs.contains($0.roomID) }
         for (index, room) in rooms.enumerated() {
             let record: PersistentRoom
             if existing[room.id] == nil {
@@ -196,7 +199,7 @@ enum PersistentWorkSessionMapper {
                 )
                 context.insert(record)
                 existing[room.id] = record
-                cart.rooms.append(record)
+                nextRooms.append(record)
             } else {
                 record = existing[room.id]!
             }
@@ -221,13 +224,15 @@ enum PersistentWorkSessionMapper {
                 context: context
             )
         }
+        cart.rooms = nextRooms
     }
 
     private static func syncMedia(
         _ attachments: [MediaAttachment],
-        existingRecords records: [PersistentMediaAttachment],
+        existingRecords records: [PersistentMediaAttachment]?,
         context: ModelContext
     ) -> [PersistentMediaAttachment] {
+        let records = records ?? []
         let desiredIDs = Set(attachments.map(\.id))
         records.filter { !desiredIDs.contains($0.attachmentID) }
             .forEach { context.delete($0) }

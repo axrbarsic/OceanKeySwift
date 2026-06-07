@@ -126,3 +126,6 @@ Simulator unless explicitly allowed.
   Speech lifecycle directly.
 - Sync direction is Apple-first for the native rewrite. Firebase should not be
   used as the architecture reference for Swift sync.
+- The SwiftData persistence schema is shaped for future CloudKit compatibility,
+  while the installed app remains local-only until iCloud sync is intentionally
+  enabled.

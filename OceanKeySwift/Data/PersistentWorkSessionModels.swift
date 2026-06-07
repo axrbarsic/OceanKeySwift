@@ -5,13 +5,13 @@ import SwiftData
 final class PersistentWorkSession {
     static let currentID = "current"
 
-    @Attribute(.unique) var id: String
+    var id: String
     var schemaVersion: Int
     var updatedAt: Date
     var workdayLocked: Bool
-    @Relationship(deleteRule: .cascade) var cartBindings: [PersistentCartBinding]
-    @Relationship(deleteRule: .cascade) var roomSelections: [PersistentRoomSelection]
-    @Relationship(deleteRule: .cascade) var carts: [PersistentCart]
+    @Relationship(deleteRule: .cascade) var cartBindings: [PersistentCartBinding]?
+    @Relationship(deleteRule: .cascade) var roomSelections: [PersistentRoomSelection]?
+    @Relationship(deleteRule: .cascade) var carts: [PersistentCart]?
 
     init(
         id: String = PersistentWorkSession.currentID,
@@ -61,8 +61,8 @@ final class PersistentCart {
     var building: String
     var note: String?
     var noteUpdatedAt: Date?
-    @Relationship(deleteRule: .cascade) var rooms: [PersistentRoom]
-    @Relationship(deleteRule: .cascade) var mediaAttachments: [PersistentMediaAttachment]
+    @Relationship(deleteRule: .cascade) var rooms: [PersistentRoom]?
+    @Relationship(deleteRule: .cascade) var mediaAttachments: [PersistentMediaAttachment]?
 
     init(
         cartNumber: Int,
@@ -101,7 +101,7 @@ final class PersistentRoom {
     var textNoteUpdatedAt: Date?
     var voiceTranscript: String?
     var voiceTranscriptUpdatedAt: Date?
-    @Relationship(deleteRule: .cascade) var mediaAttachments: [PersistentMediaAttachment]
+    @Relationship(deleteRule: .cascade) var mediaAttachments: [PersistentMediaAttachment]?
 
     init(
         roomID: String,

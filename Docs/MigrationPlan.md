@@ -28,6 +28,10 @@ verification.
   path.
 - Local persistence: SwiftData is the default local-first work-session store;
   legacy JSON exists only as an import/fallback path for older installs.
+- iCloud readiness: the SwiftData persistence schema avoids local-only
+  assumptions that would block CloudKit later; the active store remains
+  explicitly local-only until sync is enabled as a separate infrastructure
+  adapter.
 - Startup loading: saved work-session state is fetched off the main thread and
   applied on the main actor, so first render is not blocked by SwiftData or
   legacy JSON IO.

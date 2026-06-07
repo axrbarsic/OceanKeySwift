@@ -37,8 +37,14 @@ be added behind that boundary after the domain model and input flow are stable.
    - Remote changes enter through a repository/importer.
 
 3. Add Apple sync as an infrastructure adapter.
-   - Preferred first candidate: Core Data plus
-     `NSPersistentCloudKitContainer`, if the model maps cleanly.
+   - Preferred first candidate: SwiftData's managed CloudKit path, because
+     SwiftData uses the same CloudKit machinery behind the scenes while keeping
+     the repository boundary native.
+   - Keep the persisted SwiftData model compatible with CloudKit: don't rely on
+     local-only uniqueness constraints, and keep relationships optional so
+     CloudKit can process related changes in its own order.
+   - Current installed builds keep SwiftData explicitly local-only until iCloud
+     entitlements/container setup and conflict policy are enabled deliberately.
    - Fallback candidate: direct CloudKit `CKRecord`/custom zones if event log
      ordering and conflict rules need explicit control.
 
@@ -55,4 +61,6 @@ Before implementing CloudKit:
   screen consumes.
 - Legacy JSON has been upgraded behind the repository boundary; SwiftData can
   import existing local JSON without losing current installs.
+- SwiftData schema is CloudKit-ready at the model-shape level, but the active
+  store remains local-only until sync is intentionally enabled.
 - A documented conflict policy exists for two iPhones editing the same workday.
