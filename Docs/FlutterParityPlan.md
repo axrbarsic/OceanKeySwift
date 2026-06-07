@@ -74,3 +74,6 @@ Simulator unless explicitly allowed.
   looked better on iPhone than the tighter Flutter parity geometry.
 - Settings can now switch room-cell geometry between the taller first-test Swift
   layout and the tighter Flutter-parity layout.
+- Scheduled pink rooms now advance automatically to open/red on the main screen
+  when the scheduled time has arrived, recording the opened timestamp and
+  persisting the change locally.

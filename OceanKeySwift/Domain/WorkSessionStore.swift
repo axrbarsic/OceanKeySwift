@@ -86,6 +86,37 @@ final class WorkSessionStore {
         }
     }
 
+    @discardableResult
+    func advanceScheduledRooms(now: Date = Date()) -> [RoomCell.ID] {
+        var openedRoomIDs: [RoomCell.ID] = []
+        var didMutate = false
+        for cartIndex in carts.indices {
+            for roomIndex in carts[cartIndex].rooms.indices {
+                var room = carts[cartIndex].rooms[roomIndex]
+                guard let scheduledTime = room.scheduledTime else { continue }
+                guard scheduledTime <= now else { continue }
+                guard !room.opened, room.completedTasks.isEmpty else {
+                    room.scheduledTime = nil
+                    carts[cartIndex].rooms[roomIndex] = room
+                    didMutate = true
+                    continue
+                }
+
+                room.opened = true
+                room.scheduledTime = nil
+                room.timeline.openedAt = room.timeline.openedAt ?? now
+                carts[cartIndex].rooms[roomIndex] = room
+                openedRoomIDs.append(room.id)
+                didMutate = true
+            }
+        }
+
+        if didMutate {
+            persist()
+        }
+        return openedRoomIDs
+    }
+
     func room(id roomId: RoomCell.ID) -> RoomCell? {
         carts.lazy.flatMap(\.rooms).first { $0.id == roomId }
     }

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SummaryScreen: View {
+    private let scheduleTimer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
+
     @Bindable var workSession: WorkSessionStore
     @Bindable var appSettings: AppSettingsStore
     @State private var expandedActionMenuRoomID: RoomCell.ID?
@@ -59,6 +61,12 @@ struct SummaryScreen: View {
         .sheet(isPresented: $isSettingsPresented) {
             SettingsScreen(workSession: workSession, appSettings: appSettings)
                 .preferredColorScheme(.dark)
+        }
+        .onAppear {
+            workSession.advanceScheduledRooms()
+        }
+        .onReceive(scheduleTimer) { date in
+            workSession.advanceScheduledRooms(now: date)
         }
     }
 }
