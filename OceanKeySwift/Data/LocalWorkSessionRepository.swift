@@ -18,17 +18,24 @@ struct LocalWorkSessionRepository: WorkSessionRepository {
         decoder.dateDecodingStrategy = .iso8601
     }
 
-    func loadCarts() throws -> [CartSection]? {
+    func loadSnapshot() throws -> WorkSessionSnapshot? {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return nil }
         let data = try Data(contentsOf: fileURL)
-        return try decoder.decode([CartSection].self, from: data)
+        if let snapshot = try? decoder.decode(WorkSessionSnapshot.self, from: data) {
+            return snapshot
+        }
+        let legacyCarts = try decoder.decode([CartSection].self, from: data)
+        return WorkSessionSnapshot(
+            selection: WorkSessionStore.selectionState(from: legacyCarts),
+            carts: legacyCarts
+        )
     }
 
-    func save(carts: [CartSection]) throws {
+    func save(snapshot: WorkSessionSnapshot) throws {
         let directoryURL = fileURL.deletingLastPathComponent()
         try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
 
-        let data = try encoder.encode(carts)
+        let data = try encoder.encode(snapshot)
         let temporaryURL = directoryURL.appendingPathComponent(UUID().uuidString)
         try data.write(to: temporaryURL, options: [.atomic])
 
@@ -39,4 +46,3 @@ struct LocalWorkSessionRepository: WorkSessionRepository {
         }
     }
 }
-

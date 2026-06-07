@@ -7,9 +7,15 @@ final class WorkSessionStore {
     @ObservationIgnored private(set) var lastPersistenceError: Error?
 
     var carts: [CartSection]
+    var selection: WorkSessionSelectionState
 
-    init(carts: [CartSection], repository: WorkSessionRepository? = nil) {
+    init(
+        carts: [CartSection],
+        selection: WorkSessionSelectionState? = nil,
+        repository: WorkSessionRepository? = nil
+    ) {
         self.carts = carts
+        self.selection = selection ?? Self.selectionState(from: carts)
         self.repository = repository
     }
 
@@ -31,42 +37,41 @@ final class WorkSessionStore {
 
     func toggleTask(_ task: RoomTask, roomId: RoomCell.ID) {
         mutateRoom(roomId) { room in
-            if !room.opened {
-                room.opened = true
-                room.timeline.openedAt = room.timeline.openedAt ?? Date()
-            }
+            guard room.opened else { return }
+            let previousTasks = room.completedTasks
             if room.completedTasks.contains(task) {
                 room.completedTasks.remove(task)
             } else {
                 room.completedTasks.insert(task)
-                switch task {
-                case .stripped:
-                    room.timeline.strippedAt = room.timeline.strippedAt ?? Date()
-                case .linen:
-                    room.timeline.linenDeliveredAt = room.timeline.linenDeliveredAt ?? Date()
-                case .balcony:
-                    room.timeline.balconyCleanedAt = room.timeline.balconyCleanedAt ?? Date()
-                }
             }
-            room.timeline.completedAt = room.isReady ? room.timeline.completedAt ?? Date() : nil
+            room.timeline = room.timeline.updatedForTransition(
+                previousOpened: true,
+                nextOpened: true,
+                previousTasks: previousTasks,
+                nextTasks: room.completedTasks,
+                changedAt: Date()
+            )
         }
     }
 
     func toggleOpen(roomId: RoomCell.ID) {
         mutateRoom(roomId) { room in
-            if room.opened || !room.completedTasks.isEmpty {
+            let previousOpened = room.opened
+            let previousTasks = room.completedTasks
+            if room.opened {
+                guard room.completedTasks.isEmpty else { return }
                 room.opened = false
-                room.completedTasks.removeAll()
-                room.timeline.openedAt = nil
-                room.timeline.strippedAt = nil
-                room.timeline.linenDeliveredAt = nil
-                room.timeline.balconyCleanedAt = nil
-                room.timeline.completedAt = nil
             } else {
                 room.opened = true
                 room.scheduledTime = nil
-                room.timeline.openedAt = room.timeline.openedAt ?? Date()
             }
+            room.timeline = room.timeline.updatedForTransition(
+                previousOpened: previousOpened,
+                nextOpened: room.opened,
+                previousTasks: previousTasks,
+                nextTasks: room.completedTasks,
+                changedAt: Date()
+            )
         }
     }
 
@@ -182,10 +187,12 @@ final class WorkSessionStore {
         persist()
     }
 
-    private func persist() {
+    func persist() {
         guard let repository else { return }
         do {
-            try repository.save(carts: carts)
+            try repository.save(
+                snapshot: WorkSessionSnapshot(selection: selection, carts: carts)
+            )
             lastPersistenceError = nil
         } catch {
             lastPersistenceError = error
@@ -196,8 +203,12 @@ final class WorkSessionStore {
 extension WorkSessionStore {
     static func load(repository: WorkSessionRepository = LocalWorkSessionRepository()) -> WorkSessionStore {
         do {
-            if let storedCarts = try repository.loadCarts() {
-                return WorkSessionStore(carts: storedCarts, repository: repository)
+            if let snapshot = try repository.loadSnapshot() {
+                return WorkSessionStore(
+                    carts: snapshot.carts,
+                    selection: snapshot.selection,
+                    repository: repository
+                )
             }
         } catch {
             let store = WorkSessionStore(carts: seedCarts(), repository: repository)

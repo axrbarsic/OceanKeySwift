@@ -30,7 +30,11 @@ struct RoomCell: Codable, Identifiable, Equatable {
     var mediaAttachments: [MediaAttachment]?
 
     var isReady: Bool {
-        completedTasks.count == RoomTask.allCases.count
+        opened && completedTasks.count == RoomTask.allCases.count
+    }
+
+    var hasAnyTask: Bool {
+        !completedTasks.isEmpty
     }
 
     var status: RoomStatus {
@@ -98,6 +102,42 @@ struct RoomTimeline: Codable, Equatable {
             guard let date else { return nil }
             return (label, date)
         }
+    }
+
+    func markingSelected(_ changedAt: Date) -> RoomTimeline {
+        guard selectedAt == nil else { return self }
+        var next = self
+        next.selectedAt = changedAt
+        return next
+    }
+
+    func updatedForTransition(
+        previousOpened: Bool,
+        nextOpened: Bool,
+        previousTasks: Set<RoomTask>,
+        nextTasks: Set<RoomTask>,
+        changedAt: Date
+    ) -> RoomTimeline {
+        var next = self
+        if !previousOpened, nextOpened, next.openedAt == nil {
+            next.openedAt = changedAt
+        }
+        if !previousTasks.contains(.stripped), nextTasks.contains(.stripped), next.strippedAt == nil {
+            next.strippedAt = changedAt
+        }
+        if !previousTasks.contains(.linen), nextTasks.contains(.linen), next.linenDeliveredAt == nil {
+            next.linenDeliveredAt = changedAt
+        }
+        if !previousTasks.contains(.balcony), nextTasks.contains(.balcony), next.balconyCleanedAt == nil {
+            next.balconyCleanedAt = changedAt
+        }
+
+        let previousComplete = previousOpened && previousTasks.count == RoomTask.allCases.count
+        let nextComplete = nextOpened && nextTasks.count == RoomTask.allCases.count
+        if !previousComplete, nextComplete, next.completedAt == nil {
+            next.completedAt = changedAt
+        }
+        return next
     }
 }
 

@@ -10,9 +10,13 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
-            version: "0.2.0 (14)",
+            version: "0.2.0 (15)",
             date: "2026-06-06",
             changes: [
+                "Added native domain rules for room catalog, cart binding, room selection, duplicate blocking, and workday locking.",
+                "Moved local persistence to a work-session snapshot that stores selection and carts together, with legacy cart-list restore support.",
+                "Aligned core room task invariants: S/L/B require an open room and ready status requires open plus all tasks.",
+                "Documented Apple-first iCloud/CloudKit sync direction; Firebase is not a Swift migration target.",
                 "Scheduled pink rooms now automatically become open/red when their time arrives.",
                 "Added a settings switch between taller first-test cells and compact Flutter-parity cells.",
                 "Restored the taller first-test room-cell geometry as a deliberate Swift-only visual exception.",

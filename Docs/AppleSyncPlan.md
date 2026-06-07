@@ -1,0 +1,57 @@
+# Apple-First Sync Plan
+
+## Decision
+
+The native Swift rewrite does not migrate the Flutter Firebase sync stack.
+Firebase is treated as old-platform infrastructure, not as an architecture
+reference for the Swift app.
+
+The Swift app keeps a local-first domain/repository boundary. Apple sync will
+be added behind that boundary after the domain model and input flow are stable.
+
+## Official Apple Direction
+
+- CloudKit private database is the target for per-user iCloud data. Apple
+  documents `CKDatabase` as the API surface for private, public, and shared
+  databases: https://developer.apple.com/documentation/cloudkit/ckdatabase
+- For Core Data-backed apps, `NSPersistentCloudKitContainer` can mirror a local
+  persistent store to CloudKit: https://developer.apple.com/documentation/coredata/nspersistentcloudkitcontainer
+- Apple documents that `NSPersistentCloudKitContainer` uses local persistent
+  history to export local saves and import remote changes:
+  https://developer.apple.com/documentation/technotes/tn3163-understanding-the-synchronization-of-nspersistentcloudkitcontainer
+- Apple also documents sync debugging through Xcode logs/sysdiagnose:
+  https://developer.apple.com/documentation/technotes/tn3164-debugging-the-synchronization-of-nspersistentcloudkitcontainer
+
+## Architecture
+
+1. Keep domain logic independent from CloudKit.
+   - Room catalog.
+   - Cart binding and room selection.
+   - Room status/timeline/schedule/VIP rules.
+   - Notes/media metadata.
+   - Workday snapshots and event history.
+
+2. Keep local persistence as the source of immediate truth.
+   - UI updates optimistically from local state.
+   - Sync never directly drives SwiftUI screens.
+   - Remote changes enter through a repository/importer.
+
+3. Add Apple sync as an infrastructure adapter.
+   - Preferred first candidate: Core Data plus
+     `NSPersistentCloudKitContainer`, if the model maps cleanly.
+   - Fallback candidate: direct CloudKit `CKRecord`/custom zones if event log
+     ordering and conflict rules need explicit control.
+
+4. Sync only lightweight domain data.
+   - Room/cart state, timestamps, notes, settings, snapshots.
+   - Local-only media files unless a later product decision changes this.
+
+## Readiness Gate
+
+Before implementing CloudKit:
+
+- Domain commands are covered by tests.
+- The first input screen creates the same work-session state as the summary
+  screen consumes.
+- Local JSON can be upgraded or replaced without losing current installs.
+- A documented conflict policy exists for two iPhones editing the same workday.

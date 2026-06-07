@@ -1,0 +1,89 @@
+import Foundation
+
+extension WorkSessionStore {
+    var selectedCartNumbers: [Int] {
+        selection.selectedCartNumbers
+    }
+
+    func territory(forCart cartNumber: Int) -> Territory? {
+        selection.territory(forCart: cartNumber)
+    }
+
+    func selectedRooms(forCart cartNumber: Int) -> Set<RoomID> {
+        selection.rooms(forCart: cartNumber)
+    }
+
+    func blockedRooms(forCart cartNumber: Int, territory: Territory) -> [RoomID: Int] {
+        selection.blockedRooms(forCart: cartNumber, territory: territory)
+    }
+
+    @discardableResult
+    func toggleCartSelection(_ cartNumber: Int) -> WorkSessionSelectionCommandResult {
+        let result = selection.toggleCart(cartNumber)
+        reconcileCartsAfterSelectionChange(result)
+        return result
+    }
+
+    @discardableResult
+    func setCartBinding(cartNumber: Int, territory: Territory) -> WorkSessionSelectionCommandResult {
+        let result = selection.setCartBinding(cartNumber: cartNumber, territory: territory)
+        reconcileCartsAfterSelectionChange(result)
+        return result
+    }
+
+    @discardableResult
+    func toggleRoomSelection(cartNumber: Int, room: RoomID) -> WorkSessionSelectionCommandResult {
+        let result = selection.toggleRoom(cartNumber: cartNumber, room: room)
+        reconcileCartsAfterSelectionChange(result)
+        return result
+    }
+
+    @discardableResult
+    func lockWorkday() -> WorkSessionSelectionCommandResult {
+        let result = selection.lockWorkday()
+        if result == .changed {
+            persist()
+        }
+        return result
+    }
+
+    @discardableResult
+    func unlockWorkdayForEditing() -> WorkSessionSelectionCommandResult {
+        let result = selection.unlockWorkdayForEditing()
+        if result == .changed {
+            persist()
+        }
+        return result
+    }
+
+    static func selectionState(from carts: [CartSection]) -> WorkSessionSelectionState {
+        var state = WorkSessionSelectionState()
+        for cart in carts {
+            let territory = RoomCatalog.territory(id: cart.building)
+                ?? cart.rooms.lazy.compactMap { RoomCatalog.territory(for: $0.id) }.first
+                ?? WorkSessionSelectionRules.preferredTerritory(
+                    forCart: cart.id,
+                    existingBindings: state.cartBindings
+                )
+            let cartNumber = WorkSessionSelectionRules.clampedCartNumber(cart.id)
+            state.cartBindings[cartNumber] = WorkSessionCartBinding(
+                cartNumber: cartNumber,
+                territoryID: territory.id
+            )
+            let selectedRooms = Set(cart.rooms.map(\.id))
+            if !selectedRooms.isEmpty {
+                state.cartRoomSelections[cartNumber] = selectedRooms
+            }
+        }
+        return state
+    }
+
+    private func reconcileCartsAfterSelectionChange(_ result: WorkSessionSelectionCommandResult) {
+        guard result == .changed else { return }
+        carts = WorkSessionBuilder.makeCarts(
+            from: selection,
+            preserving: carts.flatMap(\.rooms)
+        )
+        persist()
+    }
+}

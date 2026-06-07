@@ -1,7 +1,6 @@
 import Foundation
 
 protocol WorkSessionRepository {
-    func loadCarts() throws -> [CartSection]?
-    func save(carts: [CartSection]) throws
+    func loadSnapshot() throws -> WorkSessionSnapshot?
+    func save(snapshot: WorkSessionSnapshot) throws
 }
-

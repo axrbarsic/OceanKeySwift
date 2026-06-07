@@ -48,7 +48,7 @@ available.
    - Evaluate CloudKit/iCloud as the primary iPhone-to-iPhone sync path.
    - Preserve idempotent local-first behavior: local edits must not disappear
      because an older cloud snapshot arrives.
-   - Firebase can stay as a migration bridge only if needed.
+   - Do not migrate or model the Swift sync architecture after Firebase.
 
 5. Notes and media
    - Port voice notes with transcription.

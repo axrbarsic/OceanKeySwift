@@ -23,6 +23,8 @@ Simulator unless explicitly allowed.
    - Milestone timestamps: selected, opened, stripped, linen, balcony, done.
    - Scheduled room transition behavior.
    - VIP state and effects.
+   - Cart selection rules: carts 1-10, A/B floors 2-5, duplicate-room blocking,
+     and workday lock/unlock.
 
 3. Notes and media
    - Text notes.
@@ -43,7 +45,7 @@ Simulator unless explicitly allowed.
 6. Persistence and sync
    - Local-first storage.
    - Apple-first sync evaluation through iCloud/CloudKit.
-   - Firebase bridge only if needed for migration.
+   - Firebase is not a Swift migration target.
 
 ## Current Native Checkpoint
 
@@ -77,3 +79,11 @@ Simulator unless explicitly allowed.
 - Scheduled pink rooms now advance automatically to open/red on the main screen
   when the scheduled time has arrived, recording the opened timestamp and
   persisting the change locally.
+- Native domain rules now cover room catalog, cart bindings, room selection,
+  blocked duplicate rooms, workday lock/unlock, and summary cart rebuilding.
+- Local persistence now writes a work-session snapshot containing selection and
+  carts together, while still reading older cart-list JSON files.
+- Core room task invariants now require an open room before S/L/B changes, and
+  ready status requires open plus all tasks.
+- Sync direction is Apple-first for the native rewrite. Firebase should not be
+  used as the architecture reference for Swift sync.
