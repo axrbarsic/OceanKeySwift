@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (20)",
+            date: "2026-06-06",
+            changes: [
+                "Restored the Flutter-style puzzle swipe handle in the summary header; dragging the puzzle now returns to room/cart selection.",
+                "Room action-menu swipes now use an armed threshold state machine with start, warning, commit, and confirm feedback.",
+                "Right-swipe handling now waits for a clear horizontal threshold so it does not fight room/task long-press actions."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (19)",
             date: "2026-06-06",
             changes: [

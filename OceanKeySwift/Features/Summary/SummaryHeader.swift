@@ -3,6 +3,7 @@ import SwiftUI
 struct SummaryHeader: View {
     let counts: SummaryCounts
     let onOpenSettings: () -> Void
+    let onOpenSelection: () -> Void
 
     var body: some View {
         HStack(spacing: 8) {
@@ -22,7 +23,10 @@ struct SummaryHeader: View {
 
             Spacer(minLength: 8)
 
-            puzzleHandle
+            SummarySelectionPuzzleHandle(
+                onComplete: onOpenSelection,
+                onLongPress: onOpenSelection
+            )
         }
         .frame(height: 48)
         .padding(.horizontal, 18)
@@ -44,31 +48,13 @@ struct SummaryHeader: View {
         .buttonStyle(.plain)
     }
 
-    private var puzzleHandle: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "puzzlepiece.extension.fill")
-                .foregroundStyle(OceanKeyTheme.accent.opacity(0.55))
-                .frame(width: 33, height: 33)
-                .background(OceanKeyTheme.accent.opacity(0.07))
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            Image(systemName: "puzzlepiece.fill")
-                .foregroundStyle(OceanKeyTheme.secondaryText)
-                .frame(width: 33, height: 33)
-                .background(OceanKeyTheme.surface.opacity(0.78))
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-        }
-        .padding(.horizontal, 8)
-        .frame(width: 86, height: 42)
-        .background(OceanKeyTheme.surface.opacity(0.78))
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(OceanKeyTheme.accent.opacity(0.22), lineWidth: 1)
-        }
-    }
 }
 
 #Preview {
-    SummaryHeader(counts: SummaryCounts(total: 10, completed: 10, remaining: 0), onOpenSettings: {})
+    SummaryHeader(
+        counts: SummaryCounts(total: 10, completed: 10, remaining: 0),
+        onOpenSettings: {},
+        onOpenSelection: {}
+    )
         .background(OceanKeyTheme.background)
 }

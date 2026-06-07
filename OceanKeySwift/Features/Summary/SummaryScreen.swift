@@ -21,7 +21,8 @@ struct SummaryScreen: View {
             VStack(spacing: 18) {
                 SummaryHeader(
                     counts: workSession.counts,
-                    onOpenSettings: openSettings
+                    onOpenSettings: openSettings,
+                    onOpenSelection: openSelection
                 )
 
                 ScrollView {
@@ -81,6 +82,11 @@ struct SummaryScreen: View {
     private func openSettings() {
         feedback.tap()
         isSettingsPresented = true
+    }
+
+    private func openSelection() {
+        feedback.confirm()
+        workSession.unlockWorkdayForEditing()
     }
 
     private func toggleOpen(roomID: RoomCell.ID) {

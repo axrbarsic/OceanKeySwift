@@ -34,6 +34,7 @@
 		799665048AEA94BD4F3094DB /* WorkSetupComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E65593F7CDFD82D3B068D4D /* WorkSetupComponents.swift */; };
 		7BC970B9E599552DDDB75700 /* SummaryRoomActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43979E9CB31E899E35B928E /* SummaryRoomActionMenu.swift */; };
 		7E9A3CC7A2F7829E1F4FA73D /* RoomDetailsMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E41E37C7F57A624740F18 /* RoomDetailsMode.swift */; };
+		839F12922CCEDD9CD0149288 /* SummarySelectionPuzzleHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AAB559BEB598BFAB429AB4 /* SummarySelectionPuzzleHandle.swift */; };
 		8547E85F7C729B1350CF7C3B /* RoomCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E3CFB6CDA7132DA0EFA9B9 /* RoomCatalog.swift */; };
 		856BDD1AEC33680D598CA693 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D64ADD5F7CDDCA26155C8 /* AppRootView.swift */; };
 		93D0CE8735DD6EAA67CEB78D /* BuildChangelog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608321B44757C987209F2A54 /* BuildChangelog.swift */; };
@@ -106,6 +107,7 @@
 		CE487E5E6D0AB9E9818EEF84 /* OceanKeySwift.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OceanKeySwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB4A5B1A271E2E7404DA2C20 /* CameraCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureView.swift; sourceTree = "<group>"; };
 		DB9BE68B3296B3000BD7A068 /* WorkSessionStore+Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorkSessionStore+Selection.swift"; sourceTree = "<group>"; };
+		E7AAB559BEB598BFAB429AB4 /* SummarySelectionPuzzleHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummarySelectionPuzzleHandle.swift; sourceTree = "<group>"; };
 		EA1A7943D626E20E20C9F481 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
 		EAE700A892F09B415394914D /* WorkSessionSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSessionSnapshot.swift; sourceTree = "<group>"; };
 		EE4FA201F6199BBB1FBE6120 /* SummaryHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryHeader.swift; sourceTree = "<group>"; };
@@ -309,6 +311,7 @@
 				EE4FA201F6199BBB1FBE6120 /* SummaryHeader.swift */,
 				F43979E9CB31E899E35B928E /* SummaryRoomActionMenu.swift */,
 				77F8BBFB5474764DC44B4456 /* SummaryScreen.swift */,
+				E7AAB559BEB598BFAB429AB4 /* SummarySelectionPuzzleHandle.swift */,
 				1B5C81FF97AC52C9DE7C54C2 /* VIPPulseOverlay.swift */,
 			);
 			path = Summary;
@@ -492,6 +495,7 @@
 				094272BBB8350642EA68BD69 /* SummaryHeader.swift in Sources */,
 				7BC970B9E599552DDDB75700 /* SummaryRoomActionMenu.swift in Sources */,
 				E79D1EED7C47265E97AAB005 /* SummaryScreen.swift in Sources */,
+				839F12922CCEDD9CD0149288 /* SummarySelectionPuzzleHandle.swift in Sources */,
 				E27BBB154B1792023F94F34B /* VIPPulseOverlay.swift in Sources */,
 				FE883ABF504432B7E12BA6BE /* WorkSessionRepository.swift in Sources */,
 				5BEF0B9F1E9F30B6E70FA14F /* WorkSessionSelection.swift in Sources */,
@@ -585,7 +589,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = J6MW4855LU;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -644,7 +648,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = J6MW4855LU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

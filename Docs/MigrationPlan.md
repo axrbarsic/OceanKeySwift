@@ -22,6 +22,8 @@ verification.
 - Interaction feedback: UIKit feedback generators plus bundled local WAV sounds
   through an ambient mixed audio session
 - Notifications: local UserNotifications for due scheduled room openings
+- Physical iPhone install is active through the local Apple Development profile
+  for `com.alex.oceankey.swift`
 - Project generation: XcodeGen through `project.yml`
 
 The bundle identifier is intentionally different from the existing Flutter app
@@ -81,6 +83,5 @@ Project-level execution details are captured in `AGENTS.md`.
 
 ## Signing Note
 
-The current Mac has an Apple Development certificate but no local provisioning
-profiles. Installing `com.alex.oceankey.swift` on a physical iPhone requires an
-Apple account/profile in Xcode or a matching `.mobileprovision` file.
+The current Mac can build, install, test, and launch `com.alex.oceankey.swift`
+on Alex's physical iPhone through the local Apple Development signing setup.

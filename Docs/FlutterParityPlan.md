@@ -92,6 +92,8 @@ Simulator unless explicitly allowed.
 - Native interaction feedback now mirrors the Flutter foundation: UIKit haptics,
   bundled click/pressed WAV sounds, ambient mixed audio, protected long-press
   room controls by default, and clean haptic feedback for right-swipe menus.
+- The summary header puzzle handle is functional again: dragging the puzzle
+  returns from the main screen to first-screen cart/room editing.
 - Room scheduling now uses a native hour/minute/AM-PM sheet with 15-minute
   increments, pink schedule status priority, automatic due-time opening, and
   local iOS notifications.

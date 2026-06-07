@@ -16,6 +16,10 @@ struct RoomCellView: View {
     let onVIPToggle: () -> Void
     let onScheduleToggle: () -> Void
     @State private var swipeFeedbackActive = false
+    @State private var swipeDX: CGFloat = 0
+    @State private var swipeDY: CGFloat = 0
+    @State private var swipeDirection = 0
+    @State private var swipeArmed = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -104,27 +108,61 @@ struct RoomCellView: View {
     }
 
     private var actionMenuDragGesture: some Gesture {
-        DragGesture(minimumDistance: 18, coordinateSpace: .local)
+        DragGesture(minimumDistance: 12, coordinateSpace: .local)
             .onChanged { value in
-                guard isHorizontalActionSwipe(value) else { return }
-                guard value.translation.width > 18 else { return }
-                if !swipeFeedbackActive {
-                    swipeFeedbackActive = true
-                    feedback.holdStart()
-                }
+                updateActionMenuDrag(value)
             }
-            .onEnded { value in
-                defer { swipeFeedbackActive = false }
-                guard isHorizontalActionSwipe(value) else { return }
-                if value.translation.width > 56 {
-                    feedback.confirm()
-                    onActionMenuToggle()
-                }
+            .onEnded { _ in
+                finishActionMenuDrag()
             }
     }
 
-    private func isHorizontalActionSwipe(_ value: DragGesture.Value) -> Bool {
-        abs(value.translation.width) > abs(value.translation.height) * 1.35
+    private func updateActionMenuDrag(_ value: DragGesture.Value) {
+        swipeDX = value.translation.width
+        swipeDY = value.translation.height
+
+        let absX = abs(swipeDX)
+        let absY = abs(swipeDY)
+        if swipeDirection == 0 {
+            guard absX >= 14, absX >= absY * 1.35 else { return }
+            guard swipeDX > 0 else {
+                resetActionMenuDrag()
+                return
+            }
+            swipeDirection = 1
+            if !swipeFeedbackActive {
+                swipeFeedbackActive = true
+                feedback.holdStart()
+            }
+        }
+
+        let threshold: CGFloat = 72
+        let armed = absX >= threshold
+        if armed, !swipeArmed {
+            feedback.holdCommit()
+        } else if !armed, absX > threshold * 0.55, !swipeArmed {
+            if !swipeFeedbackActive {
+                swipeFeedbackActive = true
+                feedback.holdStart()
+            }
+            feedback.holdWarning()
+        }
+        swipeArmed = armed
+    }
+
+    private func finishActionMenuDrag() {
+        defer { resetActionMenuDrag() }
+        guard swipeDirection > 0, swipeArmed else { return }
+        feedback.confirm()
+        onActionMenuToggle()
+    }
+
+    private func resetActionMenuDrag() {
+        swipeFeedbackActive = false
+        swipeDX = 0
+        swipeDY = 0
+        swipeDirection = 0
+        swipeArmed = false
     }
 
     private func activateOpenToggle() {
