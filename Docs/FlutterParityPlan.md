@@ -56,3 +56,5 @@ Simulator unless explicitly allowed.
 - Native state now loads from and saves to a local JSON repository in Application
   Support. This is the first local-first source-of-truth layer for the Swift
   rewrite.
+- Header settings opens a native Settings screen with developer/build info and
+  local storage status.

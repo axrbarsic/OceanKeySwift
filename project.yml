@@ -7,8 +7,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "0.1.0"
-    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "0.2.0"
+    CURRENT_PROJECT_VERSION: "6"
     DEVELOPMENT_TEAM: J6MW4855LU
 targets:
   OceanKeySwift:
@@ -31,6 +31,8 @@ targets:
       path: OceanKeySwift/Info.plist
       properties:
         CFBundleDisplayName: OceanKey Swift
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
   OceanKeySwiftTests:
     type: bundle.unit-test

@@ -2,10 +2,11 @@ import SwiftUI
 
 struct SummaryHeader: View {
     let counts: SummaryCounts
+    let onOpenSettings: () -> Void
 
     var body: some View {
         HStack(spacing: 8) {
-            softButton(systemName: "line.3.horizontal")
+            softButton(systemName: "line.3.horizontal", action: onOpenSettings)
 
             Spacer(minLength: 8)
 
@@ -27,8 +28,8 @@ struct SummaryHeader: View {
         .padding(.horizontal, 18)
     }
 
-    private func softButton(systemName: String) -> some View {
-        Button(action: {}) {
+    private func softButton(systemName: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 24, weight: .black))
                 .frame(width: 48, height: 48)
@@ -68,6 +69,6 @@ struct SummaryHeader: View {
 }
 
 #Preview {
-    SummaryHeader(counts: SummaryCounts(total: 10, completed: 10, remaining: 0))
+    SummaryHeader(counts: SummaryCounts(total: 10, completed: 10, remaining: 0), onOpenSettings: {})
         .background(OceanKeyTheme.background)
 }

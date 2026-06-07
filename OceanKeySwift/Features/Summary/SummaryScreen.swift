@@ -4,6 +4,7 @@ struct SummaryScreen: View {
     @Bindable var workSession: WorkSessionStore
     @State private var expandedActionMenuRoomID: RoomCell.ID?
     @State private var roomDetailsRoute: RoomDetailsRoute?
+    @State private var isSettingsPresented = false
 
     var body: some View {
         ZStack {
@@ -11,7 +12,10 @@ struct SummaryScreen: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 18) {
-                SummaryHeader(counts: workSession.counts)
+                SummaryHeader(
+                    counts: workSession.counts,
+                    onOpenSettings: { isSettingsPresented = true }
+                )
 
                 ScrollView {
                     LazyVStack(spacing: 18) {
@@ -39,6 +43,10 @@ struct SummaryScreen: View {
         }
         .sheet(item: $roomDetailsRoute) { route in
             RoomDetailsScreen(route: route)
+                .preferredColorScheme(.dark)
+        }
+        .sheet(isPresented: $isSettingsPresented) {
+            SettingsScreen(workSession: workSession)
                 .preferredColorScheme(.dark)
         }
     }
