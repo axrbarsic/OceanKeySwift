@@ -18,6 +18,7 @@ verification.
 - Minimum iOS: 17.0
 - UI foundation: SwiftUI
 - State foundation: Observation
+- Visual effects foundation: SpriteKit + GameplayKit hosted inside SwiftUI
 - Project generation: XcodeGen through `project.yml`
 
 The bundle identifier is intentionally different from the existing Flutter app
@@ -29,7 +30,8 @@ available.
 1. Native shell and summary screen
    - Build a small but real SwiftUI shell.
    - Port the main room list screen first.
-   - Keep visual effects behind simple, measurable native rendering paths.
+   - Keep visual effects behind the shared SpriteKit effects host, not inside
+     ad hoc SwiftUI view code.
 
 2. Domain parity
    - Port room status, task buttons, VIP state, timers, cart sections, and room
@@ -68,4 +70,3 @@ available.
 The current Mac has an Apple Development certificate but no local provisioning
 profiles. Installing `com.alex.oceankey.swift` on a physical iPhone requires an
 Apple account/profile in Xcode or a matching `.mobileprovision` file.
-

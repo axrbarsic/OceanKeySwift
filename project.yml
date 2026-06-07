@@ -16,6 +16,9 @@ targets:
     platform: iOS
     sources:
       - OceanKeySwift
+    dependencies:
+      - sdk: SpriteKit.framework
+      - sdk: GameplayKit.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.alex.oceankey.swift

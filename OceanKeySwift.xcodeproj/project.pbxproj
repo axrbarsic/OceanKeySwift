@@ -11,11 +11,15 @@
 		14A467CC5BC8CBF9F1AAF2E5 /* CartSummarySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD15DBDCE80476FF0F4FEC9 /* CartSummarySection.swift */; };
 		307C5468BDEA436295C95CE4 /* OceanKeySwiftApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868CBF052F1B053DB4F2FBA0 /* OceanKeySwiftApp.swift */; };
 		392929D2E5B73C033AA829A9 /* RoomModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0956CB0FF1C79B5413C7DC64 /* RoomModels.swift */; };
+		39D62E4704F0D75DE27FB4E7 /* GameplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CC54D512493ADEF1EB26177 /* GameplayKit.framework */; };
+		42218A4468C7741A018E32BC /* MatrixRainSpriteScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 449D6D5D2079C0C6419A7A6B /* MatrixRainSpriteScene.swift */; };
 		630D9BF8C070EDF39CF079C6 /* WorkSessionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C627CE3B38115F411539408 /* WorkSessionStoreTests.swift */; };
 		714CD792974E34438F3A1014 /* RoomCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868A0FE8D28575CF2B3F8304 /* RoomCellView.swift */; };
 		7372F4BC701E763F5FA24463 /* OceanKeyTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A96102C3B06D870C8E09F17 /* OceanKeyTheme.swift */; };
 		856BDD1AEC33680D598CA693 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D64ADD5F7CDDCA26155C8 /* AppRootView.swift */; };
+		A199E38C0D372F4506DC5865 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA1A7943D626E20E20C9F481 /* SpriteKit.framework */; };
 		BA7C18EBFE93F08708C52938 /* WorkSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 929170B7329DE71DCDD384FD /* WorkSessionStore.swift */; };
+		CDEB880791759C750A6CBF53 /* SpriteKitEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53CC2C533226B89F0CF70B87 /* SpriteKitEffectView.swift */; };
 		E27BBB154B1792023F94F34B /* VIPPulseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5C81FF97AC52C9DE7C54C2 /* VIPPulseOverlay.swift */; };
 		E2F267B30D4B9E3FCB81BFAA /* MatrixRainBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E24D2B3912DAF9638A767BD /* MatrixRainBackground.swift */; };
 		E79D1EED7C47265E97AAB005 /* SummaryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F8BBFB5474764DC44B4456 /* SummaryScreen.swift */; };
@@ -36,7 +40,10 @@
 		1A96102C3B06D870C8E09F17 /* OceanKeyTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OceanKeyTheme.swift; sourceTree = "<group>"; };
 		1B5C81FF97AC52C9DE7C54C2 /* VIPPulseOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VIPPulseOverlay.swift; sourceTree = "<group>"; };
 		2E24D2B3912DAF9638A767BD /* MatrixRainBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixRainBackground.swift; sourceTree = "<group>"; };
+		3CC54D512493ADEF1EB26177 /* GameplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameplayKit.framework; path = System/Library/Frameworks/GameplayKit.framework; sourceTree = SDKROOT; };
+		449D6D5D2079C0C6419A7A6B /* MatrixRainSpriteScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixRainSpriteScene.swift; sourceTree = "<group>"; };
 		4C627CE3B38115F411539408 /* WorkSessionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSessionStoreTests.swift; sourceTree = "<group>"; };
+		53CC2C533226B89F0CF70B87 /* SpriteKitEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteKitEffectView.swift; sourceTree = "<group>"; };
 		6CD15DBDCE80476FF0F4FEC9 /* CartSummarySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartSummarySection.swift; sourceTree = "<group>"; };
 		77F8BBFB5474764DC44B4456 /* SummaryScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryScreen.swift; sourceTree = "<group>"; };
 		868A0FE8D28575CF2B3F8304 /* RoomCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCellView.swift; sourceTree = "<group>"; };
@@ -45,11 +52,32 @@
 		B00D64ADD5F7CDDCA26155C8 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		BCAF8BEA469DB858BD47A0D4 /* OceanKeySwiftTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = OceanKeySwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE487E5E6D0AB9E9818EEF84 /* OceanKeySwift.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OceanKeySwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA1A7943D626E20E20C9F481 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
 		EE4FA201F6199BBB1FBE6120 /* SummaryHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryHeader.swift; sourceTree = "<group>"; };
 		F944082CEA5BC13C9ECF514C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		2A819335097B88E00E8E3DB9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A199E38C0D372F4506DC5865 /* SpriteKit.framework in Frameworks */,
+				39D62E4704F0D75DE27FB4E7 /* GameplayKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
+		12EBECD5526152C864BD4CD9 /* Effects */ = {
+			isa = PBXGroup;
+			children = (
+				ED1C7979FE892ABF9DCA23DB /* SpriteKit */,
+			);
+			path = Effects;
+			sourceTree = "<group>";
+		};
 		36CA4C3E5465B3F3DA219801 /* OceanKeySwift */ = {
 			isa = PBXGroup;
 			children = (
@@ -57,9 +85,19 @@
 				EB46BA9A2511009474D5840B /* App */,
 				4463822596AA3844DBFE4AB1 /* Design */,
 				EC1216ECE72E0D2A8492BCE8 /* Domain */,
+				12EBECD5526152C864BD4CD9 /* Effects */,
 				88F39E9D0789D4CADE0851D5 /* Features */,
 			);
 			path = OceanKeySwift;
+			sourceTree = "<group>";
+		};
+		37B70174422F47734BC66A08 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3CC54D512493ADEF1EB26177 /* GameplayKit.framework */,
+				EA1A7943D626E20E20C9F481 /* SpriteKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		4463822596AA3844DBFE4AB1 /* Design */ = {
@@ -91,6 +129,7 @@
 			children = (
 				36CA4C3E5465B3F3DA219801 /* OceanKeySwift */,
 				68F7A701FAA1A43CD7D4E624 /* OceanKeySwiftTests */,
+				37B70174422F47734BC66A08 /* Frameworks */,
 				ADD15C0367B5ED3749CE048A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -135,6 +174,15 @@
 			path = Domain;
 			sourceTree = "<group>";
 		};
+		ED1C7979FE892ABF9DCA23DB /* SpriteKit */ = {
+			isa = PBXGroup;
+			children = (
+				449D6D5D2079C0C6419A7A6B /* MatrixRainSpriteScene.swift */,
+				53CC2C533226B89F0CF70B87 /* SpriteKitEffectView.swift */,
+			);
+			path = SpriteKit;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -143,6 +191,7 @@
 			buildConfigurationList = 48007250CC733429FA6848DD /* Build configuration list for PBXNativeTarget "OceanKeySwift" */;
 			buildPhases = (
 				CF34DB72A5925B522D9A5E14 /* Sources */,
+				2A819335097B88E00E8E3DB9 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -226,10 +275,12 @@
 				856BDD1AEC33680D598CA693 /* AppRootView.swift in Sources */,
 				14A467CC5BC8CBF9F1AAF2E5 /* CartSummarySection.swift in Sources */,
 				E2F267B30D4B9E3FCB81BFAA /* MatrixRainBackground.swift in Sources */,
+				42218A4468C7741A018E32BC /* MatrixRainSpriteScene.swift in Sources */,
 				307C5468BDEA436295C95CE4 /* OceanKeySwiftApp.swift in Sources */,
 				7372F4BC701E763F5FA24463 /* OceanKeyTheme.swift in Sources */,
 				714CD792974E34438F3A1014 /* RoomCellView.swift in Sources */,
 				392929D2E5B73C033AA829A9 /* RoomModels.swift in Sources */,
+				CDEB880791759C750A6CBF53 /* SpriteKitEffectView.swift in Sources */,
 				094272BBB8350642EA68BD69 /* SummaryHeader.swift in Sources */,
 				E79D1EED7C47265E97AAB005 /* SummaryScreen.swift in Sources */,
 				E27BBB154B1792023F94F34B /* VIPPulseOverlay.swift in Sources */,
