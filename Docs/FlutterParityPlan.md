@@ -72,3 +72,5 @@ Simulator unless explicitly allowed.
 - Deliberate visual exception: native Swift room cells use the taller first-test
   geometry (`76pt` tile height and wider `10pt` inter-cell spacing) because it
   looked better on iPhone than the tighter Flutter parity geometry.
+- Settings can now switch room-cell geometry between the taller first-test Swift
+  layout and the tighter Flutter-parity layout.

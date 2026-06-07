@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RoomCellView: View {
     @Binding var room: RoomCell
+    let geometry: RoomCellGeometry
     let isActionMenuExpanded: Bool
     let onActionMenuToggle: () -> Void
     let onOpenNotes: () -> Void
@@ -43,7 +44,7 @@ struct RoomCellView: View {
     }
 
     private var tileBody: some View {
-        HStack(spacing: 18) {
+        HStack(spacing: geometry.taskSpacing) {
             Button(action: onOpenToggle) {
                 Text(room.id)
                     .font(.system(size: 46, weight: .black, design: .rounded))
@@ -56,8 +57,9 @@ struct RoomCellView: View {
 
             ForEach(RoomTask.allCases) { taskButton($0) }
         }
-        .padding(.horizontal, 20)
-        .frame(height: 76)
+        .padding(.leading, geometry.tileLeadingPadding)
+        .padding(.trailing, geometry.tileTrailingPadding)
+        .frame(height: geometry.tileHeight)
         .foregroundStyle(OceanKeyTheme.roomForeground)
         .background(cellBackground)
         .clipShape(tileShape)
@@ -104,15 +106,15 @@ struct RoomCellView: View {
     private var cellBackground: some View {
         tileShape
             .fill(OceanKeyTheme.fill(for: room.status))
-            .shadow(color: .black.opacity(0.25), radius: 5, x: 0, y: 4)
+            .shadow(color: .black.opacity(geometry.tileShadowOpacity), radius: 5, x: 0, y: 4)
     }
 
     private var tileShape: UnevenRoundedRectangle {
         UnevenRoundedRectangle(
-            topLeadingRadius: 14,
-            bottomLeadingRadius: isActionMenuExpanded ? 0 : 14,
-            bottomTrailingRadius: isActionMenuExpanded ? 0 : 14,
-            topTrailingRadius: 14,
+            topLeadingRadius: geometry.tileCornerRadius,
+            bottomLeadingRadius: isActionMenuExpanded ? 0 : geometry.tileCornerRadius,
+            bottomTrailingRadius: isActionMenuExpanded ? 0 : geometry.tileCornerRadius,
+            topTrailingRadius: geometry.tileCornerRadius,
             style: .continuous
         )
     }
@@ -137,6 +139,7 @@ private extension RoomCell {
     @Previewable @State var room = WorkSessionStore.preview().carts[0].rooms[0]
     return RoomCellView(
         room: $room,
+        geometry: .roomy,
         isActionMenuExpanded: true,
         onActionMenuToggle: {},
         onOpenNotes: {},

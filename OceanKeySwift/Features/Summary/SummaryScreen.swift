@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SummaryScreen: View {
     @Bindable var workSession: WorkSessionStore
+    @Bindable var appSettings: AppSettingsStore
     @State private var expandedActionMenuRoomID: RoomCell.ID?
     @State private var roomDetailsRoute: RoomDetailsRoute?
     @State private var cartDetailsRoute: CartDetailsRoute?
@@ -23,6 +24,7 @@ struct SummaryScreen: View {
                         ForEach($workSession.carts) { $cart in
                             CartSummarySection(
                                 cart: $cart,
+                                geometry: appSettings.roomCellGeometry,
                                 expandedActionMenuRoomID: $expandedActionMenuRoomID,
                                 onOpenCartDetails: { cartID in
                                     expandedActionMenuRoomID = nil
@@ -55,12 +57,12 @@ struct SummaryScreen: View {
                 .preferredColorScheme(.dark)
         }
         .sheet(isPresented: $isSettingsPresented) {
-            SettingsScreen(workSession: workSession)
+            SettingsScreen(workSession: workSession, appSettings: appSettings)
                 .preferredColorScheme(.dark)
         }
     }
 }
 
 #Preview {
-    SummaryScreen(workSession: .preview())
+    SummaryScreen(workSession: .preview(), appSettings: AppSettingsStore())
 }

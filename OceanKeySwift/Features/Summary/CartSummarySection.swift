@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CartSummarySection: View {
     @Binding var cart: CartSection
+    let geometry: RoomCellGeometry
     @Binding var expandedActionMenuRoomID: RoomCell.ID?
     let onOpenCartDetails: (CartSection.ID) -> Void
     let onOpenDetails: (RoomCell.ID, RoomDetailsMode) -> Void
@@ -11,7 +12,7 @@ struct CartSummarySection: View {
     let onScheduleToggle: (RoomCell.ID) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: geometry.sectionSpacing) {
             HStack(alignment: .firstTextBaseline) {
                 Label("Тележка \(cart.id)", systemImage: "circle.fill")
                     .labelStyle(.titleAndIcon)
@@ -30,6 +31,7 @@ struct CartSummarySection: View {
             ForEach($cart.rooms) { $room in
                 RoomCellView(
                     room: $room,
+                    geometry: geometry,
                     isActionMenuExpanded: expandedActionMenuRoomID == room.id,
                     onActionMenuToggle: {
                         expandedActionMenuRoomID = expandedActionMenuRoomID == room.id ? nil : room.id
@@ -44,7 +46,7 @@ struct CartSummarySection: View {
                 )
             }
         }
-        .padding(.horizontal, 6)
+        .padding(.horizontal, geometry.sectionHorizontalPadding)
     }
 }
 
@@ -53,6 +55,7 @@ struct CartSummarySection: View {
     @Previewable @State var expanded: RoomCell.ID?
     return CartSummarySection(
         cart: $cart,
+        geometry: .roomy,
         expandedActionMenuRoomID: $expanded,
         onOpenCartDetails: { _ in },
         onOpenDetails: { _, _ in },

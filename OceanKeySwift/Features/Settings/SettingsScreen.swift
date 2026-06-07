@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsScreen: View {
     @Bindable var workSession: WorkSessionStore
+    @Bindable var appSettings: AppSettingsStore
 
     @Environment(\.dismiss) private var dismiss
     @State private var isChangelogPresented = false
@@ -14,6 +15,7 @@ struct SettingsScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     header
+                    appearanceSection
                     developerSection
                     storageSection
                     migrationSection
@@ -59,6 +61,25 @@ struct SettingsScreen: View {
             .buttonStyle(.plain)
             SettingsInfoRow(title: "Движок", value: "SpriteKit + SwiftUI", systemName: "sparkles")
             SettingsInfoRow(title: "Цель", value: "Физический iPhone", systemName: "iphone")
+        }
+    }
+
+    private var appearanceSection: some View {
+        SettingsPanel(title: "Внешний вид") {
+            VStack(alignment: .leading, spacing: 10) {
+                Picker("Размер ячеек", selection: $appSettings.roomCellGeometry) {
+                    ForEach(RoomCellGeometry.allCases) { geometry in
+                        Text(geometry.title).tag(geometry)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                SettingsInfoRow(
+                    title: "Ячейки",
+                    value: appSettings.roomCellGeometry.description,
+                    systemName: "rectangle.roundedtop.fill"
+                )
+            }
         }
     }
 
@@ -142,6 +163,6 @@ private struct SettingsInfoRow: View {
 }
 
 #Preview {
-    SettingsScreen(workSession: .preview())
+    SettingsScreen(workSession: .preview(), appSettings: AppSettingsStore())
         .preferredColorScheme(.dark)
 }
