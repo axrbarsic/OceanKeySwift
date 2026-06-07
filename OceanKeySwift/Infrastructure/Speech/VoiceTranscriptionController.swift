@@ -13,6 +13,13 @@ private enum VoiceTranscriptionError: LocalizedError {
     }
 }
 
+private enum VoiceCaptureState {
+    case idle
+    case starting
+    case recording
+    case stopping
+}
+
 private func requestSpeechRecognitionPermission() async -> Bool {
     await withCheckedContinuation { continuation in
         SFSpeechRecognizer.requestAuthorization { status in
@@ -39,12 +46,14 @@ private func requestMicrophonePermission() async -> Bool {
 @Observable
 final class VoiceTranscriptionController {
     private let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "ru-RU"))
-    private let audioEngine = AVAudioEngine()
+    private var audioEngine: AVAudioEngine?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private var baseText = ""
     private var onTranscript: ((String) -> Void)?
     private var hasInstalledTap = false
+    private var captureState = VoiceCaptureState.idle
+    private var activeSessionID: UUID?
 
     private(set) var isRecording = false
     private(set) var statusText = "Готово к записи"
@@ -53,6 +62,7 @@ final class VoiceTranscriptionController {
         if isRecording {
             stop()
         } else {
+            guard captureState == .idle else { return }
             Task {
                 await start(transcript: transcript, onTranscript: onTranscript)
             }
@@ -60,39 +70,58 @@ final class VoiceTranscriptionController {
     }
 
     func stop() {
+        guard captureState != .idle else { return }
         finishRecording(status: "Расшифровка сохранена", cancelTask: false)
     }
 
     private func start(transcript: String, onTranscript: @escaping (String) -> Void) async {
+        guard captureState == .idle else { return }
+        let sessionID = UUID()
+        activeSessionID = sessionID
+        captureState = .starting
+        isRecording = true
+
         guard await requestPermissions() else { return }
+        guard activeSessionID == sessionID, captureState == .starting else { return }
         guard let recognizer else {
-            statusText = "Русское распознавание речи недоступно"
+            finishRecording(status: "Русское распознавание речи недоступно", cancelTask: true)
             return
         }
         guard recognizer.isAvailable else {
-            statusText = "Распознавание речи недоступно"
+            finishRecording(status: "Распознавание речи недоступно", cancelTask: true)
             return
         }
 
         stopExistingTask()
+        guard activeSessionID == sessionID else { return }
         baseText = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
         self.onTranscript = onTranscript
 
+        let engine = AVAudioEngine()
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
+        request.taskHint = .dictation
+        if #available(iOS 16.0, *) {
+            request.addsPunctuation = true
+        }
+        audioEngine = engine
         recognitionRequest = request
 
         do {
             try configureRecordingSession()
-            try installAudioTap(request: request)
-            audioEngine.prepare()
-            try audioEngine.start()
+            try installAudioTap(on: engine, request: request)
             recognitionTask = recognizer.recognitionTask(with: request) { [weak self] result, error in
                 Task { @MainActor in
                     self?.handleRecognition(result: result, error: error)
                 }
             }
-            isRecording = true
+            engine.prepare()
+            try engine.start()
+            guard activeSessionID == sessionID, captureState == .starting else {
+                finishRecording(status: "Расшифровка остановлена", cancelTask: true)
+                return
+            }
+            captureState = .recording
             statusText = "Слушаю..."
         } catch {
             statusText = "Ошибка микрофона: \(error.localizedDescription)"
@@ -104,13 +133,13 @@ final class VoiceTranscriptionController {
         statusText = "Проверяю доступ..."
         let speechAllowed = await requestSpeechRecognitionPermission()
         guard speechAllowed else {
-            statusText = "Нет доступа к распознаванию речи"
+            finishRecording(status: "Нет доступа к распознаванию речи", cancelTask: true)
             return false
         }
 
         let micAllowed = await requestMicrophonePermission()
         guard micAllowed else {
-            statusText = "Нет доступа к микрофону"
+            finishRecording(status: "Нет доступа к микрофону", cancelTask: true)
             return false
         }
         return true
@@ -136,12 +165,8 @@ final class VoiceTranscriptionController {
         }
     }
 
-    private func installAudioTap(request: SFSpeechAudioBufferRecognitionRequest) throws {
-        let inputNode = audioEngine.inputNode
-        if hasInstalledTap {
-            inputNode.removeTap(onBus: 0)
-            hasInstalledTap = false
-        }
+    private func installAudioTap(on engine: AVAudioEngine, request: SFSpeechAudioBufferRecognitionRequest) throws {
+        let inputNode = engine.inputNode
         let format = inputNode.outputFormat(forBus: 0)
         guard format.sampleRate > 0, format.channelCount > 0 else {
             throw VoiceTranscriptionError.invalidInputFormat
@@ -153,6 +178,7 @@ final class VoiceTranscriptionController {
     }
 
     private func handleRecognition(result: SFSpeechRecognitionResult?, error: Error?) {
+        guard captureState == .recording || captureState == .starting else { return }
         if let result {
             let recognized = result.bestTranscription.formattedString
             let combined = [baseText, recognized]
@@ -161,8 +187,8 @@ final class VoiceTranscriptionController {
             onTranscript?(combined)
             statusText = result.isFinal ? "Готово" : "Слушаю..."
         }
-        if error != nil, isRecording {
-            finishRecording(status: "Распознавание остановлено", cancelTask: true)
+        if let error, isRecording {
+            finishRecording(status: "Распознавание: \(error.localizedDescription)", cancelTask: true)
         }
     }
 
@@ -171,10 +197,10 @@ final class VoiceTranscriptionController {
         recognitionTask = nil
         recognitionRequest = nil
         stopAudioEngine()
-        isRecording = false
     }
 
     private func finishRecording(status: String, cancelTask: Bool) {
+        captureState = .stopping
         let request = recognitionRequest
         let task = recognitionTask
         isRecording = false
@@ -186,16 +212,20 @@ final class VoiceTranscriptionController {
         }
         recognitionTask = nil
         recognitionRequest = nil
+        activeSessionID = nil
+        captureState = .idle
         restoreInteractionAudioSession()
     }
 
     private func stopAudioEngine() {
-        if audioEngine.isRunning {
-            audioEngine.stop()
+        guard let engine = audioEngine else { return }
+        if engine.isRunning {
+            engine.stop()
         }
         if hasInstalledTap {
-            audioEngine.inputNode.removeTap(onBus: 0)
+            engine.inputNode.removeTap(onBus: 0)
             hasInstalledTap = false
         }
+        audioEngine = nil
     }
 }

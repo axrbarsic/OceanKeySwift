@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (25)",
+            date: "2026-06-06",
+            changes: [
+                "Fixed a second voice-recording crash caused by overlapping audio tap startup.",
+                "Voice capture now uses an explicit idle, starting, recording, and stopping state machine.",
+                "Each voice recording gets a fresh AVAudioEngine so repeated recordings do not inherit stale input taps."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (24)",
             date: "2026-06-06",
             changes: [

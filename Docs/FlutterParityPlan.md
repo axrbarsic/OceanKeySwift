@@ -106,5 +106,8 @@ Simulator unless explicitly allowed.
 - Voice recording startup is hardened on real devices: Speech and microphone
   permission callbacks stay outside MainActor isolation, and audio-engine tap
   cleanup avoids duplicate removal/finish paths.
+- Repeated voice recordings now run through an explicit capture state machine
+  with a fresh `AVAudioEngine` per session, preventing overlapping input taps
+  during rapid start/stop cycles.
 - Sync direction is Apple-first for the native rewrite. Firebase should not be
   used as the architecture reference for Swift sync.
