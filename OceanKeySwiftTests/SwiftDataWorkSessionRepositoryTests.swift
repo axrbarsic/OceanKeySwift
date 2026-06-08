@@ -50,9 +50,10 @@ func inMemoryCloudKitModeFallsBackToLocalStorage() throws {
 }
 
 @Test
-func defaultAppleSyncConfigurationRequestsPrivateCloudKit() {
+func defaultAppleSyncConfigurationUsesLocalStorageUntilProvisioningSupportsCloudKit() {
+    #expect(AppleSyncConfiguration.defaultSyncMode == .localOnly)
     #expect(
-        AppleSyncConfiguration.defaultSyncMode
+        AppleSyncConfiguration.cloudKitSyncMode
             == .privateCloudKit(containerIdentifier: "iCloud.com.alex.oceankey.swift")
     )
 }

@@ -4,6 +4,10 @@ enum AppleSyncConfiguration {
     static let containerIdentifier = "iCloud.com.alex.oceankey.swift"
 
     static var defaultSyncMode: SwiftDataWorkSessionRepository.SyncMode {
+        .localOnly
+    }
+
+    static var cloudKitSyncMode: SwiftDataWorkSessionRepository.SyncMode {
         .privateCloudKit(containerIdentifier: containerIdentifier)
     }
 }

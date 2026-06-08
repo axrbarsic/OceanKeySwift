@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (67)",
+            date: "2026-06-08",
+            changes: [
+                "Fixed real-device launch by creating the SwiftData Application Support store directory before CoreData/CloudKit opens default.store.",
+                "Kept the CloudKit path, but made persistent local fallback safer so startup diagnostics cannot immediately crash the app.",
+                "Defaulted the current physical-device build to local SwiftData until the Apple provisioning profile includes iCloud and Push capabilities."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (66)",
             date: "2026-06-08",
             changes: [

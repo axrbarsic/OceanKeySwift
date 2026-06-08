@@ -95,7 +95,11 @@ final class SwiftDataWorkSessionRepository: WorkSessionRepository, @unchecked Se
                 }
             }
             logger.error("Falling back to in-memory local SwiftData.")
-            return (try! makeContainer(inMemory: true, syncMode: .localOnly), .localOnly)
+            do {
+                return (try makeContainer(inMemory: true, syncMode: .localOnly), .localOnly)
+            } catch {
+                preconditionFailure("Unable to create any SwiftData work-session store: \(error.localizedDescription)")
+            }
         }
     }
 
@@ -110,12 +114,35 @@ final class SwiftDataWorkSessionRepository: WorkSessionRepository, @unchecked Se
             PersistentMediaAttachment.self,
             PersistentHistoryEntry.self
         ])
-        let configuration = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: inMemory,
-            cloudKitDatabase: cloudKitDatabase(for: syncMode, inMemory: inMemory)
-        )
+        let configuration: ModelConfiguration
+        if inMemory {
+            configuration = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: true,
+                cloudKitDatabase: .none
+            )
+        } else {
+            configuration = ModelConfiguration(
+                schema: schema,
+                url: try persistentStoreURL(),
+                cloudKitDatabase: cloudKitDatabase(for: syncMode, inMemory: false)
+            )
+        }
         return try ModelContainer(for: schema, configurations: [configuration])
+    }
+
+    private static func persistentStoreURL() throws -> URL {
+        guard let applicationSupportURL = FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+        try FileManager.default.createDirectory(
+            at: applicationSupportURL,
+            withIntermediateDirectories: true
+        )
+        return applicationSupportURL.appendingPathComponent("default.store")
     }
 
     private static func cloudKitDatabase(
