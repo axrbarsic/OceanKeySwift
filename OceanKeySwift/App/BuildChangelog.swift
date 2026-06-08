@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (64)",
+            date: "2026-06-08",
+            changes: [
+                "Fixed the room left-to-right swipe menu so the commit point lands near the B task zone instead of the unreachable physical edge.",
+                "Changed the room swipe recognizer to run simultaneously with scrolling, reducing gesture conflicts while keeping the deliberate long pull.",
+                "Added regression tests for the room swipe commit policy."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (63)",
             date: "2026-06-08",
             changes: [

@@ -35,7 +35,8 @@ struct RoomCellView: View {
     var body: some View {
         VStack(spacing: 0) {
             tileBody
-                .gesture(actionMenuDragGesture, including: .gesture)
+                .contentShape(Rectangle())
+                .simultaneousGesture(actionMenuDragGesture, including: .gesture)
 
             if isActionMenuExpanded {
                 SummaryRoomActionMenu(
@@ -194,8 +195,8 @@ struct RoomCellView: View {
             .onChanged { value in
                 updateActionMenuDrag(value)
             }
-            .onEnded { _ in
-                finishActionMenuDrag()
+            .onEnded { value in
+                finishActionMenuDrag(value)
             }
     }
 
@@ -224,7 +225,10 @@ struct RoomCellView: View {
         }
 
         let threshold = actionMenuSwipeThreshold
-        swipeProgress = min(max(absX / threshold, 0), 1)
+        swipeProgress = SummarySwipeCommitPolicy.roomActionMenuProgress(
+            translation: max(swipeDX, 0),
+            cellWidth: actionMenuCellWidth
+        )
         let armed = absX >= threshold
         if armed, !swipeArmed {
             feedback.holdCommit()
@@ -234,9 +238,14 @@ struct RoomCellView: View {
         swipeArmed = armed
     }
 
-    private func finishActionMenuDrag() {
+    private func finishActionMenuDrag(_ value: DragGesture.Value) {
         defer { resetActionMenuDrag() }
-        guard swipeDirection > 0, swipeArmed else { return }
+        let armed = swipeArmed || SummarySwipeCommitPolicy.roomActionMenuArmed(
+            translation: value.translation.width,
+            predictedTranslation: value.predictedEndTranslation.width,
+            cellWidth: actionMenuCellWidth
+        )
+        guard swipeDirection > 0, armed else { return }
         feedback.confirm()
         onActionMenuToggle()
     }
@@ -253,8 +262,11 @@ struct RoomCellView: View {
     }
 
     private var actionMenuSwipeThreshold: CGFloat {
-        let visibleWidth = tileWidth > 0 ? tileWidth : UIScreen.main.bounds.width - 32
-        return max(330, visibleWidth * 0.985)
+        SummarySwipeCommitPolicy.roomActionMenuThreshold(cellWidth: actionMenuCellWidth)
+    }
+
+    private var actionMenuCellWidth: CGFloat {
+        tileWidth > 0 ? tileWidth : UIScreen.main.bounds.width - 32
     }
 
     private func triggerPhysicsPulse() {
