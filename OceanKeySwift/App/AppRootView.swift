@@ -27,6 +27,7 @@ struct AppRootView: View {
         .environment(\.appBackgroundVideoBlur, appSettings.backgroundVideoBlur)
         .environment(\.appBackgroundVideoBrightness, appSettings.backgroundVideoBrightness)
         .environment(\.appBackgroundVideoGreenTint, appSettings.backgroundVideoGreenTint)
+        .environment(\.appBackgroundVideoGridIntensity, appSettings.backgroundVideoGridIntensity)
         .environment(\.matrixRainConfiguration, appSettings.matrixConfiguration)
         .environment(\.experimentalLiquidGlassEnabled, appSettings.developerLiquidGlassEnabled)
         .environment(\.experimentalGlassVIPEnabled, appSettings.developerGlassVIPEnabled)
@@ -36,12 +37,12 @@ struct AppRootView: View {
         .environment(\.experimentalVIPParticlesEnabled, appSettings.developerVIPParticlesEnabled)
         .environment(\.experimentalCellPhysicsEnabled, appSettings.developerCellPhysicsEnabled)
         .environment(\.experimentalAssistantObjectEnabled, appSettings.developerAssistantObjectEnabled)
-        .environment(\.experimentalCellVolumeEnabled, appSettings.developerCellVolumeEnabled)
-        .environment(\.experimentalCellVolumeIntensity, appSettings.developerCellVolumeIntensity)
+        .environment(\.experimentalCellVolumeEnabled, false)
         .environment(\.experimentalCellSpringIntensity, appSettings.developerCellSpringIntensity)
         .environment(\.experimentalCellSpringSpeed, appSettings.developerCellSpringSpeed)
         .environment(\.experimentalVIPZebraIntensity, appSettings.developerVIPZebraIntensity)
         .environment(\.experimentalVIPZebraSpeed, appSettings.developerVIPZebraSpeed)
+        .environment(\.experimentalVIPZebraSharpness, appSettings.developerVIPZebraSharpness)
         .environment(
             \.interactionFeedback,
             .live(

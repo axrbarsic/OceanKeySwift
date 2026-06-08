@@ -43,6 +43,7 @@ func appSettingsPersistsBackgroundVideoSettings() {
     settings.backgroundVideoBlur = 0.64
     settings.backgroundVideoBrightness = 0.22
     settings.backgroundVideoGreenTint = 0.71
+    settings.backgroundVideoGridIntensity = 0.58
 
     let loaded = AppSettingsStore.load(userDefaults: defaults)
 
@@ -51,6 +52,7 @@ func appSettingsPersistsBackgroundVideoSettings() {
     #expect(loaded.backgroundVideoBlur == 0.64)
     #expect(loaded.backgroundVideoBrightness == 0.22)
     #expect(loaded.backgroundVideoGreenTint == 0.71)
+    #expect(loaded.backgroundVideoGridIntensity == 0.58)
 }
 
 @Test
@@ -74,6 +76,7 @@ func appSettingsPersistsDeveloperExperimentalFlags() {
     settings.developerCellSpringSpeed = 1.14
     settings.developerVIPZebraIntensity = 0.77
     settings.developerVIPZebraSpeed = 1.22
+    settings.developerVIPZebraSharpness = 0.44
 
     let loaded = AppSettingsStore.load(userDefaults: defaults)
 
@@ -85,12 +88,13 @@ func appSettingsPersistsDeveloperExperimentalFlags() {
     #expect(!loaded.developerVIPParticlesEnabled)
     #expect(loaded.developerCellPhysicsEnabled)
     #expect(!loaded.developerAssistantObjectEnabled)
-    #expect(loaded.developerCellVolumeEnabled)
-    #expect(loaded.developerCellVolumeIntensity == 0.52)
+    #expect(!loaded.developerCellVolumeEnabled)
+    #expect(loaded.developerCellVolumeIntensity == 0)
     #expect(loaded.developerCellSpringIntensity == 0.64)
     #expect(loaded.developerCellSpringSpeed == 1.14)
     #expect(loaded.developerVIPZebraIntensity == 0.77)
     #expect(loaded.developerVIPZebraSpeed == 1.22)
+    #expect(loaded.developerVIPZebraSharpness == 0.44)
 }
 
 @Test
@@ -201,6 +205,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     settings.backgroundVideoBlur = 0.7
     settings.backgroundVideoBrightness = 0.33
     settings.backgroundVideoGreenTint = 0.81
+    settings.backgroundVideoGridIntensity = 0.42
     settings.developerLiquidGlassEnabled = true
     settings.developerGlassVIPEnabled = true
     settings.developerMetalAuroraEnabled = true
@@ -215,6 +220,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     settings.developerCellSpringSpeed = 1.25
     settings.developerVIPZebraIntensity = 0.45
     settings.developerVIPZebraSpeed = 1.35
+    settings.developerVIPZebraSharpness = 0.29
 
     settings.resetToDefaults()
     let loaded = AppSettingsStore.load(userDefaults: defaults)
@@ -227,8 +233,9 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     #expect(loaded.matrixSpeed == MatrixRainConfiguration.default.speed)
     #expect(loaded.backgroundVideoRelativePath == nil)
     #expect(loaded.backgroundVideoBlur == 0.28)
-    #expect(loaded.backgroundVideoBrightness == 0)
+    #expect(loaded.backgroundVideoBrightness == 0.08)
     #expect(loaded.backgroundVideoGreenTint == 0.34)
+    #expect(loaded.backgroundVideoGridIntensity == 0)
     #expect(!loaded.developerLiquidGlassEnabled)
     #expect(!loaded.developerGlassVIPEnabled)
     #expect(!loaded.developerMetalAuroraEnabled)
@@ -238,9 +245,10 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     #expect(!loaded.developerCellPhysicsEnabled)
     #expect(!loaded.developerAssistantObjectEnabled)
     #expect(!loaded.developerCellVolumeEnabled)
-    #expect(loaded.developerCellVolumeIntensity == 0.78)
+    #expect(loaded.developerCellVolumeIntensity == 0)
     #expect(loaded.developerCellSpringIntensity == 0.72)
     #expect(loaded.developerCellSpringSpeed == 0.82)
     #expect(loaded.developerVIPZebraIntensity == 0.86)
     #expect(loaded.developerVIPZebraSpeed == 0.78)
+    #expect(loaded.developerVIPZebraSharpness == 0.62)
 }

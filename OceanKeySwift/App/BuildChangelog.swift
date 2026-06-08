@@ -10,6 +10,18 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (63)",
+            date: "2026-06-08",
+            changes: [
+                "Removed the experimental volume-cell look from the active app and hard-disabled its stale saved setting on load.",
+                "Added VIP zebra sharpness control so the moving stripes can be made crisper and less blurred.",
+                "Replaced the room media marker with a compact top-right icon badge instead of a dark text chip.",
+                "Expanded video wallpaper tuning with stronger green range, wider brightness range, and a lightweight scanline/grid overlay.",
+                "Tightened the room-cell and setup-unlock swipe thresholds to require a near-complete drag.",
+                "Added delete actions for room and cart voice/photo/video attachments, including local file cleanup."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (62)",
             date: "2026-06-08",
             changes: [

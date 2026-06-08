@@ -28,6 +28,12 @@ struct LocalMediaFileStore {
         rootDirectory.appendingPathComponent(attachment.relativePath)
     }
 
+    func delete(_ attachment: MediaAttachment) {
+        let fileURL = url(for: attachment)
+        guard fileManager.fileExists(atPath: fileURL.path) else { return }
+        try? fileManager.removeItem(at: fileURL)
+    }
+
     private func savePhoto(_ image: UIImage) throws -> MediaAttachment {
         guard let data = image.jpegData(compressionQuality: 0.88) else {
             throw LocalMediaFileStoreError.cannotEncodePhoto

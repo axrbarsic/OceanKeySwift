@@ -215,6 +215,20 @@ final class WorkSessionStore {
         }
     }
 
+    func removeRoomMedia(_ attachment: MediaAttachment, roomId: RoomCell.ID) {
+        mutateRoom(roomId, history: { _, after, _ in
+            (.roomMediaAdded, "\(after.id): удалено \(attachment.historyLabel)")
+        }) { room in
+            var attachments = room.mediaAttachments ?? []
+            attachments.removeAll { $0.id == attachment.id }
+            room.mediaAttachments = attachments.isEmpty ? nil : attachments
+            if attachment.kind == .audio, room.voiceTranscript == attachment.transcript {
+                room.voiceTranscript = nil
+                room.voiceTranscriptUpdatedAt = nil
+            }
+        }
+    }
+
     func updateCartNote(_ text: String, cartId: CartSection.ID) {
         mutateCart(cartId, history: { _, after, _ in
             (.cartNoteChanged, "Тележка \(after.id): заметка")
@@ -232,6 +246,20 @@ final class WorkSessionStore {
             var attachments = cart.mediaAttachments ?? []
             attachments.insert(attachment, at: 0)
             cart.mediaAttachments = attachments
+        }
+    }
+
+    func removeCartMedia(_ attachment: MediaAttachment, cartId: CartSection.ID) {
+        mutateCart(cartId, history: { _, after, _ in
+            (.cartMediaAdded, "Тележка \(after.id): удалено \(attachment.historyLabel)")
+        }) { cart in
+            var attachments = cart.mediaAttachments ?? []
+            attachments.removeAll { $0.id == attachment.id }
+            cart.mediaAttachments = attachments.isEmpty ? nil : attachments
+            if attachment.kind == .audio, cart.note == attachment.transcript {
+                cart.note = nil
+                cart.noteUpdatedAt = nil
+            }
         }
     }
 

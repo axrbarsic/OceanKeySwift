@@ -44,6 +44,7 @@ final class AppSettingsStore {
         static let backgroundVideoBlur = "backgroundVideoBlur"
         static let backgroundVideoBrightness = "backgroundVideoBrightness"
         static let backgroundVideoGreenTint = "backgroundVideoGreenTint"
+        static let backgroundVideoGridIntensity = "backgroundVideoGridIntensity"
         static let developerLiquidGlassEnabled = "developerLiquidGlassEnabled"
         static let developerGlassVIPEnabled = "developerGlassVIPEnabled"
         static let developerMetalAuroraEnabled = "developerMetalAuroraEnabled"
@@ -58,6 +59,7 @@ final class AppSettingsStore {
         static let developerCellSpringSpeed = "developerCellSpringSpeed"
         static let developerVIPZebraIntensity = "developerVIPZebraIntensity"
         static let developerVIPZebraSpeed = "developerVIPZebraSpeed"
+        static let developerVIPZebraSharpness = "developerVIPZebraSharpness"
     }
 
     @ObservationIgnored private let userDefaults: UserDefaults
@@ -66,11 +68,12 @@ final class AppSettingsStore {
     private var storedBackgroundVideoBlur: Double
     private var storedBackgroundVideoBrightness: Double
     private var storedBackgroundVideoGreenTint: Double
-    private var storedDeveloperCellVolumeIntensity: Double
+    private var storedBackgroundVideoGridIntensity: Double
     private var storedDeveloperCellSpringIntensity: Double
     private var storedDeveloperCellSpringSpeed: Double
     private var storedDeveloperVIPZebraIntensity: Double
     private var storedDeveloperVIPZebraSpeed: Double
+    private var storedDeveloperVIPZebraSharpness: Double
 
     var appBackgroundMode: AppBackgroundMode {
         didSet {
@@ -149,6 +152,14 @@ final class AppSettingsStore {
         }
     }
 
+    var backgroundVideoGridIntensity: Double {
+        get { storedBackgroundVideoGridIntensity }
+        set {
+            storedBackgroundVideoGridIntensity = Self.normalizedBackgroundVideoGridIntensity(newValue)
+            userDefaults.set(storedBackgroundVideoGridIntensity, forKey: Keys.backgroundVideoGridIntensity)
+        }
+    }
+
     var developerLiquidGlassEnabled: Bool {
         didSet {
             userDefaults.set(developerLiquidGlassEnabled, forKey: Keys.developerLiquidGlassEnabled)
@@ -204,10 +215,9 @@ final class AppSettingsStore {
     }
 
     var developerCellVolumeIntensity: Double {
-        get { storedDeveloperCellVolumeIntensity }
+        get { 0 }
         set {
-            storedDeveloperCellVolumeIntensity = Self.normalizedDeveloperCellVolumeIntensity(newValue)
-            userDefaults.set(storedDeveloperCellVolumeIntensity, forKey: Keys.developerCellVolumeIntensity)
+            userDefaults.set(Self.normalizedDeveloperCellVolumeIntensity(newValue), forKey: Keys.developerCellVolumeIntensity)
         }
     }
 
@@ -240,6 +250,14 @@ final class AppSettingsStore {
         set {
             storedDeveloperVIPZebraSpeed = Self.normalizedDeveloperVIPZebraSpeed(newValue)
             userDefaults.set(storedDeveloperVIPZebraSpeed, forKey: Keys.developerVIPZebraSpeed)
+        }
+    }
+
+    var developerVIPZebraSharpness: Double {
+        get { storedDeveloperVIPZebraSharpness }
+        set {
+            storedDeveloperVIPZebraSharpness = Self.normalizedDeveloperVIPZebraSharpness(newValue)
+            userDefaults.set(storedDeveloperVIPZebraSharpness, forKey: Keys.developerVIPZebraSharpness)
         }
     }
 
@@ -286,8 +304,9 @@ final class AppSettingsStore {
         matrixSpeed = MatrixRainConfiguration.default.speed
         backgroundVideoRelativePath = nil
         backgroundVideoBlur = 0.28
-        backgroundVideoBrightness = 0
+        backgroundVideoBrightness = 0.08
         backgroundVideoGreenTint = 0.34
+        backgroundVideoGridIntensity = 0
         developerLiquidGlassEnabled = false
         developerGlassVIPEnabled = false
         developerMetalAuroraEnabled = false
@@ -297,11 +316,12 @@ final class AppSettingsStore {
         developerCellPhysicsEnabled = false
         developerAssistantObjectEnabled = false
         developerCellVolumeEnabled = false
-        developerCellVolumeIntensity = 0.78
+        developerCellVolumeIntensity = 0
         developerCellSpringIntensity = 0.72
         developerCellSpringSpeed = 0.82
         developerVIPZebraIntensity = 0.86
         developerVIPZebraSpeed = 0.78
+        developerVIPZebraSharpness = 0.62
     }
 
     init(
@@ -313,8 +333,9 @@ final class AppSettingsStore {
         matrixSpeed: Double = MatrixRainConfiguration.default.speed,
         backgroundVideoRelativePath: String? = nil,
         backgroundVideoBlur: Double = 0.28,
-        backgroundVideoBrightness: Double = 0,
+        backgroundVideoBrightness: Double = 0.08,
         backgroundVideoGreenTint: Double = 0.34,
+        backgroundVideoGridIntensity: Double = 0,
         developerLiquidGlassEnabled: Bool = false,
         developerGlassVIPEnabled: Bool = false,
         developerMetalAuroraEnabled: Bool = false,
@@ -324,11 +345,12 @@ final class AppSettingsStore {
         developerCellPhysicsEnabled: Bool = false,
         developerAssistantObjectEnabled: Bool = false,
         developerCellVolumeEnabled: Bool = false,
-        developerCellVolumeIntensity: Double = 0.78,
+        developerCellVolumeIntensity: Double = 0,
         developerCellSpringIntensity: Double = 0.72,
         developerCellSpringSpeed: Double = 0.82,
         developerVIPZebraIntensity: Double = 0.86,
         developerVIPZebraSpeed: Double = 0.78,
+        developerVIPZebraSharpness: Double = 0.62,
         userDefaults: UserDefaults = .standard
     ) {
         self.appBackgroundMode = appBackgroundMode
@@ -341,11 +363,12 @@ final class AppSettingsStore {
         self.storedBackgroundVideoBlur = Self.normalizedBackgroundVideoBlur(backgroundVideoBlur)
         self.storedBackgroundVideoBrightness = Self.normalizedBackgroundVideoBrightness(backgroundVideoBrightness)
         self.storedBackgroundVideoGreenTint = Self.normalizedBackgroundVideoGreenTint(backgroundVideoGreenTint)
-        self.storedDeveloperCellVolumeIntensity = Self.normalizedDeveloperCellVolumeIntensity(developerCellVolumeIntensity)
+        self.storedBackgroundVideoGridIntensity = Self.normalizedBackgroundVideoGridIntensity(backgroundVideoGridIntensity)
         self.storedDeveloperCellSpringIntensity = Self.normalizedDeveloperCellSpringIntensity(developerCellSpringIntensity)
         self.storedDeveloperCellSpringSpeed = Self.normalizedDeveloperCellSpringSpeed(developerCellSpringSpeed)
         self.storedDeveloperVIPZebraIntensity = Self.normalizedDeveloperVIPZebraIntensity(developerVIPZebraIntensity)
         self.storedDeveloperVIPZebraSpeed = Self.normalizedDeveloperVIPZebraSpeed(developerVIPZebraSpeed)
+        self.storedDeveloperVIPZebraSharpness = Self.normalizedDeveloperVIPZebraSharpness(developerVIPZebraSharpness)
         self.developerLiquidGlassEnabled = developerLiquidGlassEnabled
         self.developerGlassVIPEnabled = developerGlassVIPEnabled
         self.developerMetalAuroraEnabled = developerMetalAuroraEnabled
@@ -370,8 +393,9 @@ final class AppSettingsStore {
             ?? MatrixRainConfiguration.default.speed
         let backgroundVideoRelativePath = userDefaults.string(forKey: Keys.backgroundVideoRelativePath)
         let backgroundVideoBlur = userDefaults.object(forKey: Keys.backgroundVideoBlur) as? Double ?? 0.28
-        let backgroundVideoBrightness = userDefaults.object(forKey: Keys.backgroundVideoBrightness) as? Double ?? 0
+        let backgroundVideoBrightness = userDefaults.object(forKey: Keys.backgroundVideoBrightness) as? Double ?? 0.08
         let backgroundVideoGreenTint = userDefaults.object(forKey: Keys.backgroundVideoGreenTint) as? Double ?? 0.34
+        let backgroundVideoGridIntensity = userDefaults.object(forKey: Keys.backgroundVideoGridIntensity) as? Double ?? 0
         let developerLiquidGlassEnabled = false
         let developerGlassVIPEnabled = false
         let developerMetalAuroraEnabled = false
@@ -380,12 +404,13 @@ final class AppSettingsStore {
         let developerVIPParticlesEnabled = false
         let developerCellPhysicsEnabled = userDefaults.object(forKey: Keys.developerCellPhysicsEnabled) as? Bool ?? false
         let developerAssistantObjectEnabled = false
-        let developerCellVolumeEnabled = userDefaults.object(forKey: Keys.developerCellVolumeEnabled) as? Bool ?? false
-        let developerCellVolumeIntensity = userDefaults.object(forKey: Keys.developerCellVolumeIntensity) as? Double ?? 0.78
+        let developerCellVolumeEnabled = false
+        let developerCellVolumeIntensity = 0.0
         let developerCellSpringIntensity = userDefaults.object(forKey: Keys.developerCellSpringIntensity) as? Double ?? 0.72
         let developerCellSpringSpeed = userDefaults.object(forKey: Keys.developerCellSpringSpeed) as? Double ?? 0.82
         let developerVIPZebraIntensity = userDefaults.object(forKey: Keys.developerVIPZebraIntensity) as? Double ?? 0.86
         let developerVIPZebraSpeed = userDefaults.object(forKey: Keys.developerVIPZebraSpeed) as? Double ?? 0.78
+        let developerVIPZebraSharpness = userDefaults.object(forKey: Keys.developerVIPZebraSharpness) as? Double ?? 0.62
         return AppSettingsStore(
             appBackgroundMode: appBackgroundMode,
             roomCellGeometry: geometry,
@@ -397,6 +422,7 @@ final class AppSettingsStore {
             backgroundVideoBlur: backgroundVideoBlur,
             backgroundVideoBrightness: backgroundVideoBrightness,
             backgroundVideoGreenTint: backgroundVideoGreenTint,
+            backgroundVideoGridIntensity: backgroundVideoGridIntensity,
             developerLiquidGlassEnabled: developerLiquidGlassEnabled,
             developerGlassVIPEnabled: developerGlassVIPEnabled,
             developerMetalAuroraEnabled: developerMetalAuroraEnabled,
@@ -411,6 +437,7 @@ final class AppSettingsStore {
             developerCellSpringSpeed: developerCellSpringSpeed,
             developerVIPZebraIntensity: developerVIPZebraIntensity,
             developerVIPZebraSpeed: developerVIPZebraSpeed,
+            developerVIPZebraSharpness: developerVIPZebraSharpness,
             userDefaults: userDefaults
         )
     }
@@ -428,10 +455,14 @@ final class AppSettingsStore {
     }
 
     static func normalizedBackgroundVideoBrightness(_ value: Double) -> Double {
-        min(max(value, -0.45), 0.45)
+        min(max(value, -0.85), 0.85)
     }
 
     static func normalizedBackgroundVideoGreenTint(_ value: Double) -> Double {
+        min(max(value, 0), 1)
+    }
+
+    static func normalizedBackgroundVideoGridIntensity(_ value: Double) -> Double {
         min(max(value, 0), 1)
     }
 
@@ -453,5 +484,9 @@ final class AppSettingsStore {
 
     static func normalizedDeveloperVIPZebraSpeed(_ value: Double) -> Double {
         min(max(value, 0.2), 1.8)
+    }
+
+    static func normalizedDeveloperVIPZebraSharpness(_ value: Double) -> Double {
+        min(max(value, 0), 1)
     }
 }

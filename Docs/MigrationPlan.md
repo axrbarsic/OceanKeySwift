@@ -168,6 +168,10 @@ available.
      settings sliders must update the existing effect rather than remounting it.
    - Keep video wallpaper matte/blur inside one native player composition
      rather than layering per-frame SwiftUI filters over AV playback.
+   - Keep scanline/grid video wallpaper styling as a lightweight overlay on the
+     player view, not a per-frame image filter.
+   - Rejected developer experiments should be hard-disabled at settings load so
+     stale device defaults cannot resurrect them.
    - Gate iOS 26 visual experiments with availability checks and developer
      toggles so production behavior stays stable while new Apple APIs are
      evaluated.

@@ -207,6 +207,33 @@ func ignoredRoomMutationDoesNotRecordHistory() {
 }
 
 @Test
+func roomAndCartMediaRemovalClearsAttachmentsAndRecordsHistory() {
+    let store = WorkSessionStore.preview()
+    let roomAttachment = MediaAttachment(
+        id: UUID(),
+        kind: .audio,
+        relativePath: "Media/room.m4a",
+        createdAt: Date(),
+        transcript: "Room voice"
+    )
+    let cartAttachment = MediaAttachment(
+        id: UUID(),
+        kind: .photo,
+        relativePath: "Media/cart.jpg",
+        createdAt: Date()
+    )
+
+    store.addRoomMedia(roomAttachment, roomId: "303")
+    store.addCartMedia(cartAttachment, cartId: 7)
+    store.removeRoomMedia(roomAttachment, roomId: "303")
+    store.removeCartMedia(cartAttachment, cartId: 7)
+
+    #expect(store.room(id: "303")?.mediaAttachments?.contains(roomAttachment) != true)
+    #expect(store.cart(id: 7)?.mediaAttachments?.contains(cartAttachment) != true)
+    #expect(store.history.prefix(2).allSatisfy { $0.title.contains("удалено") })
+}
+
+@Test
 func cartConsumableQuantityAndCompletionRecordHistory() {
     let store = WorkSessionStore.preview()
 

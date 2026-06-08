@@ -140,13 +140,15 @@ struct VideoBackgroundTuning: Equatable {
     var blur: Double
     var brightness: Double
     var greenTint: Double
+    var gridIntensity: Double
 
-    static let `default` = VideoBackgroundTuning(blur: 0.28, brightness: 0, greenTint: 0.34)
+    static let `default` = VideoBackgroundTuning(blur: 0.28, brightness: 0.08, greenTint: 0.34, gridIntensity: 0)
 }
 
 final class VideoBackgroundPlayerView: UIView {
     private let tintView = UIView()
     private let dimView = UIView()
+    private let gridView = VideoGridOverlayView()
 
     override static var layerClass: AnyClass {
         AVPlayerLayer.self
@@ -169,6 +171,7 @@ final class VideoBackgroundPlayerView: UIView {
         dimView.backgroundColor = .black
 
         addSubview(tintView)
+        addSubview(gridView)
         addSubview(dimView)
     }
 
@@ -180,22 +183,25 @@ final class VideoBackgroundPlayerView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         tintView.frame = bounds
+        gridView.frame = bounds
         dimView.frame = bounds
     }
 
     func setTuning(_ tuning: VideoBackgroundTuning, animated: Bool) {
         let blur = min(max(tuning.blur, 0), 1)
         let green = min(max(tuning.greenTint, 0), 1)
-        let brightness = min(max(tuning.brightness, -0.45), 0.45)
+        let brightness = min(max(tuning.brightness, -0.85), 0.85)
+        let grid = min(max(tuning.gridIntensity, 0), 1)
 
         let apply = {
             if green <= 0.01, blur <= 0.01 {
                 self.tintView.alpha = 0
             } else {
-                self.tintView.alpha = CGFloat(0.04 + blur * 0.12 + green * 0.52)
+                self.tintView.alpha = CGFloat(0.03 + blur * 0.10 + green * 0.82)
             }
-            self.dimView.alpha = brightness < 0 ? CGFloat(abs(brightness) * 0.72) : 0
-            self.playerLayer.opacity = Float(1 + max(0, brightness) * 0.75)
+            self.gridView.intensity = grid
+            self.dimView.alpha = brightness < 0 ? CGFloat(abs(brightness) * 0.82) : 0
+            self.playerLayer.opacity = Float(1 + max(0, brightness) * 0.35)
         }
 
         guard animated else {
@@ -212,6 +218,60 @@ final class VideoBackgroundPlayerView: UIView {
     }
 }
 
+private final class VideoGridOverlayView: UIView {
+    var intensity: Double = 0 {
+        didSet {
+            alpha = CGFloat(min(max(intensity, 0), 1))
+            isHidden = intensity <= 0.01
+            setNeedsDisplay()
+        }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        isOpaque = false
+        isUserInteractionEnabled = false
+        contentMode = .redraw
+        alpha = 0
+        isHidden = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func draw(_ rect: CGRect) {
+        guard intensity > 0.01, let context = UIGraphicsGetCurrentContext() else { return }
+        context.clear(rect)
+
+        let normalized = min(max(intensity, 0), 1)
+        let scale = window?.screen.scale ?? UIScreen.main.scale
+        let spacing = max(2.0, 3.0 * scale)
+        let majorSpacing = spacing * 4
+        let minorAlpha = CGFloat(0.10 + normalized * 0.24)
+        let majorAlpha = CGFloat(0.05 + normalized * 0.13)
+        let lineWidth = 1.0 / scale
+
+        context.setLineWidth(lineWidth)
+        context.setShouldAntialias(false)
+
+        context.setStrokeColor(UIColor.white.withAlphaComponent(minorAlpha).cgColor)
+        stride(from: CGFloat(0), through: rect.maxY, by: spacing).forEach { y in
+            context.move(to: CGPoint(x: rect.minX, y: y.rounded(.down)))
+            context.addLine(to: CGPoint(x: rect.maxX, y: y.rounded(.down)))
+        }
+        context.strokePath()
+
+        context.setStrokeColor(UIColor.black.withAlphaComponent(majorAlpha).cgColor)
+        stride(from: CGFloat(0), through: rect.maxX, by: majorSpacing).forEach { x in
+            context.move(to: CGPoint(x: x.rounded(.down), y: rect.minY))
+            context.addLine(to: CGPoint(x: x.rounded(.down), y: rect.maxY))
+        }
+        context.strokePath()
+    }
+}
+
 private final class VideoMatteFilter: @unchecked Sendable {
     private let lock = NSLock()
     private var storedTuning = VideoBackgroundTuning.default
@@ -220,8 +280,9 @@ private final class VideoMatteFilter: @unchecked Sendable {
         lock.lock()
         storedTuning = VideoBackgroundTuning(
             blur: min(max(tuning.blur, 0), 1),
-            brightness: min(max(tuning.brightness, -0.45), 0.45),
-            greenTint: min(max(tuning.greenTint, 0), 1)
+            brightness: min(max(tuning.brightness, -0.85), 0.85),
+            greenTint: min(max(tuning.greenTint, 0), 1),
+            gridIntensity: min(max(tuning.gridIntensity, 0), 1)
         )
         lock.unlock()
     }
@@ -251,15 +312,21 @@ private enum VideoMatteCompositionFactory {
                 "CIColorControls",
                 parameters: [
                     kCIInputBrightnessKey: tuning.brightness,
-                    kCIInputSaturationKey: 1 + tuning.greenTint * 0.22
+                    kCIInputSaturationKey: max(0.08, 1 - tuning.greenTint * 0.54)
                 ]
             )
+            let green = tuning.greenTint
             let greened = tuned.applyingFilter(
                 "CIColorMatrix",
                 parameters: [
-                    "inputRVector": CIVector(x: 1 - tuning.greenTint * 0.34, y: 0, z: 0, w: 0),
-                    "inputGVector": CIVector(x: 0, y: 1 + tuning.greenTint * 0.38, z: 0, w: 0),
-                    "inputBVector": CIVector(x: 0, y: tuning.greenTint * 0.18, z: 1 - tuning.greenTint * 0.42, w: 0),
+                    "inputRVector": CIVector(x: max(0.02, 1 - green * 0.98), y: 0, z: 0, w: 0),
+                    "inputGVector": CIVector(
+                        x: 0.18 * green,
+                        y: 1 + 0.42 * green,
+                        z: 0.16 * green,
+                        w: 0
+                    ),
+                    "inputBVector": CIVector(x: 0, y: 0, z: max(0.02, 1 - green * 0.98), w: 0),
                     "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1)
                 ]
             )

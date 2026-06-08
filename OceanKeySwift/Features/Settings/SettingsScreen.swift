@@ -133,30 +133,6 @@ struct SettingsScreen: View {
                 )
             }
 
-            Toggle(isOn: $appSettings.developerCellVolumeEnabled) {
-                SettingsInfoRow(
-                    title: "Объёмные ячейки",
-                    value: appSettings.developerCellVolumeEnabled ? "Вкл" : "Выкл",
-                    systemName: "view.in.ar",
-                    subtitle: "Глянцевый выпуклый вид ячеек в стиле драже из Flutter-версии."
-                )
-            }
-            .tint(OceanKeyTheme.accent)
-            .onChange(of: appSettings.developerCellVolumeEnabled) { _, _ in
-                feedback.confirm()
-            }
-
-            if appSettings.developerCellVolumeEnabled {
-                SettingsSliderRow(
-                    title: "Сила объёма",
-                    valueLabel: "\(Int((appSettings.developerCellVolumeIntensity * 100).rounded()))%",
-                    systemName: "circle.grid.cross",
-                    range: 0...1,
-                    defaultValue: 0.78,
-                    value: $appSettings.developerCellVolumeIntensity
-                )
-            }
-
             SettingsSliderRow(
                 title: "VIP-зебра",
                 valueLabel: "\(Int((appSettings.developerVIPZebraIntensity * 100).rounded()))%",
@@ -172,6 +148,14 @@ struct SettingsScreen: View {
                 range: 0.2...1.8,
                 defaultValue: 0.78,
                 value: $appSettings.developerVIPZebraSpeed
+            )
+            SettingsSliderRow(
+                title: "Резкость VIP",
+                valueLabel: "\(Int((appSettings.developerVIPZebraSharpness * 100).rounded()))%",
+                systemName: "slider.horizontal.2.square.on.square",
+                range: 0...1,
+                defaultValue: 0.62,
+                value: $appSettings.developerVIPZebraSharpness
             )
         }
     }
@@ -329,17 +313,25 @@ struct SettingsScreen: View {
                 title: "Яркость",
                 valueLabel: "\(Int((appSettings.backgroundVideoBrightness * 100).rounded()))%",
                 systemName: "sun.max.fill",
-                range: -0.45...0.45,
-                defaultValue: 0,
+                range: -0.85...0.85,
+                defaultValue: 0.08,
                 value: $appSettings.backgroundVideoBrightness
             )
             SettingsSliderRow(
-                title: "Зелёный оттенок",
+                title: "Зелёный",
                 valueLabel: "\(Int((appSettings.backgroundVideoGreenTint * 100).rounded()))%",
                 systemName: "leaf.fill",
                 range: 0...1,
                 defaultValue: 0.34,
                 value: $appSettings.backgroundVideoGreenTint
+            )
+            SettingsSliderRow(
+                title: "Сетка",
+                valueLabel: "\(Int((appSettings.backgroundVideoGridIntensity * 100).rounded()))%",
+                systemName: "squareshape.split.3x3",
+                range: 0...1,
+                defaultValue: 0,
+                value: $appSettings.backgroundVideoGridIntensity
             )
         }
     }

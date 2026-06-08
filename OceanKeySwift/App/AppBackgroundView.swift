@@ -6,6 +6,7 @@ struct AppBackgroundView: View {
     @Environment(\.appBackgroundVideoBlur) private var appBackgroundVideoBlur
     @Environment(\.appBackgroundVideoBrightness) private var appBackgroundVideoBrightness
     @Environment(\.appBackgroundVideoGreenTint) private var appBackgroundVideoGreenTint
+    @Environment(\.appBackgroundVideoGridIntensity) private var appBackgroundVideoGridIntensity
 
     var body: some View {
         ZStack {
@@ -18,7 +19,8 @@ struct AppBackgroundView: View {
                     tuning: VideoBackgroundTuning(
                         blur: appBackgroundVideoBlur,
                         brightness: appBackgroundVideoBrightness,
-                        greenTint: appBackgroundVideoGreenTint
+                        greenTint: appBackgroundVideoGreenTint,
+                        gridIntensity: appBackgroundVideoGridIntensity
                     )
                 )
             }

@@ -214,8 +214,12 @@ Simulator unless explicitly allowed.
   Metal Aurora uses `MTKView` plus a fullscreen fragment shader and is isolated
   from the default Matrix/video wallpaper paths.
 - Developer experiments were simplified again after real-device testing:
-  deprecated invisible/heavy overlays are no longer activated from stored
-  settings, while the active test controls are live spring cells, glossy volume
-  cells, and adjustable moving VIP zebra stripes.
+  deprecated invisible/heavy overlays and the rejected glossy volume-cell effect
+  are no longer activated from stored settings, while the active test controls
+  are live spring cells and adjustable moving VIP zebra stripes with sharpness.
 - Room and cart voice notes now share playable local audio bubbles, while room
-  cells show compact indicators when text, voice, photo, or video data exists.
+  cells show compact top-right indicators when text, voice, photo, or video
+  data exists. Room/cart attachments can be deleted and their local files are
+  cleaned up.
+- Video wallpaper controls now include stronger green tint, wider brightness,
+  matte blur, scanline/grid overlay, and the playback watchdog.

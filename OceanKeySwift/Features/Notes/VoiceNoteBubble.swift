@@ -3,6 +3,7 @@ import SwiftUI
 
 struct VoiceNoteBubble: View {
     let attachment: MediaAttachment
+    var onDelete: (() -> Void)?
     private let fileStore = LocalMediaFileStore()
 
     @State private var player: AVAudioPlayer?
@@ -28,9 +29,20 @@ struct VoiceNoteBubble: View {
                         .font(.system(size: 12, weight: .black, design: .rounded))
                         .foregroundStyle(OceanKeyTheme.secondaryText)
                     Spacer()
-                    Image(systemName: "waveform")
-                        .font(.system(size: 13, weight: .black))
-                        .foregroundStyle(OceanKeyTheme.accent.opacity(0.78))
+                    HStack(spacing: 8) {
+                        Image(systemName: "waveform")
+                            .font(.system(size: 13, weight: .black))
+                            .foregroundStyle(OceanKeyTheme.accent.opacity(0.78))
+                        if let onDelete {
+                            Button(action: onDelete) {
+                                Image(systemName: "trash.fill")
+                                    .font(.system(size: 12, weight: .black))
+                                    .foregroundStyle(OceanKeyTheme.pending.opacity(0.95))
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Удалить голосовую заметку")
+                        }
+                    }
                 }
 
                 Text(attachment.transcript?.isEmpty == false ? attachment.transcript! : "Голос сохранён без расшифровки")

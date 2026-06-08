@@ -107,7 +107,10 @@ struct RoomDetailsScreen: View {
             } else {
                 VStack(spacing: 10) {
                     ForEach(voiceAttachments) { attachment in
-                        VoiceNoteBubble(attachment: attachment)
+                        VoiceNoteBubble(
+                            attachment: attachment,
+                            onDelete: { deleteMediaAttachment(attachment) }
+                        )
                     }
                 }
             }
@@ -146,10 +149,24 @@ struct RoomDetailsScreen: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {
                         ForEach(visualMediaAttachments) { attachment in
-                            Button(action: { selectedMedia = attachment }) {
-                                MediaThumbnailView(attachment: attachment)
+                            ZStack(alignment: .topTrailing) {
+                                Button(action: { selectedMedia = attachment }) {
+                                    MediaThumbnailView(attachment: attachment)
+                                }
+                                .buttonStyle(.plain)
+
+                                Button(action: { deleteMediaAttachment(attachment) }) {
+                                    Image(systemName: "trash.fill")
+                                        .font(.system(size: 12, weight: .black))
+                                        .foregroundStyle(.white)
+                                        .frame(width: 28, height: 28)
+                                        .background(OceanKeyTheme.pending.opacity(0.92), in: Circle())
+                                        .shadow(color: .black.opacity(0.34), radius: 3, x: 0, y: 1)
+                                }
+                                .buttonStyle(.plain)
+                                .padding(6)
+                                .accessibilityLabel("Удалить медиа")
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -245,6 +262,14 @@ struct RoomDetailsScreen: View {
             mediaError = error.localizedDescription
         }
         try? FileManager.default.removeItem(at: result.audioURL)
+    }
+
+    private func deleteMediaAttachment(_ attachment: MediaAttachment) {
+        if selectedMedia?.id == attachment.id {
+            selectedMedia = nil
+        }
+        LocalMediaFileStore().delete(attachment)
+        workSession.removeRoomMedia(attachment, roomId: route.roomID)
     }
 
     private var updatedLabel: String? {

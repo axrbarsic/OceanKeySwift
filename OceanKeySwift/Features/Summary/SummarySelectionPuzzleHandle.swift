@@ -12,7 +12,7 @@ struct SummarySelectionPuzzleHandle: View {
     @State private var feedbackStarted = false
 
     private var threshold: CGFloat {
-        max(220, UIScreen.main.bounds.width - 166)
+        max(280, UIScreen.main.bounds.width - 94)
     }
 
     var body: some View {
@@ -44,7 +44,7 @@ struct SummarySelectionPuzzleHandle: View {
                 fillOpacity: 0.08 + 0.18 * eased,
                 shadowOpacity: 0.22 * eased
             )
-            .offset(x: -threshold * 0.96 * eased)
+            .offset(x: -threshold * eased)
             .frame(maxWidth: .infinity, alignment: .trailing)
             .padding(.trailing, 6)
         }
@@ -67,7 +67,7 @@ struct SummarySelectionPuzzleHandle: View {
                 let nextArmed = next >= threshold
                 if nextArmed, !armed {
                     feedback.holdCommit()
-                } else if !nextArmed, next > threshold * 0.55, drag <= threshold * 0.55 {
+                } else if !nextArmed, next > threshold * 0.82, drag <= threshold * 0.82 {
                     feedback.holdWarning()
                 }
                 drag = next

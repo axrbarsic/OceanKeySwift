@@ -36,10 +36,6 @@ private struct ExperimentalCellVolumeEnabledKey: EnvironmentKey {
     static let defaultValue = false
 }
 
-private struct ExperimentalCellVolumeIntensityKey: EnvironmentKey {
-    static let defaultValue = 0.78
-}
-
 private struct ExperimentalCellSpringIntensityKey: EnvironmentKey {
     static let defaultValue = 0.72
 }
@@ -54,6 +50,10 @@ private struct ExperimentalVIPZebraIntensityKey: EnvironmentKey {
 
 private struct ExperimentalVIPZebraSpeedKey: EnvironmentKey {
     static let defaultValue = 0.78
+}
+
+private struct ExperimentalVIPZebraSharpnessKey: EnvironmentKey {
+    static let defaultValue = 0.62
 }
 
 extension EnvironmentValues {
@@ -102,11 +102,6 @@ extension EnvironmentValues {
         set { self[ExperimentalCellVolumeEnabledKey.self] = newValue }
     }
 
-    var experimentalCellVolumeIntensity: Double {
-        get { self[ExperimentalCellVolumeIntensityKey.self] }
-        set { self[ExperimentalCellVolumeIntensityKey.self] = newValue }
-    }
-
     var experimentalCellSpringIntensity: Double {
         get { self[ExperimentalCellSpringIntensityKey.self] }
         set { self[ExperimentalCellSpringIntensityKey.self] = newValue }
@@ -125,5 +120,10 @@ extension EnvironmentValues {
     var experimentalVIPZebraSpeed: Double {
         get { self[ExperimentalVIPZebraSpeedKey.self] }
         set { self[ExperimentalVIPZebraSpeedKey.self] = newValue }
+    }
+
+    var experimentalVIPZebraSharpness: Double {
+        get { self[ExperimentalVIPZebraSharpnessKey.self] }
+        set { self[ExperimentalVIPZebraSharpnessKey.self] = newValue }
     }
 }

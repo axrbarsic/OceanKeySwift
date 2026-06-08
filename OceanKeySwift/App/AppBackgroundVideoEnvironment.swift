@@ -17,6 +17,10 @@ private struct AppBackgroundVideoGreenTintEnvironmentKey: EnvironmentKey {
     static let defaultValue: Double = 0
 }
 
+private struct AppBackgroundVideoGridIntensityEnvironmentKey: EnvironmentKey {
+    static let defaultValue: Double = 0
+}
+
 extension EnvironmentValues {
     var appBackgroundVideoURL: URL? {
         get { self[AppBackgroundVideoURLEnvironmentKey.self] }
@@ -36,5 +40,10 @@ extension EnvironmentValues {
     var appBackgroundVideoGreenTint: Double {
         get { self[AppBackgroundVideoGreenTintEnvironmentKey.self] }
         set { self[AppBackgroundVideoGreenTintEnvironmentKey.self] = newValue }
+    }
+
+    var appBackgroundVideoGridIntensity: Double {
+        get { self[AppBackgroundVideoGridIntensityEnvironmentKey.self] }
+        set { self[AppBackgroundVideoGridIntensityEnvironmentKey.self] = newValue }
     }
 }

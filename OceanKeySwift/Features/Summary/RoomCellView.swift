@@ -6,12 +6,11 @@ struct RoomCellView: View {
     @Environment(\.experimentalGlassVIPEnabled) private var experimentalGlassVIPEnabled
     @Environment(\.experimentalVIPParticlesEnabled) private var experimentalVIPParticlesEnabled
     @Environment(\.experimentalCellPhysicsEnabled) private var experimentalCellPhysicsEnabled
-    @Environment(\.experimentalCellVolumeEnabled) private var experimentalCellVolumeEnabled
-    @Environment(\.experimentalCellVolumeIntensity) private var experimentalCellVolumeIntensity
     @Environment(\.experimentalCellSpringIntensity) private var experimentalCellSpringIntensity
     @Environment(\.experimentalCellSpringSpeed) private var experimentalCellSpringSpeed
     @Environment(\.experimentalVIPZebraIntensity) private var experimentalVIPZebraIntensity
     @Environment(\.experimentalVIPZebraSpeed) private var experimentalVIPZebraSpeed
+    @Environment(\.experimentalVIPZebraSharpness) private var experimentalVIPZebraSharpness
 
     @Binding var room: RoomCell
     let geometry: RoomCellGeometry
@@ -131,16 +130,12 @@ struct RoomCellView: View {
                 : .default,
             value: physicsPulse
         )
-        .experimentalCellVolume(
-            enabled: experimentalCellVolumeEnabled,
-            shape: tileShape,
-            intensity: experimentalCellVolumeIntensity
-        )
         .vipZebraEffect(
             enabled: room.isVIP,
             shape: tileShape,
             intensity: experimentalVIPZebraIntensity,
-            speed: experimentalVIPZebraSpeed
+            speed: experimentalVIPZebraSpeed,
+            sharpness: experimentalVIPZebraSharpness
         )
         .experimentalVIPGlass(enabled: experimentalGlassVIPEnabled && room.isVIP, shape: tileShape)
         .anchorPreference(key: VIPParticleAnchorPreferenceKey.self, value: .bounds) { anchor in
@@ -172,28 +167,11 @@ struct RoomCellView: View {
                     )
             }
         }
-        .overlay(alignment: .bottomLeading) {
-            if !room.noteIndicatorIcons.isEmpty {
-                HStack(spacing: 5) {
-                    ForEach(room.noteIndicatorIcons, id: \.self) { iconName in
-                        Image(systemName: iconName)
-                            .font(.system(size: 11, weight: .black))
-                    }
-                    if room.noteIndicatorCount > room.noteIndicatorIcons.count {
-                        Text("+\(room.noteIndicatorCount - room.noteIndicatorIcons.count)")
-                            .font(.system(size: 10, weight: .black, design: .rounded))
-                            .monospacedDigit()
-                    }
-                }
-                .foregroundStyle(.white)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(.black.opacity(0.72))
-                .clipShape(Capsule())
-                .padding(.leading, 10)
-                .padding(.bottom, isActionMenuExpanded ? 7 : 8)
+        .overlay(alignment: .topTrailing) {
+            RoomMediaIndicator(room: room)
+                .padding(.top, 7)
+                .padding(.trailing, 10)
                 .allowsHitTesting(false)
-            }
         }
     }
 
@@ -250,7 +228,7 @@ struct RoomCellView: View {
         let armed = absX >= threshold
         if armed, !swipeArmed {
             feedback.holdCommit()
-        } else if !armed, absX > threshold * 0.72, !swipeArmed {
+        } else if !armed, absX > threshold * 0.86, !swipeArmed {
             feedback.holdWarning()
         }
         swipeArmed = armed
@@ -276,7 +254,7 @@ struct RoomCellView: View {
 
     private var actionMenuSwipeThreshold: CGFloat {
         let visibleWidth = tileWidth > 0 ? tileWidth : UIScreen.main.bounds.width - 32
-        return max(300, visibleWidth * 0.92)
+        return max(330, visibleWidth * 0.985)
     }
 
     private func triggerPhysicsPulse() {
@@ -350,97 +328,20 @@ private extension View {
     }
 
     @ViewBuilder
-    func experimentalCellVolume(
-        enabled: Bool,
-        shape: UnevenRoundedRectangle,
-        intensity: Double
-    ) -> some View {
-        if enabled {
-            let normalized = min(max(intensity, 0), 1)
-            self
-                .overlay {
-                    shape
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    .white.opacity(0.30 * normalized),
-                                    .white.opacity(0.08 * normalized),
-                                    .clear,
-                                    .black.opacity(0.20 * normalized)
-                                ],
-                                startPoint: UnitPoint(x: 0.05, y: 0.0),
-                                endPoint: UnitPoint(x: 0.92, y: 1.0)
-                            )
-                        )
-                        .blendMode(.overlay)
-                        .allowsHitTesting(false)
-                }
-                .overlay(alignment: .topLeading) {
-                    GeometryReader { proxy in
-                        Ellipse()
-                            .fill(
-                                RadialGradient(
-                                    colors: [
-                                        .white.opacity(0.42 * normalized),
-                                        .white.opacity(0.11 * normalized),
-                                        .clear
-                                    ],
-                                    center: UnitPoint(x: 0.22, y: 0.24),
-                                    startRadius: 2,
-                                    endRadius: max(proxy.size.width, proxy.size.height) * 0.58
-                                )
-                            )
-                            .frame(
-                                width: proxy.size.width * 0.58,
-                                height: proxy.size.height * 0.48
-                            )
-                            .offset(x: proxy.size.width * 0.04, y: proxy.size.height * 0.04)
-                            .blendMode(.screen)
-                            .allowsHitTesting(false)
-                    }
-                    .clipShape(shape)
-                }
-                .overlay {
-                    shape
-                        .strokeBorder(
-                            LinearGradient(
-                                colors: [
-                                    .white.opacity(0.42 * normalized),
-                                    .white.opacity(0.06 * normalized),
-                                    .black.opacity(0.20 * normalized)
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ),
-                            lineWidth: 1.2 + 1.6 * normalized
-                        )
-                        .blendMode(.screen)
-                        .allowsHitTesting(false)
-                }
-                .shadow(
-                    color: .black.opacity(0.18 + 0.18 * normalized),
-                    radius: 7 + 9 * normalized,
-                    x: 0,
-                    y: 4 + 4 * normalized
-                )
-        } else {
-            self
-        }
-    }
-
-    @ViewBuilder
     func vipZebraEffect(
         enabled: Bool,
         shape: UnevenRoundedRectangle,
         intensity: Double,
-        speed: Double
+        speed: Double,
+        sharpness: Double
     ) -> some View {
         if enabled {
             self.overlay {
                 VIPZebraOverlay(
                     shape: shape,
                     intensity: intensity,
-                    speed: speed
+                    speed: speed,
+                    sharpness: sharpness
                 )
                 .allowsHitTesting(false)
             }
@@ -454,6 +355,7 @@ private struct VIPZebraOverlay: View {
     let shape: UnevenRoundedRectangle
     let intensity: Double
     let speed: Double
+    let sharpness: Double
 
     var body: some View {
         TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
@@ -481,24 +383,65 @@ private struct VIPZebraOverlay: View {
         min(max(intensity, 0), 1)
     }
 
+    private var normalizedSharpness: Double {
+        min(max(sharpness, 0), 1)
+    }
+
     private var zebraStops: [Gradient.Stop] {
-        let bright = 0.30 * normalizedIntensity
-        let soft = 0.10 * normalizedIntensity
-        let dark = 0.16 * normalizedIntensity
+        let bright = (0.20 + 0.32 * normalizedSharpness) * normalizedIntensity
+        let soft = (0.11 - 0.075 * normalizedSharpness) * normalizedIntensity
+        let dark = (0.10 + 0.18 * normalizedSharpness) * normalizedIntensity
+        let edge = max(0.018, 0.060 - 0.042 * normalizedSharpness)
         return [
             .init(color: .clear, location: 0.00),
-            .init(color: .white.opacity(soft), location: 0.08),
-            .init(color: .white.opacity(bright), location: 0.14),
-            .init(color: .clear, location: 0.22),
-            .init(color: .black.opacity(dark), location: 0.30),
-            .init(color: .clear, location: 0.38),
+            .init(color: .white.opacity(soft), location: 0.12 - edge),
+            .init(color: .white.opacity(bright), location: 0.12),
+            .init(color: .clear, location: 0.12 + edge),
+            .init(color: .black.opacity(dark), location: 0.31),
+            .init(color: .clear, location: 0.31 + edge),
             .init(color: .white.opacity(bright * 0.86), location: 0.48),
-            .init(color: .clear, location: 0.58),
+            .init(color: .clear, location: 0.48 + edge),
             .init(color: .black.opacity(dark * 0.78), location: 0.68),
-            .init(color: .clear, location: 0.78),
+            .init(color: .clear, location: 0.68 + edge),
             .init(color: .white.opacity(bright), location: 0.88),
-            .init(color: .clear, location: 1.00)
+            .init(color: .clear, location: min(1, 0.88 + edge))
         ]
+    }
+}
+
+private struct RoomMediaIndicator: View {
+    let room: RoomCell
+
+    var body: some View {
+        if let primaryIcon = room.primaryNoteIndicatorIcon {
+            HStack(spacing: -4) {
+                Image(systemName: primaryIcon)
+                    .font(.system(size: 15, weight: .black))
+                    .symbolRenderingMode(.hierarchical)
+                    .frame(width: 28, height: 28)
+                    .background(.ultraThinMaterial.opacity(0.80), in: Circle())
+                    .overlay {
+                        Circle()
+                            .stroke(.white.opacity(0.30), lineWidth: 1)
+                    }
+
+                if room.noteIndicatorCount > 1 {
+                    Text("\(room.noteIndicatorCount)")
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                        .frame(width: 17, height: 17)
+                        .background(OceanKeyTheme.accent, in: Circle())
+                        .overlay {
+                            Circle()
+                                .stroke(.white.opacity(0.55), lineWidth: 0.8)
+                        }
+                        .offset(x: -2, y: -8)
+                }
+            }
+            .foregroundStyle(.white.opacity(0.96))
+            .shadow(color: .black.opacity(0.30), radius: 3, x: 0, y: 1)
+        }
     }
 }
 
@@ -511,22 +454,21 @@ private extension RoomCell {
         return formatter.string(from: scheduledTime)
     }
 
-    var noteIndicatorIcons: [String] {
-        var icons: [String] = []
-        if textNote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false {
-            icons.append("text.bubble.fill")
-        }
+    var primaryNoteIndicatorIcon: String? {
         if voiceTranscript?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
             || mediaAttachments?.contains(where: { $0.kind == .audio }) == true {
-            icons.append("mic.fill")
-        }
-        if mediaAttachments?.contains(where: { $0.kind == .photo }) == true {
-            icons.append("photo.fill")
+            return "waveform.circle.fill"
         }
         if mediaAttachments?.contains(where: { $0.kind == .video }) == true {
-            icons.append("video.fill")
+            return "play.rectangle.fill"
         }
-        return Array(icons.prefix(3))
+        if mediaAttachments?.contains(where: { $0.kind == .photo }) == true {
+            return "photo.circle.fill"
+        }
+        if textNote?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false {
+            return "text.bubble.fill"
+        }
+        return nil
     }
 
     var noteIndicatorCount: Int {
