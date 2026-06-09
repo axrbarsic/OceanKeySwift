@@ -5,8 +5,8 @@ struct CellTVStaticOverlay: View {
     let roomID: String
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 36.0)) { timeline in
-            let frame = UInt64(timeline.date.timeIntervalSinceReferenceDate * 36)
+        TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
+            let frame = UInt64(timeline.date.timeIntervalSinceReferenceDate * 60)
             let seed = CellTVStaticNoise.seed(roomID: roomID, frame: frame)
             Canvas(opaque: false, rendersAsynchronously: true) { context, size in
                 CellTVStaticNoise.draw(
@@ -16,12 +16,10 @@ struct CellTVStaticOverlay: View {
                     seed: seed
                 )
             }
-            .blendMode(.plusLighter)
-            .opacity(0.52)
+            .opacity(0.96)
             .overlay {
                 scanlines
-                    .blendMode(.multiply)
-                    .opacity(0.26)
+                    .opacity(0.55)
             }
         }
     }
@@ -29,10 +27,11 @@ struct CellTVStaticOverlay: View {
     private var scanlines: some View {
         LinearGradient(
             stops: [
-                .init(color: .black.opacity(0.36), location: 0.00),
-                .init(color: .clear, location: 0.30),
-                .init(color: .clear, location: 0.70),
-                .init(color: .black.opacity(0.28), location: 1.00)
+                .init(color: .black.opacity(0.52), location: 0.00),
+                .init(color: .clear, location: 0.22),
+                .init(color: .white.opacity(0.18), location: 0.50),
+                .init(color: .clear, location: 0.78),
+                .init(color: .black.opacity(0.46), location: 1.00)
             ],
             startPoint: .top,
             endPoint: .bottom
@@ -54,43 +53,55 @@ private enum CellTVStaticNoise {
         guard size.width > 0, size.height > 0 else { return }
 
         var generator = SeededNoise(seed: seed)
-        let pixel = max(2.0, min(4.0, size.height / 22.0))
+        let pixel = max(2.0, min(3.0, size.height / 30.0))
         let columns = max(1, Int(size.width / pixel))
         let rows = max(1, Int(size.height / pixel))
 
         for row in 0..<rows {
             let rowY = CGFloat(row) * pixel
-            let rowFlicker = 0.32 + generator.nextUnit() * 0.64
-            for column in stride(from: 0, to: columns, by: 2) {
-                let spark = generator.nextUnit()
-                guard spark > 0.28 else { continue }
-
-                let widthMultiplier = spark > 0.93 ? 2.6 : 1.15
-                let alpha = (0.12 + spark * 0.38) * rowFlicker
+            let rowFlicker = 0.70 + generator.nextUnit() * 0.55
+            for column in 0..<columns {
+                let noise = generator.nextUnit()
+                let color = color(for: noise, statusColor: statusColor, rowFlicker: rowFlicker)
                 let rect = CGRect(
                     x: CGFloat(column) * pixel,
                     y: rowY,
-                    width: pixel * widthMultiplier,
-                    height: pixel * (spark > 0.88 ? 1.45 : 0.92)
+                    width: pixel * (noise > 0.965 ? 2.2 : 1.03),
+                    height: pixel * (noise < 0.05 || noise > 0.95 ? 1.35 : 1.03)
                 )
-                context.fill(Path(rect), with: .color(statusColor.opacity(alpha)))
+                context.fill(Path(rect), with: .color(color))
             }
         }
 
-        for _ in 0..<8 {
+        for _ in 0..<12 {
             let y = generator.nextUnit() * size.height
-            let height = 1.0 + generator.nextUnit() * 2.5
-            let alpha = 0.08 + generator.nextUnit() * 0.16
+            let height = 1.0 + generator.nextUnit() * 3.0
+            let alpha = 0.16 + generator.nextUnit() * 0.28
             let rect = CGRect(x: 0, y: y, width: size.width, height: height)
-            context.fill(Path(rect), with: .color(Color.white.opacity(alpha)))
+            let lineColor = generator.nextUnit() > 0.45 ? Color.black.opacity(alpha) : Color.white.opacity(alpha)
+            context.fill(Path(rect), with: .color(lineColor))
         }
 
-        if generator.nextUnit() > 0.62 {
+        for _ in 0..<3 where generator.nextUnit() > 0.35 {
             let x = generator.nextUnit() * size.width
-            let width = 10 + generator.nextUnit() * 42
+            let width = 8 + generator.nextUnit() * 34
+            let alpha = 0.16 + generator.nextUnit() * 0.20
             let rect = CGRect(x: x, y: 0, width: width, height: size.height)
-            context.fill(Path(rect), with: .color(statusColor.opacity(0.12)))
+            context.fill(Path(rect), with: .color(statusColor.opacity(alpha)))
         }
+    }
+
+    private static func color(for noise: CGFloat, statusColor: Color, rowFlicker: CGFloat) -> Color {
+        if noise < 0.18 {
+            return .black.opacity((0.28 + (0.18 - noise) * 2.1) * rowFlicker)
+        }
+        if noise > 0.82 {
+            return .white.opacity((0.16 + (noise - 0.82) * 2.4) * rowFlicker)
+        }
+        if noise > 0.58 {
+            return statusColor.opacity((0.18 + (noise - 0.58) * 0.9) * rowFlicker)
+        }
+        return .black.opacity(0.05 + noise * 0.12)
     }
 }
 

@@ -10,6 +10,14 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (77)",
+            date: "2026-06-08",
+            changes: [
+                "Made the broken-TV cell overlay much more visible with high-contrast black, white, and status-tinted static.",
+                "Raised the cell TV static cadence to 60 Hz and added stronger scanline/glitch bands so the effect reads like the full-screen TV background."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (76)",
             date: "2026-06-08",
             changes: [
