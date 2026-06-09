@@ -10,6 +10,14 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (76)",
+            date: "2026-06-08",
+            changes: [
+                "Made the cell broken-TV experiment easier to find by showing it in Background settings as well as Developer experiments.",
+                "Renamed the toggle to 'Сломанный ТВ в ячейках' so it clearly describes the visible cell effect."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (75)",
             date: "2026-06-08",
             changes: [

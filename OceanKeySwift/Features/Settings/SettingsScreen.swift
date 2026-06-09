@@ -120,18 +120,7 @@ struct SettingsScreen: View {
                 )
             }
 
-            Toggle(isOn: $appSettings.developerCellTVStaticEnabled) {
-                SettingsInfoRow(
-                    title: "TV-шум в ячейках",
-                    value: appSettings.developerCellTVStaticEnabled ? "Вкл" : "Выкл",
-                    systemName: "tv.fill",
-                    subtitle: "Цветной шум сломанного телевизора внутри каждой ячейки по её статусу."
-                )
-            }
-            .tint(OceanKeyTheme.accent)
-            .onChange(of: appSettings.developerCellTVStaticEnabled) { _, _ in
-                feedback.confirm()
-            }
+            cellTVStaticToggle
 
             SettingsSliderRow(
                 title: "VIP-зебра",
@@ -247,6 +236,7 @@ struct SettingsScreen: View {
                 systemName: "grid",
                 subtitle: backgroundModeSubtitle
             )
+            cellTVStaticToggle
             if appSettings.appBackgroundMode == .matrixRain {
                 SettingsSliderRow(
                     title: "Скорость",
@@ -273,6 +263,21 @@ struct SettingsScreen: View {
             "ShaderKit Dynamic Gray Noise: аналоговый телевизионный снег как основной фон."
         case .video:
             "Видео хранится только локально на устройстве."
+        }
+    }
+
+    private var cellTVStaticToggle: some View {
+        Toggle(isOn: $appSettings.developerCellTVStaticEnabled) {
+            SettingsInfoRow(
+                title: "Сломанный ТВ в ячейках",
+                value: appSettings.developerCellTVStaticEnabled ? "Вкл" : "Выкл",
+                systemName: "tv.fill",
+                subtitle: "Включает цветной TV-шум внутри ячеек, окрашенный по статусу номера."
+            )
+        }
+        .tint(OceanKeyTheme.accent)
+        .onChange(of: appSettings.developerCellTVStaticEnabled) { _, _ in
+            feedback.confirm()
         }
     }
 
