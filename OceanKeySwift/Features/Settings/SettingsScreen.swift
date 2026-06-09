@@ -146,6 +146,54 @@ struct SettingsScreen: View {
                 defaultValue: 0.62,
                 value: $appSettings.developerVIPZebraSharpness
             )
+
+            Toggle(isOn: $appSettings.developerVIPFlickerEnabled) {
+                SettingsInfoRow(
+                    title: "VIP-мерцание",
+                    value: appSettings.developerVIPFlickerEnabled ? "Вкл" : "Выкл",
+                    systemName: "bolt.fill",
+                    subtitle: "Быстрое статусное мерцание без чёрного шума и грубых блоков."
+                )
+            }
+            .tint(OceanKeyTheme.accent)
+            .onChange(of: appSettings.developerVIPFlickerEnabled) { _, _ in
+                feedback.confirm()
+            }
+
+            if appSettings.developerVIPFlickerEnabled {
+                SettingsSliderRow(
+                    title: "Скорость мерцания",
+                    valueLabel: "\(String(format: "%.2f", appSettings.developerVIPFlickerSpeed))x",
+                    systemName: "speedometer",
+                    range: 0.4...4.0,
+                    defaultValue: 1.6,
+                    value: $appSettings.developerVIPFlickerSpeed
+                )
+            }
+
+            Toggle(isOn: $appSettings.developerVIPBreathingEnabled) {
+                SettingsInfoRow(
+                    title: "VIP-дыхание",
+                    value: appSettings.developerVIPBreathingEnabled ? "Вкл" : "Выкл",
+                    systemName: "lungs.fill",
+                    subtitle: "Плавное расширение и сжатие VIP-ячейки как живой статусный отклик."
+                )
+            }
+            .tint(OceanKeyTheme.accent)
+            .onChange(of: appSettings.developerVIPBreathingEnabled) { _, _ in
+                feedback.confirm()
+            }
+
+            if appSettings.developerVIPBreathingEnabled {
+                SettingsSliderRow(
+                    title: "Скорость дыхания",
+                    valueLabel: "\(String(format: "%.2f", appSettings.developerVIPBreathingSpeed))x",
+                    systemName: "wind",
+                    range: 0.2...2.5,
+                    defaultValue: 0.75,
+                    value: $appSettings.developerVIPBreathingSpeed
+                )
+            }
         }
     }
 
@@ -246,6 +294,9 @@ struct SettingsScreen: View {
                     value: $appSettings.matrixSpeed
                 )
             }
+            if appSettings.appBackgroundMode == .tvStaticNoise {
+                tvStaticBackgroundControls
+            }
             if appSettings.appBackgroundMode == .video {
                 videoBackgroundControls
             }
@@ -328,6 +379,43 @@ struct SettingsScreen: View {
                 range: 0...1,
                 defaultValue: 0,
                 value: $appSettings.backgroundVideoGridIntensity
+            )
+        }
+    }
+
+    private var tvStaticBackgroundControls: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SettingsSliderRow(
+                title: "Скорость шума",
+                valueLabel: "\(String(format: "%.2f", appSettings.tvStaticSpeed))x",
+                systemName: "speedometer",
+                range: 0.2...3.0,
+                defaultValue: TVStaticNoiseConfiguration.default.speed,
+                value: $appSettings.tvStaticSpeed
+            )
+            SettingsSliderRow(
+                title: "Размер зерна",
+                valueLabel: "\(String(format: "%.2f", appSettings.tvStaticParticleSize))x",
+                systemName: "circle.grid.3x3.fill",
+                range: 0.5...2.5,
+                defaultValue: TVStaticNoiseConfiguration.default.particleSize,
+                value: $appSettings.tvStaticParticleSize
+            )
+            SettingsSliderRow(
+                title: "Яркость",
+                valueLabel: "\(Int((appSettings.tvStaticBrightness * 100).rounded()))%",
+                systemName: "sun.max.fill",
+                range: -0.65...0.65,
+                defaultValue: TVStaticNoiseConfiguration.default.brightness,
+                value: $appSettings.tvStaticBrightness
+            )
+            SettingsSliderRow(
+                title: "Зелёный",
+                valueLabel: "\(Int((appSettings.tvStaticGreenTint * 100).rounded()))%",
+                systemName: "leaf.fill",
+                range: 0...1,
+                defaultValue: TVStaticNoiseConfiguration.default.greenTint,
+                value: $appSettings.tvStaticGreenTint
             )
         }
     }

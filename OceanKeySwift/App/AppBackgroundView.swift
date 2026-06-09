@@ -7,6 +7,7 @@ struct AppBackgroundView: View {
     @Environment(\.appBackgroundVideoBrightness) private var appBackgroundVideoBrightness
     @Environment(\.appBackgroundVideoGreenTint) private var appBackgroundVideoGreenTint
     @Environment(\.appBackgroundVideoGridIntensity) private var appBackgroundVideoGridIntensity
+    @Environment(\.tvStaticNoiseConfiguration) private var tvStaticNoiseConfiguration
 
     var body: some View {
         ZStack {
@@ -14,7 +15,7 @@ struct AppBackgroundView: View {
             if appBackgroundMode == .matrixRain {
                 SpriteKitEffectView(.matrixRain)
             } else if appBackgroundMode == .tvStaticNoise {
-                TVStaticNoiseBackgroundView()
+                TVStaticNoiseBackgroundView(configuration: tvStaticNoiseConfiguration)
             } else if appBackgroundMode == .video, let appBackgroundVideoURL {
                 LoopingVideoBackgroundView(
                     url: appBackgroundVideoURL,

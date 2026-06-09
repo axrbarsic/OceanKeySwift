@@ -10,6 +10,10 @@ struct RoomCellView: View {
     @Environment(\.experimentalVIPZebraIntensity) private var experimentalVIPZebraIntensity
     @Environment(\.experimentalVIPZebraSpeed) private var experimentalVIPZebraSpeed
     @Environment(\.experimentalVIPZebraSharpness) private var experimentalVIPZebraSharpness
+    @Environment(\.experimentalVIPFlickerEnabled) private var experimentalVIPFlickerEnabled
+    @Environment(\.experimentalVIPFlickerSpeed) private var experimentalVIPFlickerSpeed
+    @Environment(\.experimentalVIPBreathingEnabled) private var experimentalVIPBreathingEnabled
+    @Environment(\.experimentalVIPBreathingSpeed) private var experimentalVIPBreathingSpeed
 
     @Binding var room: RoomCell
     let geometry: RoomCellGeometry
@@ -93,6 +97,10 @@ struct RoomCellView: View {
             axis: (x: 0.0, y: 1.0, z: 0.0),
             perspective: 0.72
         )
+        .vipBreathingEffect(
+            enabled: room.isVIP && experimentalVIPBreathingEnabled,
+            speed: experimentalVIPBreathingSpeed
+        )
         .background {
             GeometryReader { proxy in
                 Color.clear
@@ -126,6 +134,11 @@ struct RoomCellView: View {
             intensity: experimentalVIPZebraIntensity,
             speed: experimentalVIPZebraSpeed,
             sharpness: experimentalVIPZebraSharpness
+        )
+        .vipFlickerEffect(
+            enabled: room.isVIP && experimentalVIPFlickerEnabled,
+            shape: tileShape,
+            speed: experimentalVIPFlickerSpeed
         )
         .overlay(alignment: .bottomTrailing) {
             if let scheduleLabel = room.scheduleLabel {
@@ -337,6 +350,90 @@ private extension View {
         } else {
             self
         }
+    }
+
+    @ViewBuilder
+    func vipFlickerEffect(
+        enabled: Bool,
+        shape: UnevenRoundedRectangle,
+        speed: Double
+    ) -> some View {
+        if enabled {
+            self.overlay {
+                VIPFlickerOverlay(shape: shape, speed: speed)
+                    .allowsHitTesting(false)
+            }
+        } else {
+            self
+        }
+    }
+
+    @ViewBuilder
+    func vipBreathingEffect(enabled: Bool, speed: Double) -> some View {
+        if enabled {
+            self.modifier(VIPBreathingModifier(speed: speed))
+        } else {
+            self
+        }
+    }
+}
+
+private struct VIPBreathingModifier: ViewModifier {
+    let speed: Double
+
+    func body(content: Content) -> some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
+            let phase = timeline.date.timeIntervalSinceReferenceDate * min(max(speed, 0.2), 2.5)
+            let wave = (sin(phase * .pi * 2) + 1) * 0.5
+            let eased = 0.5 - cos(wave * .pi) * 0.5
+            content
+                .scaleEffect(
+                    x: 1 + 0.024 * eased,
+                    y: 1 - 0.018 * eased,
+                    anchor: .center
+                )
+                .shadow(color: OceanKeyTheme.accent.opacity(0.10 * eased), radius: 8 * eased, x: 0, y: 0)
+        }
+    }
+}
+
+private struct VIPFlickerOverlay: View {
+    let shape: UnevenRoundedRectangle
+    let speed: Double
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
+            let time = timeline.date.timeIntervalSinceReferenceDate
+            let normalizedSpeed = min(max(speed, 0.4), 4.0)
+            let shimmer = flickerValue(time: time, speed: normalizedSpeed)
+            shape
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            .white.opacity(0.03 + shimmer * 0.10),
+                            OceanKeyTheme.accent.opacity(0.03 + shimmer * 0.08),
+                            .white.opacity(0.01 + shimmer * 0.16)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .blendMode(.screen)
+                .clipShape(shape)
+                .overlay {
+                    shape
+                        .stroke(.white.opacity(0.04 + shimmer * 0.16), lineWidth: 1)
+                        .blendMode(.screen)
+                }
+        }
+    }
+
+    private func flickerValue(time: TimeInterval, speed: Double) -> Double {
+        let fast = sin(time * 32.0 * speed)
+        let faster = sin(time * 71.0 * speed + 1.7)
+        let pulse = sin(time * 11.0 * speed + 0.4)
+        let combined = fast * 0.42 + faster * 0.34 + pulse * 0.24
+        return min(max((combined + 1) * 0.5, 0), 1)
     }
 }
 

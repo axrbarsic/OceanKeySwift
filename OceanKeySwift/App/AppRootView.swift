@@ -29,6 +29,7 @@ struct AppRootView: View {
         .environment(\.appBackgroundVideoGreenTint, appSettings.backgroundVideoGreenTint)
         .environment(\.appBackgroundVideoGridIntensity, appSettings.backgroundVideoGridIntensity)
         .environment(\.matrixRainConfiguration, appSettings.matrixConfiguration)
+        .environment(\.tvStaticNoiseConfiguration, appSettings.tvStaticNoiseConfiguration)
         .environment(\.experimentalCellPhysicsEnabled, appSettings.developerCellPhysicsEnabled)
         .environment(\.experimentalCellSpringIntensity, appSettings.developerCellSpringIntensity)
         .environment(\.experimentalCellSpringSpeed, appSettings.developerCellSpringSpeed)
@@ -36,6 +37,10 @@ struct AppRootView: View {
         .environment(\.experimentalVIPZebraIntensity, appSettings.developerVIPZebraIntensity)
         .environment(\.experimentalVIPZebraSpeed, appSettings.developerVIPZebraSpeed)
         .environment(\.experimentalVIPZebraSharpness, appSettings.developerVIPZebraSharpness)
+        .environment(\.experimentalVIPFlickerEnabled, appSettings.developerVIPFlickerEnabled)
+        .environment(\.experimentalVIPFlickerSpeed, appSettings.developerVIPFlickerSpeed)
+        .environment(\.experimentalVIPBreathingEnabled, appSettings.developerVIPBreathingEnabled)
+        .environment(\.experimentalVIPBreathingSpeed, appSettings.developerVIPBreathingSpeed)
         .environment(
             \.interactionFeedback,
             .live(interactionFeedbackService)

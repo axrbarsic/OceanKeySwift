@@ -10,6 +10,14 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (82)",
+            date: "2026-06-09",
+            changes: [
+                "Added live controls for the Broken TV background: noise speed, grain size, brightness, and green tint.",
+                "Added experimental VIP flicker and VIP breathing controls so VIP cells can pulse without using the coarse TV-static cell effect."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (81)",
             date: "2026-06-09",
             changes: [
