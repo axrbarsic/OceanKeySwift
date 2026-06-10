@@ -146,6 +146,28 @@ func appSettingsPersistsSummaryActionMenuMode() {
 }
 
 @Test
+func appSettingsPersistsPersonalCartMarkers() {
+    let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let settings = AppSettingsStore(userDefaults: defaults)
+    settings.personalCartMarkers = PersonalCartMarkers(
+        aYellowFloor: 3,
+        aGrayFloor: 4,
+        bYellowFloor: 5,
+        bGrayFloor: 2
+    )
+
+    let loaded = AppSettingsStore.load(userDefaults: defaults)
+
+    #expect(loaded.personalCartMarkers.aYellowFloor == 3)
+    #expect(loaded.personalCartMarkers.aGrayFloor == 4)
+    #expect(loaded.personalCartMarkers.bYellowFloor == 5)
+    #expect(loaded.personalCartMarkers.bGrayFloor == 2)
+}
+
+@Test
 func appSettingsPersistsStatusPaletteSaturation() {
     let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
     let defaults = UserDefaults(suiteName: suiteName)!
@@ -199,6 +221,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     settings.roomCellGeometry = .compact
     settings.roomTaskLongPress = false
     settings.summaryActionMenuAllowsMultiple = true
+    settings.personalCartMarkers = PersonalCartMarkers(aYellowFloor: 3, aGrayFloor: 4, bYellowFloor: 5, bGrayFloor: 2)
     settings.statusPaletteSaturation = 1.52
     settings.matrixSpeed = 2.2
     settings.backgroundVideoRelativePath = "Background/video-wallpaper.mov"
@@ -224,6 +247,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     #expect(loaded.roomCellGeometry == .roomy)
     #expect(loaded.roomTaskLongPress)
     #expect(!loaded.summaryActionMenuAllowsMultiple)
+    #expect(loaded.personalCartMarkers == .default)
     #expect(loaded.statusPaletteSaturation == 1)
     #expect(loaded.matrixSpeed == MatrixRainConfiguration.default.speed)
     #expect(loaded.backgroundVideoRelativePath == nil)

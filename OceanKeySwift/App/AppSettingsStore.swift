@@ -43,6 +43,7 @@ final class AppSettingsStore {
         static let roomCellGeometry = "roomCellGeometry"
         static let roomTaskLongPress = "roomTaskLongPress"
         static let summaryActionMenuAllowsMultiple = "summaryActionMenuAllowsMultiple"
+        static let personalCartMarkers = "personalCartMarkers"
         static let statusPaletteSaturation = "statusPaletteSaturation"
         static let matrixSpeed = "matrixSpeed"
         static let backgroundVideoRelativePath = "backgroundVideoRelativePath"
@@ -103,6 +104,12 @@ final class AppSettingsStore {
     var summaryActionMenuAllowsMultiple: Bool {
         didSet {
             userDefaults.set(summaryActionMenuAllowsMultiple, forKey: Keys.summaryActionMenuAllowsMultiple)
+        }
+    }
+
+    var personalCartMarkers: PersonalCartMarkers {
+        didSet {
+            Self.savePersonalCartMarkers(personalCartMarkers, userDefaults: userDefaults)
         }
     }
 
@@ -279,6 +286,7 @@ final class AppSettingsStore {
         roomCellGeometry = .roomy
         roomTaskLongPress = true
         summaryActionMenuAllowsMultiple = false
+        personalCartMarkers = .default
         statusPaletteSaturation = 1
         matrixSpeed = MatrixRainConfiguration.default.speed
         backgroundVideoRelativePath = nil
@@ -305,6 +313,7 @@ final class AppSettingsStore {
         roomCellGeometry: RoomCellGeometry = .roomy,
         roomTaskLongPress: Bool = true,
         summaryActionMenuAllowsMultiple: Bool = false,
+        personalCartMarkers: PersonalCartMarkers = .default,
         statusPaletteSaturation: Double = 1,
         matrixSpeed: Double = MatrixRainConfiguration.default.speed,
         backgroundVideoRelativePath: String? = nil,
@@ -330,6 +339,7 @@ final class AppSettingsStore {
         self.roomCellGeometry = roomCellGeometry
         self.roomTaskLongPress = roomTaskLongPress
         self.summaryActionMenuAllowsMultiple = summaryActionMenuAllowsMultiple
+        self.personalCartMarkers = personalCartMarkers.normalized()
         self.backgroundVideoRelativePath = backgroundVideoRelativePath
         self.tvStaticVariant = tvStaticVariant
         self.storedStatusPaletteSaturation = Self.normalizedStatusPaletteSaturation(statusPaletteSaturation)
@@ -359,6 +369,7 @@ final class AppSettingsStore {
         let geometry = rawValue.flatMap(RoomCellGeometry.init(rawValue:)) ?? .roomy
         let roomTaskLongPress = userDefaults.object(forKey: Keys.roomTaskLongPress) as? Bool ?? true
         let summaryActionMenuAllowsMultiple = userDefaults.object(forKey: Keys.summaryActionMenuAllowsMultiple) as? Bool ?? false
+        let personalCartMarkers = Self.loadPersonalCartMarkers(userDefaults: userDefaults)
         let statusPaletteSaturation = userDefaults.object(forKey: Keys.statusPaletteSaturation) as? Double ?? 1
         let matrixSpeed = userDefaults.object(forKey: Keys.matrixSpeed) as? Double
             ?? MatrixRainConfiguration.default.speed
@@ -390,6 +401,7 @@ final class AppSettingsStore {
             roomCellGeometry: geometry,
             roomTaskLongPress: roomTaskLongPress,
             summaryActionMenuAllowsMultiple: summaryActionMenuAllowsMultiple,
+            personalCartMarkers: personalCartMarkers,
             statusPaletteSaturation: statusPaletteSaturation,
             matrixSpeed: matrixSpeed,
             backgroundVideoRelativePath: backgroundVideoRelativePath,
@@ -424,6 +436,20 @@ final class AppSettingsStore {
         userDefaults.set(true, forKey: Keys.developerVIPJellyEnabled)
         userDefaults.set(true, forKey: Keys.developerVIPJellyDefaultEnabledMigration)
         return true
+    }
+
+    private static func loadPersonalCartMarkers(userDefaults: UserDefaults) -> PersonalCartMarkers {
+        guard let data = userDefaults.data(forKey: Keys.personalCartMarkers),
+              let decoded = try? JSONDecoder().decode(PersonalCartMarkers.self, from: data)
+        else {
+            return .default
+        }
+        return decoded.normalized()
+    }
+
+    private static func savePersonalCartMarkers(_ markers: PersonalCartMarkers, userDefaults: UserDefaults) {
+        guard let data = try? JSONEncoder().encode(markers.normalized()) else { return }
+        userDefaults.set(data, forKey: Keys.personalCartMarkers)
     }
 
     static func normalizedMatrixSpeed(_ value: Double) -> Double {

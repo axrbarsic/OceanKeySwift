@@ -25,6 +25,7 @@ struct SummaryScreen: View {
             VStack(spacing: 18) {
                 SummaryHeader(
                     counts: workSession.counts,
+                    personalCartMarkers: $appSettings.personalCartMarkers,
                     onOpenSettings: openSettings,
                     onOpenSelection: openSelection
                 )

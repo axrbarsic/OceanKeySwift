@@ -65,11 +65,13 @@
 		856BDD1AEC33680D598CA693 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D64ADD5F7CDDCA26155C8 /* AppRootView.swift */; };
 		8623867BDD224CD95F47BBF2 /* SettingsControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F4E1B0F391C1E8C9C2F6C /* SettingsControls.swift */; };
 		87852D01D8D77739E19E6738 /* AppSettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71CFB1546F72B1749BEB27E7 /* AppSettingsStoreTests.swift */; };
+		890E1BC90E023BE94B4946C9 /* PersonalCartMarkerStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8A5F3E8A1246EC011FB56F /* PersonalCartMarkerStrip.swift */; };
 		8CECF869B23D86602BF9C7D9 /* VIPJellyContentWarp.metal in Sources */ = {isa = PBXBuildFile; fileRef = 4D3F2DE20CF0C54E078DB861 /* VIPJellyContentWarp.metal */; };
 		8D2078D793C208875DCC662A /* TVStaticNoiseBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43FCE41FAC12F7171994989 /* TVStaticNoiseBackgroundView.swift */; };
 		8F5523652C530ACE93B68B17 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EFBAE95AF4F46E1B0BAE485 /* PhotosUI.framework */; };
 		90E670E6CFD78A670C422204 /* MatrixRainConfigurationEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA7911C61D036B30E2BEF6 /* MatrixRainConfigurationEnvironment.swift */; };
 		93D0CE8735DD6EAA67CEB78D /* BuildChangelog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608321B44757C987209F2A54 /* BuildChangelog.swift */; };
+		9707C15DF96CCB849CAAB2D6 /* PersonalCartMarkers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 366D4AAFEFE9FDBCE75E5577 /* PersonalCartMarkers.swift */; };
 		9723FE9E9B7A04E31BE1260B /* RoomScheduleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B55CBE9F99AD8814E390BE3C /* RoomScheduleSheet.swift */; };
 		9A12B43A26BB9BB84920CC5C /* PersistentWorkSessionMapper+Consumables.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDA1FF459FA36ED5D33AEC3 /* PersistentWorkSessionMapper+Consumables.swift */; };
 		A199E38C0D372F4506DC5865 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA1A7943D626E20E20C9F481 /* SpriteKit.framework */; };
@@ -142,6 +144,7 @@
 		34C06E17287428AB435FFE0E /* WorkSetupScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSetupScreen.swift; sourceTree = "<group>"; };
 		35D69AE220AA11A895CB8FD5 /* CartDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartDetailsScreen.swift; sourceTree = "<group>"; };
 		35DB0EFE6ABD3A6B013CDC36 /* SwiftDataWorkSessionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataWorkSessionRepository.swift; sourceTree = "<group>"; };
+		366D4AAFEFE9FDBCE75E5577 /* PersonalCartMarkers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCartMarkers.swift; sourceTree = "<group>"; };
 		3A66CA79C454C0F64B64E853 /* OceanKeySwift.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OceanKeySwift.entitlements; sourceTree = "<group>"; };
 		3CC537DE278380CBBA0A1D85 /* AppBackgroundVideoEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBackgroundVideoEnvironment.swift; sourceTree = "<group>"; };
 		3CC54D512493ADEF1EB26177 /* GameplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameplayKit.framework; path = System/Library/Frameworks/GameplayKit.framework; sourceTree = SDKROOT; };
@@ -209,6 +212,7 @@
 		D14392CAF529EF78B4841747 /* AppleSyncEntitlementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSyncEntitlementTests.swift; sourceTree = "<group>"; };
 		D221253E9DCEF3666178BF1F /* RuntimeDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeDiagnostics.swift; sourceTree = "<group>"; };
 		DB4A5B1A271E2E7404DA2C20 /* CameraCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureView.swift; sourceTree = "<group>"; };
+		DD8A5F3E8A1246EC011FB56F /* PersonalCartMarkerStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCartMarkerStrip.swift; sourceTree = "<group>"; };
 		DEC5A6449A20B95C1537B2C9 /* SwiftDataWorkSessionRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataWorkSessionRepositoryTests.swift; sourceTree = "<group>"; };
 		E7AAB559BEB598BFAB429AB4 /* SummarySelectionPuzzleHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummarySelectionPuzzleHandle.swift; sourceTree = "<group>"; };
 		EA1A7943D626E20E20C9F481 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
@@ -505,6 +509,7 @@
 			isa = PBXGroup;
 			children = (
 				6CD15DBDCE80476FF0F4FEC9 /* CartSummarySection.swift */,
+				DD8A5F3E8A1246EC011FB56F /* PersonalCartMarkerStrip.swift */,
 				581AA4C2C21D792F644F4B08 /* RoomActionMenuLampTransition.swift */,
 				868A0FE8D28575CF2B3F8304 /* RoomCellView.swift */,
 				CA51E54DB659431A15729529 /* RoomScheduleRoute.swift */,
@@ -542,6 +547,7 @@
 				B6604386501D00F125345B04 /* ExperimentalAppearanceEnvironment.swift */,
 				067B3DBCAB2B48683F38F685 /* LoopingVideoBackgroundView.swift */,
 				868CBF052F1B053DB4F2FBA0 /* OceanKeySwiftApp.swift */,
+				366D4AAFEFE9FDBCE75E5577 /* PersonalCartMarkers.swift */,
 				C43FCE41FAC12F7171994989 /* TVStaticNoiseBackgroundView.swift */,
 			);
 			path = App;
@@ -733,6 +739,8 @@
 				7621009AF01399FC9909112E /* PersistentWorkSessionMapper+History.swift in Sources */,
 				737F1A575F371EAC9B6103EF /* PersistentWorkSessionMapper.swift in Sources */,
 				469914E1D57ABFC62A127B96 /* PersistentWorkSessionModels.swift in Sources */,
+				890E1BC90E023BE94B4946C9 /* PersonalCartMarkerStrip.swift in Sources */,
+				9707C15DF96CCB849CAAB2D6 /* PersonalCartMarkers.swift in Sources */,
 				BFB26C1A0A7C67F26219BFA4 /* RoomActionMenuLampTransition.swift in Sources */,
 				8547E85F7C729B1350CF7C3B /* RoomCatalog.swift in Sources */,
 				CDCECFDE80C1B36038EDE677 /* RoomCellGeometry.swift in Sources */,
@@ -864,7 +872,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = J6MW4855LU;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -923,7 +931,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = J6MW4855LU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

@@ -2,9 +2,12 @@ import SwiftUI
 
 struct SummaryHeader: View {
     let counts: SummaryCounts
+    @Binding var personalCartMarkers: PersonalCartMarkers
     let onOpenSettings: () -> Void
     let onOpenSelection: () -> Void
+    @Environment(\.interactionFeedback) private var feedback
     @State private var selectionPuzzleProgress: CGFloat = 0
+    @State private var activePersonalCartMarkerSlot: PersonalCartMarkerSlot?
 
     var body: some View {
         GeometryReader { proxy in
@@ -24,6 +27,11 @@ struct SummaryHeader: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
 
+                PersonalCartMarkerStrip(
+                    markers: personalCartMarkers,
+                    onTap: openPersonalCartMarkerPicker
+                )
+
                 Spacer(minLength: 8)
             }
             .padding(.horizontal, 18)
@@ -36,6 +44,29 @@ struct SummaryHeader: View {
             }
         }
         .frame(height: 48)
+        .confirmationDialog(
+            activePersonalCartMarkerSlot?.title ?? "Метка тележки",
+            isPresented: Binding(
+                get: { activePersonalCartMarkerSlot != nil },
+                set: { if !$0 { activePersonalCartMarkerSlot = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            if let slot = activePersonalCartMarkerSlot {
+                ForEach(PersonalCartMarkers.allowedFloors, id: \.self) { floor in
+                    Button("Этаж \(floor)") {
+                        setPersonalCartMarkerFloor(floor, for: slot)
+                    }
+                }
+                Button("Очистить", role: .destructive) {
+                    setPersonalCartMarkerFloor(nil, for: slot)
+                }
+            }
+        } message: {
+            if let slot = activePersonalCartMarkerSlot {
+                Text("Выбери этаж для \(slot.title) метки здания \(slot.building.label).")
+            }
+        }
     }
 
     private func softButton(systemName: String, action: @escaping () -> Void) -> some View {
@@ -54,11 +85,28 @@ struct SummaryHeader: View {
         .buttonStyle(.plain)
     }
 
+    private func openPersonalCartMarkerPicker(_ slot: PersonalCartMarkerSlot) {
+        feedback.tap()
+        activePersonalCartMarkerSlot = slot
+    }
+
+    private func setPersonalCartMarkerFloor(_ floor: Int?, for slot: PersonalCartMarkerSlot) {
+        feedback.confirm()
+        personalCartMarkers = personalCartMarkers.settingFloor(floor, for: slot)
+        activePersonalCartMarkerSlot = nil
+    }
 }
 
 #Preview {
+    @Previewable @State var markers = PersonalCartMarkers(
+        aYellowFloor: 3,
+        aGrayFloor: nil,
+        bYellowFloor: 5,
+        bGrayFloor: 2
+    )
     SummaryHeader(
         counts: SummaryCounts(total: 10, completed: 10, remaining: 0),
+        personalCartMarkers: $markers,
         onOpenSettings: {},
         onOpenSelection: {}
     )
