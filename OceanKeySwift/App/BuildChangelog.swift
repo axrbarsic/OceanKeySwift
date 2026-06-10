@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (89)",
+            date: "2026-06-09",
+            changes: [
+                "Added a Developer toggle for VIP jelly depth so the raised blob look can be compared on and off.",
+                "Strengthened the VIP jelly depth lighting with a clear specular highlight, darker lower edge, and deeper status-colored body shadow.",
+                "Made the room number and S/L/B controls move subtly with VIP jelly so the content follows the blob instead of staying rigid."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (88)",
             date: "2026-06-09",
             changes: [

@@ -63,6 +63,7 @@ final class AppSettingsStore {
         // Keep the old key names so existing installs migrate VIP breathing into the replacement VIP jelly mode.
         static let developerVIPJellyEnabled = "developerVIPBreathingEnabled"
         static let developerVIPJellySpeed = "developerVIPBreathingSpeed"
+        static let developerVIPJellyDepthEnabled = "developerVIPJellyDepthEnabled"
     }
 
     @ObservationIgnored private let userDefaults: UserDefaults
@@ -222,6 +223,12 @@ final class AppSettingsStore {
         }
     }
 
+    var developerVIPJellyDepthEnabled: Bool {
+        didSet {
+            userDefaults.set(developerVIPJellyDepthEnabled, forKey: Keys.developerVIPJellyDepthEnabled)
+        }
+    }
+
     var developerCellSpringIntensity: Double {
         get { storedDeveloperCellSpringIntensity }
         set {
@@ -297,6 +304,7 @@ final class AppSettingsStore {
         developerVIPFlickerSpeed = 1.6
         developerVIPJellyEnabled = false
         developerVIPJellySpeed = 0.75
+        developerVIPJellyDepthEnabled = false
     }
 
     init(
@@ -323,6 +331,7 @@ final class AppSettingsStore {
         developerVIPFlickerSpeed: Double = 1.6,
         developerVIPJellyEnabled: Bool = false,
         developerVIPJellySpeed: Double = 0.75,
+        developerVIPJellyDepthEnabled: Bool = false,
         userDefaults: UserDefaults = .standard
     ) {
         self.appBackgroundMode = appBackgroundMode
@@ -348,6 +357,7 @@ final class AppSettingsStore {
         self.developerCellPhysicsEnabled = developerCellPhysicsEnabled
         self.developerVIPFlickerEnabled = developerVIPFlickerEnabled
         self.developerVIPJellyEnabled = developerVIPJellyEnabled
+        self.developerVIPJellyDepthEnabled = developerVIPJellyDepthEnabled
         self.userDefaults = userDefaults
     }
 
@@ -384,6 +394,7 @@ final class AppSettingsStore {
         let developerVIPFlickerSpeed = userDefaults.object(forKey: Keys.developerVIPFlickerSpeed) as? Double ?? 1.6
         let developerVIPJellyEnabled = userDefaults.object(forKey: Keys.developerVIPJellyEnabled) as? Bool ?? false
         let developerVIPJellySpeed = userDefaults.object(forKey: Keys.developerVIPJellySpeed) as? Double ?? 0.75
+        let developerVIPJellyDepthEnabled = userDefaults.object(forKey: Keys.developerVIPJellyDepthEnabled) as? Bool ?? false
         return AppSettingsStore(
             appBackgroundMode: appBackgroundMode,
             roomCellGeometry: geometry,
@@ -408,6 +419,7 @@ final class AppSettingsStore {
             developerVIPFlickerSpeed: developerVIPFlickerSpeed,
             developerVIPJellyEnabled: developerVIPJellyEnabled,
             developerVIPJellySpeed: developerVIPJellySpeed,
+            developerVIPJellyDepthEnabled: developerVIPJellyDepthEnabled,
             userDefaults: userDefaults
         )
     }

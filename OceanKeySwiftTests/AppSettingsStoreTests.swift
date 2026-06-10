@@ -110,6 +110,7 @@ func appSettingsPersistsDeveloperExperimentalFlags() {
     settings.developerVIPFlickerSpeed = 2.35
     settings.developerVIPJellyEnabled = true
     settings.developerVIPJellySpeed = 1.45
+    settings.developerVIPJellyDepthEnabled = true
 
     let loaded = AppSettingsStore.load(userDefaults: defaults)
 
@@ -120,6 +121,7 @@ func appSettingsPersistsDeveloperExperimentalFlags() {
     #expect(loaded.developerVIPFlickerSpeed == 2.35)
     #expect(loaded.developerVIPJellyEnabled)
     #expect(loaded.developerVIPJellySpeed == 1.45)
+    #expect(loaded.developerVIPJellyDepthEnabled)
 }
 
 @Test
@@ -216,6 +218,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     settings.developerVIPFlickerSpeed = 3.2
     settings.developerVIPJellyEnabled = true
     settings.developerVIPJellySpeed = 2.1
+    settings.developerVIPJellyDepthEnabled = true
 
     settings.resetToDefaults()
     let loaded = AppSettingsStore.load(userDefaults: defaults)
@@ -243,4 +246,5 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     #expect(loaded.developerVIPFlickerSpeed == 1.6)
     #expect(!loaded.developerVIPJellyEnabled)
     #expect(loaded.developerVIPJellySpeed == 0.75)
+    #expect(!loaded.developerVIPJellyDepthEnabled)
 }
