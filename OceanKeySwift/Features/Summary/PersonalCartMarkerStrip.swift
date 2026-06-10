@@ -52,9 +52,9 @@ private struct PersonalCartMarkerButton: View {
 
     private var label: String {
         if let floor {
-            "\(slot.building.label)\(floor)"
+            "\(floor)"
         } else {
-            "\(slot.building.label)-"
+            "-"
         }
     }
 
