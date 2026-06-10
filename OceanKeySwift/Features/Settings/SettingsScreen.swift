@@ -120,33 +120,6 @@ struct SettingsScreen: View {
                 )
             }
 
-            cellTVStaticToggle
-
-            SettingsSliderRow(
-                title: "VIP-зебра",
-                valueLabel: "\(Int((appSettings.developerVIPZebraIntensity * 100).rounded()))%",
-                systemName: "line.3.horizontal.decrease.circle.fill",
-                range: 0...1,
-                defaultValue: 0.86,
-                value: $appSettings.developerVIPZebraIntensity
-            )
-            SettingsSliderRow(
-                title: "Скорость VIP",
-                valueLabel: "\(String(format: "%.2f", appSettings.developerVIPZebraSpeed))x",
-                systemName: "speedometer",
-                range: 0.2...1.8,
-                defaultValue: 0.78,
-                value: $appSettings.developerVIPZebraSpeed
-            )
-            SettingsSliderRow(
-                title: "Резкость VIP",
-                valueLabel: "\(Int((appSettings.developerVIPZebraSharpness * 100).rounded()))%",
-                systemName: "slider.horizontal.2.square.on.square",
-                range: 0...1,
-                defaultValue: 0.62,
-                value: $appSettings.developerVIPZebraSharpness
-            )
-
             Toggle(isOn: $appSettings.developerVIPFlickerEnabled) {
                 SettingsInfoRow(
                     title: "VIP-мерцание",
@@ -316,21 +289,6 @@ struct SettingsScreen: View {
         }
     }
 
-    private var cellTVStaticToggle: some View {
-        Toggle(isOn: $appSettings.developerCellTVStaticEnabled) {
-            SettingsInfoRow(
-                title: "TV-шум для VIP",
-                value: appSettings.developerCellTVStaticEnabled ? "Вкл" : "Выкл",
-                systemName: "tv.fill",
-                subtitle: "Заменяет VIP-зебру на цветной TV-шум только внутри VIP-ячеек."
-            )
-        }
-        .tint(OceanKeyTheme.accent)
-        .onChange(of: appSettings.developerCellTVStaticEnabled) { _, _ in
-            feedback.confirm()
-        }
-    }
-
     private var videoBackgroundControls: some View {
         let videoStatus = appSettings.backgroundVideoRelativePath == nil ? "Выбрать" : "Выбрано"
 
@@ -386,26 +344,10 @@ struct SettingsScreen: View {
     private var tvStaticBackgroundControls: some View {
         VStack(alignment: .leading, spacing: 12) {
             SettingsSliderRow(
-                title: "Скорость шума",
-                valueLabel: "\(String(format: "%.2f", appSettings.tvStaticSpeed))x",
-                systemName: "speedometer",
-                range: 0.2...3.0,
-                defaultValue: TVStaticNoiseConfiguration.default.speed,
-                value: $appSettings.tvStaticSpeed
-            )
-            SettingsSliderRow(
-                title: "Размер зерна",
-                valueLabel: "\(String(format: "%.2f", appSettings.tvStaticParticleSize))x",
-                systemName: "circle.grid.3x3.fill",
-                range: 0.5...2.5,
-                defaultValue: TVStaticNoiseConfiguration.default.particleSize,
-                value: $appSettings.tvStaticParticleSize
-            )
-            SettingsSliderRow(
                 title: "Яркость",
                 valueLabel: "\(Int((appSettings.tvStaticBrightness * 100).rounded()))%",
                 systemName: "sun.max.fill",
-                range: -0.65...0.65,
+                range: -1...1,
                 defaultValue: TVStaticNoiseConfiguration.default.brightness,
                 value: $appSettings.tvStaticBrightness
             )

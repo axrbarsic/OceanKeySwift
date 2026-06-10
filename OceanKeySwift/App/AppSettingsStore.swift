@@ -57,10 +57,6 @@ final class AppSettingsStore {
         static let developerCellPhysicsEnabled = "developerCellPhysicsEnabled"
         static let developerCellSpringIntensity = "developerCellSpringIntensity"
         static let developerCellSpringSpeed = "developerCellSpringSpeed"
-        static let developerVIPZebraIntensity = "developerVIPZebraIntensity"
-        static let developerVIPZebraSpeed = "developerVIPZebraSpeed"
-        static let developerVIPZebraSharpness = "developerVIPZebraSharpness"
-        static let developerCellTVStaticEnabled = "developerCellTVStaticEnabled"
         static let developerVIPFlickerEnabled = "developerVIPFlickerEnabled"
         static let developerVIPFlickerSpeed = "developerVIPFlickerSpeed"
         static let developerVIPBreathingEnabled = "developerVIPBreathingEnabled"
@@ -80,9 +76,6 @@ final class AppSettingsStore {
     private var storedTVStaticGreenTint: Double
     private var storedDeveloperCellSpringIntensity: Double
     private var storedDeveloperCellSpringSpeed: Double
-    private var storedDeveloperVIPZebraIntensity: Double
-    private var storedDeveloperVIPZebraSpeed: Double
-    private var storedDeveloperVIPZebraSharpness: Double
     private var storedDeveloperVIPFlickerSpeed: Double
     private var storedDeveloperVIPBreathingSpeed: Double
 
@@ -209,12 +202,6 @@ final class AppSettingsStore {
         }
     }
 
-    var developerCellTVStaticEnabled: Bool {
-        didSet {
-            userDefaults.set(developerCellTVStaticEnabled, forKey: Keys.developerCellTVStaticEnabled)
-        }
-    }
-
     var developerVIPFlickerEnabled: Bool {
         didSet {
             userDefaults.set(developerVIPFlickerEnabled, forKey: Keys.developerVIPFlickerEnabled)
@@ -240,30 +227,6 @@ final class AppSettingsStore {
         set {
             storedDeveloperCellSpringSpeed = Self.normalizedDeveloperCellSpringSpeed(newValue)
             userDefaults.set(storedDeveloperCellSpringSpeed, forKey: Keys.developerCellSpringSpeed)
-        }
-    }
-
-    var developerVIPZebraIntensity: Double {
-        get { storedDeveloperVIPZebraIntensity }
-        set {
-            storedDeveloperVIPZebraIntensity = Self.normalizedDeveloperVIPZebraIntensity(newValue)
-            userDefaults.set(storedDeveloperVIPZebraIntensity, forKey: Keys.developerVIPZebraIntensity)
-        }
-    }
-
-    var developerVIPZebraSpeed: Double {
-        get { storedDeveloperVIPZebraSpeed }
-        set {
-            storedDeveloperVIPZebraSpeed = Self.normalizedDeveloperVIPZebraSpeed(newValue)
-            userDefaults.set(storedDeveloperVIPZebraSpeed, forKey: Keys.developerVIPZebraSpeed)
-        }
-    }
-
-    var developerVIPZebraSharpness: Double {
-        get { storedDeveloperVIPZebraSharpness }
-        set {
-            storedDeveloperVIPZebraSharpness = Self.normalizedDeveloperVIPZebraSharpness(newValue)
-            userDefaults.set(storedDeveloperVIPZebraSharpness, forKey: Keys.developerVIPZebraSharpness)
         }
     }
 
@@ -318,12 +281,8 @@ final class AppSettingsStore {
         tvStaticBrightness = TVStaticNoiseConfiguration.default.brightness
         tvStaticGreenTint = TVStaticNoiseConfiguration.default.greenTint
         developerCellPhysicsEnabled = false
-        developerCellTVStaticEnabled = false
         developerCellSpringIntensity = 0.72
         developerCellSpringSpeed = 0.82
-        developerVIPZebraIntensity = 0.86
-        developerVIPZebraSpeed = 0.78
-        developerVIPZebraSharpness = 0.62
         developerVIPFlickerEnabled = false
         developerVIPFlickerSpeed = 1.6
         developerVIPBreathingEnabled = false
@@ -347,12 +306,8 @@ final class AppSettingsStore {
         tvStaticBrightness: Double = TVStaticNoiseConfiguration.default.brightness,
         tvStaticGreenTint: Double = TVStaticNoiseConfiguration.default.greenTint,
         developerCellPhysicsEnabled: Bool = false,
-        developerCellTVStaticEnabled: Bool = false,
         developerCellSpringIntensity: Double = 0.72,
         developerCellSpringSpeed: Double = 0.82,
-        developerVIPZebraIntensity: Double = 0.86,
-        developerVIPZebraSpeed: Double = 0.78,
-        developerVIPZebraSharpness: Double = 0.62,
         developerVIPFlickerEnabled: Bool = false,
         developerVIPFlickerSpeed: Double = 1.6,
         developerVIPBreathingEnabled: Bool = false,
@@ -376,13 +331,9 @@ final class AppSettingsStore {
         self.storedTVStaticGreenTint = Self.normalizedTVStaticGreenTint(tvStaticGreenTint)
         self.storedDeveloperCellSpringIntensity = Self.normalizedDeveloperCellSpringIntensity(developerCellSpringIntensity)
         self.storedDeveloperCellSpringSpeed = Self.normalizedDeveloperCellSpringSpeed(developerCellSpringSpeed)
-        self.storedDeveloperVIPZebraIntensity = Self.normalizedDeveloperVIPZebraIntensity(developerVIPZebraIntensity)
-        self.storedDeveloperVIPZebraSpeed = Self.normalizedDeveloperVIPZebraSpeed(developerVIPZebraSpeed)
-        self.storedDeveloperVIPZebraSharpness = Self.normalizedDeveloperVIPZebraSharpness(developerVIPZebraSharpness)
         self.storedDeveloperVIPFlickerSpeed = Self.normalizedDeveloperVIPFlickerSpeed(developerVIPFlickerSpeed)
         self.storedDeveloperVIPBreathingSpeed = Self.normalizedDeveloperVIPBreathingSpeed(developerVIPBreathingSpeed)
         self.developerCellPhysicsEnabled = developerCellPhysicsEnabled
-        self.developerCellTVStaticEnabled = developerCellTVStaticEnabled
         self.developerVIPFlickerEnabled = developerVIPFlickerEnabled
         self.developerVIPBreathingEnabled = developerVIPBreathingEnabled
         self.userDefaults = userDefaults
@@ -412,12 +363,8 @@ final class AppSettingsStore {
         let tvStaticGreenTint = userDefaults.object(forKey: Keys.tvStaticGreenTint) as? Double
             ?? TVStaticNoiseConfiguration.default.greenTint
         let developerCellPhysicsEnabled = userDefaults.object(forKey: Keys.developerCellPhysicsEnabled) as? Bool ?? false
-        let developerCellTVStaticEnabled = userDefaults.object(forKey: Keys.developerCellTVStaticEnabled) as? Bool ?? false
         let developerCellSpringIntensity = userDefaults.object(forKey: Keys.developerCellSpringIntensity) as? Double ?? 0.72
         let developerCellSpringSpeed = userDefaults.object(forKey: Keys.developerCellSpringSpeed) as? Double ?? 0.82
-        let developerVIPZebraIntensity = userDefaults.object(forKey: Keys.developerVIPZebraIntensity) as? Double ?? 0.86
-        let developerVIPZebraSpeed = userDefaults.object(forKey: Keys.developerVIPZebraSpeed) as? Double ?? 0.78
-        let developerVIPZebraSharpness = userDefaults.object(forKey: Keys.developerVIPZebraSharpness) as? Double ?? 0.62
         let developerVIPFlickerEnabled = userDefaults.object(forKey: Keys.developerVIPFlickerEnabled) as? Bool ?? false
         let developerVIPFlickerSpeed = userDefaults.object(forKey: Keys.developerVIPFlickerSpeed) as? Double ?? 1.6
         let developerVIPBreathingEnabled = userDefaults.object(forKey: Keys.developerVIPBreathingEnabled) as? Bool ?? false
@@ -439,12 +386,8 @@ final class AppSettingsStore {
             tvStaticBrightness: tvStaticBrightness,
             tvStaticGreenTint: tvStaticGreenTint,
             developerCellPhysicsEnabled: developerCellPhysicsEnabled,
-            developerCellTVStaticEnabled: developerCellTVStaticEnabled,
             developerCellSpringIntensity: developerCellSpringIntensity,
             developerCellSpringSpeed: developerCellSpringSpeed,
-            developerVIPZebraIntensity: developerVIPZebraIntensity,
-            developerVIPZebraSpeed: developerVIPZebraSpeed,
-            developerVIPZebraSharpness: developerVIPZebraSharpness,
             developerVIPFlickerEnabled: developerVIPFlickerEnabled,
             developerVIPFlickerSpeed: developerVIPFlickerSpeed,
             developerVIPBreathingEnabled: developerVIPBreathingEnabled,
@@ -486,7 +429,7 @@ final class AppSettingsStore {
     }
 
     static func normalizedTVStaticBrightness(_ value: Double) -> Double {
-        min(max(value, -0.65), 0.65)
+        min(max(value, -1), 1)
     }
 
     static func normalizedTVStaticGreenTint(_ value: Double) -> Double {
@@ -499,18 +442,6 @@ final class AppSettingsStore {
 
     static func normalizedDeveloperCellSpringSpeed(_ value: Double) -> Double {
         min(max(value, 0.2), 1.6)
-    }
-
-    static func normalizedDeveloperVIPZebraIntensity(_ value: Double) -> Double {
-        min(max(value, 0), 1)
-    }
-
-    static func normalizedDeveloperVIPZebraSpeed(_ value: Double) -> Double {
-        min(max(value, 0.2), 1.8)
-    }
-
-    static func normalizedDeveloperVIPZebraSharpness(_ value: Double) -> Double {
-        min(max(value, 0), 1)
     }
 
     static func normalizedDeveloperVIPFlickerSpeed(_ value: Double) -> Double {

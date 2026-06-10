@@ -77,21 +77,17 @@ func appSettingsPersistsTVStaticBackgroundSettings() {
 
     let settings = AppSettingsStore(userDefaults: defaults)
     settings.appBackgroundMode = .tvStaticNoise
-    settings.tvStaticSpeed = 2.4
-    settings.tvStaticParticleSize = 1.8
     settings.tvStaticBrightness = 0.31
     settings.tvStaticGreenTint = 0.76
 
     let loaded = AppSettingsStore.load(userDefaults: defaults)
 
     #expect(loaded.appBackgroundMode == .tvStaticNoise)
-    #expect(loaded.tvStaticSpeed == 2.4)
-    #expect(loaded.tvStaticParticleSize == 1.8)
     #expect(loaded.tvStaticBrightness == 0.31)
     #expect(loaded.tvStaticGreenTint == 0.76)
     #expect(loaded.tvStaticNoiseConfiguration == TVStaticNoiseConfiguration(
-        speed: 2.4,
-        particleSize: 1.8,
+        speed: TVStaticNoiseConfiguration.default.speed,
+        particleSize: TVStaticNoiseConfiguration.default.particleSize,
         brightness: 0.31,
         greenTint: 0.76
     ))
@@ -105,12 +101,8 @@ func appSettingsPersistsDeveloperExperimentalFlags() {
 
     let settings = AppSettingsStore(userDefaults: defaults)
     settings.developerCellPhysicsEnabled = true
-    settings.developerCellTVStaticEnabled = true
     settings.developerCellSpringIntensity = 0.64
     settings.developerCellSpringSpeed = 1.14
-    settings.developerVIPZebraIntensity = 0.77
-    settings.developerVIPZebraSpeed = 1.22
-    settings.developerVIPZebraSharpness = 0.44
     settings.developerVIPFlickerEnabled = true
     settings.developerVIPFlickerSpeed = 2.35
     settings.developerVIPBreathingEnabled = true
@@ -119,12 +111,8 @@ func appSettingsPersistsDeveloperExperimentalFlags() {
     let loaded = AppSettingsStore.load(userDefaults: defaults)
 
     #expect(loaded.developerCellPhysicsEnabled)
-    #expect(loaded.developerCellTVStaticEnabled)
     #expect(loaded.developerCellSpringIntensity == 0.64)
     #expect(loaded.developerCellSpringSpeed == 1.14)
-    #expect(loaded.developerVIPZebraIntensity == 0.77)
-    #expect(loaded.developerVIPZebraSpeed == 1.22)
-    #expect(loaded.developerVIPZebraSharpness == 0.44)
     #expect(loaded.developerVIPFlickerEnabled)
     #expect(loaded.developerVIPFlickerSpeed == 2.35)
     #expect(loaded.developerVIPBreathingEnabled)
@@ -215,17 +203,11 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     settings.backgroundVideoBrightness = 0.33
     settings.backgroundVideoGreenTint = 0.81
     settings.backgroundVideoGridIntensity = 0.42
-    settings.tvStaticSpeed = 2.5
-    settings.tvStaticParticleSize = 2.2
     settings.tvStaticBrightness = 0.44
     settings.tvStaticGreenTint = 0.93
     settings.developerCellPhysicsEnabled = true
-    settings.developerCellTVStaticEnabled = true
     settings.developerCellSpringIntensity = 0.35
     settings.developerCellSpringSpeed = 1.25
-    settings.developerVIPZebraIntensity = 0.45
-    settings.developerVIPZebraSpeed = 1.35
-    settings.developerVIPZebraSharpness = 0.29
     settings.developerVIPFlickerEnabled = true
     settings.developerVIPFlickerSpeed = 3.2
     settings.developerVIPBreathingEnabled = true
@@ -250,12 +232,8 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     #expect(loaded.tvStaticBrightness == TVStaticNoiseConfiguration.default.brightness)
     #expect(loaded.tvStaticGreenTint == TVStaticNoiseConfiguration.default.greenTint)
     #expect(!loaded.developerCellPhysicsEnabled)
-    #expect(!loaded.developerCellTVStaticEnabled)
     #expect(loaded.developerCellSpringIntensity == 0.72)
     #expect(loaded.developerCellSpringSpeed == 0.82)
-    #expect(loaded.developerVIPZebraIntensity == 0.86)
-    #expect(loaded.developerVIPZebraSpeed == 0.78)
-    #expect(loaded.developerVIPZebraSharpness == 0.62)
     #expect(!loaded.developerVIPFlickerEnabled)
     #expect(loaded.developerVIPFlickerSpeed == 1.6)
     #expect(!loaded.developerVIPBreathingEnabled)

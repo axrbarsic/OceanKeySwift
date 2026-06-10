@@ -119,16 +119,17 @@ final class TVStaticNoiseRenderView: UIView {
         let jitterX = CGFloat(Int(framePhase * 37) % 8192)
         let jitterY = CGFloat(Int(framePhase * 91) % 8192)
         let greenTint = min(max(configuration.greenTint, 0), 1)
-        let redWeight = 1 - (0.82 * greenTint)
-        let greenWeight = 1 + (0.12 * greenTint)
-        let blueWeight = 1 - (0.74 * greenTint)
+        let effectiveBrightness = min(max(configuration.brightness * 1.25, -1), 1)
+        let redWeight = 1 - (0.97 * greenTint)
+        let greenWeight = 1 + (0.55 * greenTint)
+        let blueWeight = 1 - (0.92 * greenTint)
         let cropped = source
             .transformed(by: CGAffineTransform(translationX: jitterX, y: jitterY))
             .cropped(to: CGRect(origin: .zero, size: renderSize))
             .applyingFilter("CIColorControls", parameters: [
                 kCIInputSaturationKey: 0,
-                kCIInputContrastKey: 1.9,
-                kCIInputBrightnessKey: configuration.brightness
+                kCIInputContrastKey: 1.9 + 0.45 * greenTint,
+                kCIInputBrightnessKey: effectiveBrightness
             ])
             .applyingFilter("CIColorMatrix", parameters: [
                 "inputRVector": CIVector(x: redWeight, y: 0, z: 0, w: 0),

@@ -6,10 +6,6 @@ struct RoomCellView: View {
     @Environment(\.experimentalCellPhysicsEnabled) private var experimentalCellPhysicsEnabled
     @Environment(\.experimentalCellSpringIntensity) private var experimentalCellSpringIntensity
     @Environment(\.experimentalCellSpringSpeed) private var experimentalCellSpringSpeed
-    @Environment(\.experimentalCellTVStaticEnabled) private var experimentalCellTVStaticEnabled
-    @Environment(\.experimentalVIPZebraIntensity) private var experimentalVIPZebraIntensity
-    @Environment(\.experimentalVIPZebraSpeed) private var experimentalVIPZebraSpeed
-    @Environment(\.experimentalVIPZebraSharpness) private var experimentalVIPZebraSharpness
     @Environment(\.experimentalVIPFlickerEnabled) private var experimentalVIPFlickerEnabled
     @Environment(\.experimentalVIPFlickerSpeed) private var experimentalVIPFlickerSpeed
     @Environment(\.experimentalVIPBreathingEnabled) private var experimentalVIPBreathingEnabled
@@ -127,13 +123,6 @@ struct RoomCellView: View {
                 )
                 : .default,
             value: physicsPulse
-        )
-        .vipZebraEffect(
-            enabled: room.isVIP && !experimentalCellTVStaticEnabled,
-            shape: tileShape,
-            intensity: experimentalVIPZebraIntensity,
-            speed: experimentalVIPZebraSpeed,
-            sharpness: experimentalVIPZebraSharpness
         )
         .vipFlickerEffect(
             enabled: room.isVIP && experimentalVIPFlickerEnabled,
@@ -302,13 +291,6 @@ struct RoomCellView: View {
         let statusColor = OceanKeyTheme.fill(for: room.status, saturation: statusPaletteSaturation)
         return tileShape
             .fill(statusColor)
-            .overlay {
-                if experimentalCellTVStaticEnabled, room.isVIP {
-                    CellTVStaticOverlay(statusColor: statusColor, roomID: room.id)
-                        .clipShape(tileShape)
-                        .allowsHitTesting(false)
-                }
-            }
             .shadow(color: .black.opacity(geometry.tileShadowOpacity), radius: 5, x: 0, y: 4)
     }
 
@@ -329,29 +311,6 @@ struct RoomCellView: View {
 }
 
 private extension View {
-    @ViewBuilder
-    func vipZebraEffect(
-        enabled: Bool,
-        shape: UnevenRoundedRectangle,
-        intensity: Double,
-        speed: Double,
-        sharpness: Double
-    ) -> some View {
-        if enabled {
-            self.overlay {
-                VIPZebraOverlay(
-                    shape: shape,
-                    intensity: intensity,
-                    speed: speed,
-                    sharpness: sharpness
-                )
-                .allowsHitTesting(false)
-            }
-        } else {
-            self
-        }
-    }
-
     @ViewBuilder
     func vipFlickerEffect(
         enabled: Bool,
@@ -384,15 +343,25 @@ private struct VIPBreathingModifier: ViewModifier {
     func body(content: Content) -> some View {
         TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
             let phase = timeline.date.timeIntervalSinceReferenceDate * min(max(speed, 0.2), 2.5)
-            let wave = (sin(phase * .pi * 2) + 1) * 0.5
-            let eased = 0.5 - cos(wave * .pi) * 0.5
+            let waveA = (sin(phase * .pi * 2) + 1) * 0.5
+            let waveB = (sin(phase * .pi * 3.7 + 1.1) + 1) * 0.5
+            let eased = 0.5 - cos(waveA * .pi) * 0.5
             content
                 .scaleEffect(
-                    x: 1 + 0.024 * eased,
-                    y: 1 - 0.018 * eased,
+                    x: 1 + 0.022 * eased,
+                    y: 1 + 0.018 * waveB,
                     anchor: .center
                 )
-                .shadow(color: OceanKeyTheme.accent.opacity(0.10 * eased), radius: 8 * eased, x: 0, y: 0)
+                .distortionEffect(
+                    ShaderLibrary.vipJelly(
+                        .float(Float(timeline.date.timeIntervalSinceReferenceDate)),
+                        .float(Float(speed)),
+                        .float(0.72),
+                        .float2(360, 86)
+                    ),
+                    maxSampleOffset: CGSize(width: 18, height: 10)
+                )
+                .shadow(color: OceanKeyTheme.accent.opacity(0.14 * max(eased, waveB)), radius: 10 * max(eased, waveB), x: 0, y: 0)
         }
     }
 }
@@ -410,19 +379,20 @@ private struct VIPFlickerOverlay: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            .white.opacity(0.03 + shimmer * 0.10),
-                            OceanKeyTheme.accent.opacity(0.03 + shimmer * 0.08),
-                            .white.opacity(0.01 + shimmer * 0.16)
+                            .black.opacity(0.10 + shimmer * 0.18),
+                            .white.opacity(0.18 + shimmer * 0.36),
+                            OceanKeyTheme.accent.opacity(0.10 + shimmer * 0.22),
+                            .white.opacity(0.08 + shimmer * 0.30)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
-                .blendMode(.screen)
+                .blendMode(shimmer > 0.54 ? .plusLighter : .overlay)
                 .clipShape(shape)
                 .overlay {
                     shape
-                        .stroke(.white.opacity(0.04 + shimmer * 0.16), lineWidth: 1)
+                        .stroke(.white.opacity(0.10 + shimmer * 0.28), lineWidth: 1.2)
                         .blendMode(.screen)
                 }
         }
@@ -434,64 +404,6 @@ private struct VIPFlickerOverlay: View {
         let pulse = sin(time * 11.0 * speed + 0.4)
         let combined = fast * 0.42 + faster * 0.34 + pulse * 0.24
         return min(max((combined + 1) * 0.5, 0), 1)
-    }
-}
-
-private struct VIPZebraOverlay: View {
-    let shape: UnevenRoundedRectangle
-    let intensity: Double
-    let speed: Double
-    let sharpness: Double
-
-    var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
-            let phase = timeline.date.timeIntervalSinceReferenceDate * min(max(speed, 0.2), 1.8)
-            let offset = CGFloat(phase.truncatingRemainder(dividingBy: 1))
-            shape
-                .fill(
-                    LinearGradient(
-                        stops: zebraStops,
-                        startPoint: UnitPoint(x: -0.55 + offset * 1.25, y: -0.08),
-                        endPoint: UnitPoint(x: 0.50 + offset * 1.25, y: 1.08)
-                    )
-                )
-                .blendMode(.screen)
-                .clipShape(shape)
-                .overlay {
-                    shape
-                        .stroke(.white.opacity(0.10 * normalizedIntensity), lineWidth: 1)
-                        .blendMode(.screen)
-                }
-        }
-    }
-
-    private var normalizedIntensity: Double {
-        min(max(intensity, 0), 1)
-    }
-
-    private var normalizedSharpness: Double {
-        min(max(sharpness, 0), 1)
-    }
-
-    private var zebraStops: [Gradient.Stop] {
-        let bright = (0.20 + 0.32 * normalizedSharpness) * normalizedIntensity
-        let soft = (0.11 - 0.075 * normalizedSharpness) * normalizedIntensity
-        let dark = (0.10 + 0.18 * normalizedSharpness) * normalizedIntensity
-        let edge = max(0.018, 0.060 - 0.042 * normalizedSharpness)
-        return [
-            .init(color: .clear, location: 0.00),
-            .init(color: .white.opacity(soft), location: 0.12 - edge),
-            .init(color: .white.opacity(bright), location: 0.12),
-            .init(color: .clear, location: 0.12 + edge),
-            .init(color: .black.opacity(dark), location: 0.31),
-            .init(color: .clear, location: 0.31 + edge),
-            .init(color: .white.opacity(bright * 0.86), location: 0.48),
-            .init(color: .clear, location: 0.48 + edge),
-            .init(color: .black.opacity(dark * 0.78), location: 0.68),
-            .init(color: .clear, location: 0.68 + edge),
-            .init(color: .white.opacity(bright), location: 0.88),
-            .init(color: .clear, location: min(1, 0.88 + edge))
-        ]
     }
 }
 
