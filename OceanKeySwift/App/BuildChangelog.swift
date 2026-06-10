@@ -10,6 +10,14 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (84)",
+            date: "2026-06-09",
+            changes: [
+                "Strengthened the VIP jelly effect so enabled VIP cells visibly pulse vertically and warp through the real cell size.",
+                "Added animated jelly edge highlights to make the effect easier to see without bringing back the removed zebra or TV-static VIP modes."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (83)",
             date: "2026-06-09",
             changes: [

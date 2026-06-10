@@ -342,27 +342,97 @@ private struct VIPBreathingModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
-            let phase = timeline.date.timeIntervalSinceReferenceDate * min(max(speed, 0.2), 2.5)
+            let currentTime = timeline.date.timeIntervalSinceReferenceDate
+            let phase = currentTime * min(max(speed, 0.2), 2.5)
             let waveA = (sin(phase * .pi * 2) + 1) * 0.5
             let waveB = (sin(phase * .pi * 3.7 + 1.1) + 1) * 0.5
+            let waveC = (sin(phase * .pi * 5.1 + 2.4) + 1) * 0.5
             let eased = 0.5 - cos(waveA * .pi) * 0.5
             content
                 .scaleEffect(
-                    x: 1 + 0.022 * eased,
-                    y: 1 + 0.018 * waveB,
+                    x: 1 + 0.038 * eased - 0.012 * waveC,
+                    y: 1 + 0.064 * waveB,
                     anchor: .center
                 )
-                .distortionEffect(
-                    ShaderLibrary.vipJelly(
-                        .float(Float(timeline.date.timeIntervalSinceReferenceDate)),
-                        .float(Float(speed)),
-                        .float(0.72),
-                        .float2(360, 86)
-                    ),
-                    maxSampleOffset: CGSize(width: 18, height: 10)
-                )
-                .shadow(color: OceanKeyTheme.accent.opacity(0.14 * max(eased, waveB)), radius: 10 * max(eased, waveB), x: 0, y: 0)
+                .visualEffect { view, proxy in
+                    view.distortionEffect(
+                        ShaderLibrary.vipJelly(
+                            .float(Float(currentTime)),
+                            .float(Float(speed)),
+                            .float(1.85),
+                            .float2(Float(proxy.size.width), Float(proxy.size.height))
+                        ),
+                        maxSampleOffset: CGSize(width: 34, height: 22)
+                    )
+                }
+                .overlay {
+                    VIPJellyEdgeOverlay(
+                        time: currentTime,
+                        speed: speed,
+                        energy: max(eased, max(waveB, waveC))
+                    )
+                    .allowsHitTesting(false)
+                }
+                .shadow(color: OceanKeyTheme.accent.opacity(0.20 * max(eased, waveB)), radius: 14 * max(eased, waveB), x: 0, y: 0)
         }
+    }
+}
+
+private struct VIPJellyEdgeOverlay: View {
+    let time: TimeInterval
+    let speed: Double
+    let energy: Double
+
+    var body: some View {
+        GeometryReader { proxy in
+            Canvas { context, size in
+                drawEdges(context: context, size: size)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .blendMode(.screen)
+        }
+    }
+
+    private func drawEdges(context: GraphicsContext, size: CGSize) {
+        let phase = time * min(max(speed, 0.2), 2.5)
+        let topPath = edgePath(size: size, phase: phase, top: true)
+        let bottomPath = edgePath(size: size, phase: phase, top: false)
+        context.stroke(
+            topPath,
+            with: .color(.white.opacity(0.10 + 0.22 * energy)),
+            style: StrokeStyle(lineWidth: 2.2, lineCap: .round, lineJoin: .round)
+        )
+        context.stroke(
+            bottomPath,
+            with: .color(OceanKeyTheme.accent.opacity(0.12 + 0.22 * energy)),
+            style: StrokeStyle(lineWidth: 2.4, lineCap: .round, lineJoin: .round)
+        )
+    }
+
+    private func edgePath(size: CGSize, phase: TimeInterval, top: Bool) -> Path {
+        var path = Path()
+        let steps = 18
+        for index in 0...steps {
+            let point = edgePoint(size: size, phase: phase, index: index, steps: steps, top: top)
+            if index == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
+            }
+        }
+        return path
+    }
+
+    private func edgePoint(size: CGSize, phase: TimeInterval, index: Int, steps: Int, top: Bool) -> CGPoint {
+        let x = size.width * CGFloat(index) / CGFloat(steps)
+        let unit = Double(index) / Double(steps)
+        let wave = top
+            ? sin((unit * 3.4 + phase * 0.83) * .pi * 2) * 5.5
+                + sin((unit * 7.1 - phase * 0.47) * .pi * 2) * 2.8
+            : sin((unit * 4.7 - phase * 0.68 + 0.9) * .pi * 2) * 5.0
+                + sin((unit * 6.3 + phase * 0.39) * .pi * 2) * 2.6
+        let offset = CGFloat(4 + wave * energy)
+        return CGPoint(x: x, y: top ? offset : size.height - offset)
     }
 }
 
