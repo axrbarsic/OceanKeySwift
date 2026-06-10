@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (94)",
+            date: "2026-06-09",
+            changes: [
+                "Restored a visible animated VIP jelly mask over the whole composited cell so VIP rooms no longer stay plain rectangles.",
+                "Kept the Metal layer effect for content deformation while the shared jelly mask guarantees the cell contour visibly moves.",
+                "Migrated existing installs to enable VIP jelly once by default so old saved experiment flags cannot hide the effect."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (93)",
             date: "2026-06-09",
             changes: [

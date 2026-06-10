@@ -64,17 +64,10 @@ static float2 vipJellyDisplacement(float2 position, float time, float speed, flo
     return float2(dx * 0.95, dy * 1.28) * amplitude * weight;
 }
 
-static float roundedBoxMask(float2 position, float2 size, float radius) {
-    float2 center = size * 0.5;
-    float2 halfSize = max(size * 0.5 - float2(radius, radius), float2(1.0, 1.0));
-    float2 d = abs(position - center) - halfSize;
-    float signedDistance = length(max(d, float2(0.0, 0.0))) + min(max(d.x, d.y), 0.0) - radius;
-    return 1.0 - smoothstep(-0.75, 1.35, signedDistance);
-}
-
 // Layer effect version: samples the already composited room cell and applies
-// the same displacement to color and alpha. This keeps fill, number, S/L/B,
-// badges, and the visible contour as one deformed material.
+// the same displacement to color and alpha. The SwiftUI shape mask owns the
+// outer contour so the visible silhouette cannot disappear if the layer shader
+// samples transparent edge pixels.
 [[ stitchable ]] half4 vipJellyUnifiedLayer(
     float2 position,
     SwiftUI::Layer layer,
@@ -88,11 +81,5 @@ static float roundedBoxMask(float2 position, float2 size, float radius) {
     float2 safe = max(size, float2(1.0, 1.0));
     float2 displacement = vipJellyDisplacement(position, time, speed, seed, safe, amplitude);
     float2 sourcePosition = position - displacement;
-    half4 color = layer.sample(sourcePosition);
-
-    float radius = clamp(cornerRadius, 1.0, min(safe.x, safe.y) * 0.5);
-    float alpha = roundedBoxMask(sourcePosition, safe, radius);
-    color.a *= half(alpha);
-    color.rgb *= half(alpha);
-    return color;
+    return layer.sample(sourcePosition);
 }

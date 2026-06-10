@@ -63,6 +63,7 @@ final class AppSettingsStore {
         // Keep the old key names so existing installs migrate VIP breathing into the replacement VIP jelly mode.
         static let developerVIPJellyEnabled = "developerVIPBreathingEnabled"
         static let developerVIPJellySpeed = "developerVIPBreathingSpeed"
+        static let developerVIPJellyDefaultEnabledMigration = "developerVIPJellyDefaultEnabledMigration_v94"
     }
 
     @ObservationIgnored private let userDefaults: UserDefaults
@@ -295,7 +296,7 @@ final class AppSettingsStore {
         developerCellSpringSpeed = 0.82
         developerVIPFlickerEnabled = false
         developerVIPFlickerSpeed = 1.6
-        developerVIPJellyEnabled = false
+        developerVIPJellyEnabled = true
         developerVIPJellySpeed = 0.75
     }
 
@@ -321,7 +322,7 @@ final class AppSettingsStore {
         developerCellSpringSpeed: Double = 0.82,
         developerVIPFlickerEnabled: Bool = false,
         developerVIPFlickerSpeed: Double = 1.6,
-        developerVIPJellyEnabled: Bool = false,
+        developerVIPJellyEnabled: Bool = true,
         developerVIPJellySpeed: Double = 0.75,
         userDefaults: UserDefaults = .standard
     ) {
@@ -382,7 +383,7 @@ final class AppSettingsStore {
         let developerCellSpringSpeed = userDefaults.object(forKey: Keys.developerCellSpringSpeed) as? Double ?? 0.82
         let developerVIPFlickerEnabled = userDefaults.object(forKey: Keys.developerVIPFlickerEnabled) as? Bool ?? false
         let developerVIPFlickerSpeed = userDefaults.object(forKey: Keys.developerVIPFlickerSpeed) as? Double ?? 1.6
-        let developerVIPJellyEnabled = userDefaults.object(forKey: Keys.developerVIPJellyEnabled) as? Bool ?? false
+        let developerVIPJellyEnabled = Self.migratedDeveloperVIPJellyEnabled(userDefaults: userDefaults)
         let developerVIPJellySpeed = userDefaults.object(forKey: Keys.developerVIPJellySpeed) as? Double ?? 0.75
         return AppSettingsStore(
             appBackgroundMode: appBackgroundMode,
@@ -414,6 +415,15 @@ final class AppSettingsStore {
 
     static func normalizedStatusPaletteSaturation(_ value: Double) -> Double {
         min(max(value, 0.70), 1.65)
+    }
+
+    private static func migratedDeveloperVIPJellyEnabled(userDefaults: UserDefaults) -> Bool {
+        if userDefaults.bool(forKey: Keys.developerVIPJellyDefaultEnabledMigration) {
+            return userDefaults.object(forKey: Keys.developerVIPJellyEnabled) as? Bool ?? true
+        }
+        userDefaults.set(true, forKey: Keys.developerVIPJellyEnabled)
+        userDefaults.set(true, forKey: Keys.developerVIPJellyDefaultEnabledMigration)
+        return true
     }
 
     static func normalizedMatrixSpeed(_ value: Double) -> Double {

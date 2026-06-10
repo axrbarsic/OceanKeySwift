@@ -241,6 +241,23 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     #expect(loaded.developerCellSpringSpeed == 0.82)
     #expect(!loaded.developerVIPFlickerEnabled)
     #expect(loaded.developerVIPFlickerSpeed == 1.6)
-    #expect(!loaded.developerVIPJellyEnabled)
+    #expect(loaded.developerVIPJellyEnabled)
     #expect(loaded.developerVIPJellySpeed == 0.75)
+}
+
+@Test
+func appSettingsMigratesVIPJellyOnForExistingDevicesOnce() {
+    let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    defaults.set(false, forKey: "developerVIPBreathingEnabled")
+
+    let migrated = AppSettingsStore.load(userDefaults: defaults)
+    #expect(migrated.developerVIPJellyEnabled)
+
+    migrated.developerVIPJellyEnabled = false
+
+    let reloaded = AppSettingsStore.load(userDefaults: defaults)
+    #expect(!reloaded.developerVIPJellyEnabled)
 }
