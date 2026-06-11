@@ -151,6 +151,7 @@ struct SettingsScreen: View {
     private var deepSeekLabSection: some View {
         DeepSeekLabSection(
             presetStore: aiVisualPresetStore,
+            appSettings: appSettings,
             modelTier: $appSettings.deepSeekModelTier
         )
     }

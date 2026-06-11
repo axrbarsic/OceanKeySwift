@@ -54,6 +54,12 @@ be added behind that boundary after the domain model and input flow are stable.
      com.alex.oceankey.swift` contains neither `aps-environment` nor
      `com.apple.developer.icloud-*` entitlements and does not support the
      `iCloud.com.alex.oceankey.swift` container.
+   - Build 103 keeps real CloudKit entitlements limited to simulator/future
+     validation so physical iPhone installs keep working with Alex's Personal
+     Team profile. AI/live-wallpaper preset protection is therefore a manual
+     Files export path for now: the app writes a lightweight JSON backup
+     document with preset/config data, and Alex can save that document to
+     iCloud Drive through the system exporter.
    - To unblock real iPhone sync, enable iCloud/CloudKit and Push Notifications
      for App ID `com.alex.oceankey.swift`, attach/create container
      `iCloud.com.alex.oceankey.swift`, regenerate/download the development
@@ -70,6 +76,9 @@ be added behind that boundary after the domain model and input flow are stable.
    - Room/cart state, timestamps, notes, settings, history entries, visual
      snapshots.
    - Local-only media files unless a later product decision changes this.
+   - AI-generated live wallpaper and VIP effect presets are config/code
+     payloads, not video files. Backups should store those lightweight
+     definitions plus current background settings, not rendered media.
 
 ## Readiness Gate
 

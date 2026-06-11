@@ -69,6 +69,7 @@
 		8547E85F7C729B1350CF7C3B /* RoomCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E3CFB6CDA7132DA0EFA9B9 /* RoomCatalog.swift */; };
 		856BDD1AEC33680D598CA693 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D64ADD5F7CDDCA26155C8 /* AppRootView.swift */; };
 		8623867BDD224CD95F47BBF2 /* SettingsControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88F4E1B0F391C1E8C9C2F6C /* SettingsControls.swift */; };
+		8644D03B4964470C44521126 /* OceanKeyPresetBackupDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ED70772827CF4F9FACCE5C /* OceanKeyPresetBackupDocument.swift */; };
 		87852D01D8D77739E19E6738 /* AppSettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71CFB1546F72B1749BEB27E7 /* AppSettingsStoreTests.swift */; };
 		890E1BC90E023BE94B4946C9 /* PersonalCartMarkerStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8A5F3E8A1246EC011FB56F /* PersonalCartMarkerStrip.swift */; };
 		8CECF869B23D86602BF9C7D9 /* VIPJellyContentWarp.metal in Sources */ = {isa = PBXBuildFile; fileRef = 4D3F2DE20CF0C54E078DB861 /* VIPJellyContentWarp.metal */; };
@@ -213,6 +214,7 @@
 		BCAF8BEA469DB858BD47A0D4 /* OceanKeySwiftTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = OceanKeySwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C101C82A766E12EFA3ECB00C /* VoiceNoteViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteViewModelTests.swift; sourceTree = "<group>"; };
 		C32871C27FCEBEF323FDE3E1 /* BackgroundVideoFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundVideoFileStore.swift; sourceTree = "<group>"; };
+		C3ED70772827CF4F9FACCE5C /* OceanKeyPresetBackupDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OceanKeyPresetBackupDocument.swift; sourceTree = "<group>"; };
 		C43FCE41FAC12F7171994989 /* TVStaticNoiseBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVStaticNoiseBackgroundView.swift; sourceTree = "<group>"; };
 		C53CB4860DB0F1128AAFF966 /* SummarySwipeCommitPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummarySwipeCommitPolicyTests.swift; sourceTree = "<group>"; };
 		C831B23410D63DEBCFBC85BF /* MatrixRainConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixRainConfiguration.swift; sourceTree = "<group>"; };
@@ -411,6 +413,7 @@
 				C32871C27FCEBEF323FDE3E1 /* BackgroundVideoFileStore.swift */,
 				A8D625970C1997ABD4B4AEB6 /* LocalMediaFileStore.swift */,
 				F4BF40D409EFD665315F16C6 /* LocalWorkSessionRepository.swift */,
+				C3ED70772827CF4F9FACCE5C /* OceanKeyPresetBackupDocument.swift */,
 				4A5FB5B5BF1C322BC8B5C892 /* PersistentAIVisualPreset.swift */,
 				1CF609A6F4519C8C100DE4E3 /* PersistentWorkSessionMapper.swift */,
 				ACDA1FF459FA36ED5D33AEC3 /* PersistentWorkSessionMapper+Consumables.swift */,
@@ -775,6 +778,7 @@
 				42218A4468C7741A018E32BC /* MatrixRainSpriteScene.swift in Sources */,
 				53CE312477D9329530227EB4 /* MediaThumbnailView.swift in Sources */,
 				149EF7313B6A406216DEDDD3 /* MediaViewerScreen.swift in Sources */,
+				8644D03B4964470C44521126 /* OceanKeyPresetBackupDocument.swift in Sources */,
 				307C5468BDEA436295C95CE4 /* OceanKeySwiftApp.swift in Sources */,
 				7372F4BC701E763F5FA24463 /* OceanKeyTheme.swift in Sources */,
 				125D5264FCA308B7C3213538 /* PerformanceTelemetryStore.swift in Sources */,
@@ -865,7 +869,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = OceanKeySwift/OceanKeySwift.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = OceanKeySwift/OceanKeySwift.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = OceanKeySwift/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "OceanKey Swift";
@@ -916,7 +920,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 102;
+				CURRENT_PROJECT_VERSION = 103;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = J6MW4855LU;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -975,7 +979,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 102;
+				CURRENT_PROJECT_VERSION = 103;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = J6MW4855LU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1011,7 +1015,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = OceanKeySwift/OceanKeySwift.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = OceanKeySwift/OceanKeySwift.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = OceanKeySwift/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "OceanKey Swift";

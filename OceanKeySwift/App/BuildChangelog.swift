@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (103)",
+            date: "2026-06-10",
+            changes: [
+                "Added a manual preset backup exporter for DeepSeek-generated Matrix/VIP configurations and the current live wallpaper settings.",
+                "The backup is a lightweight configuration document that can be saved through the system Files picker, including iCloud Drive, without CloudKit entitlements.",
+                "Restored physical-device signing to the Personal Team-compatible path while keeping CloudKit entitlements available for simulator/future Developer Program validation."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (102)",
             date: "2026-06-10",
             changes: [

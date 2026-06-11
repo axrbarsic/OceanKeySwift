@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-struct AIVisualPreset: Identifiable, Equatable, Sendable {
+struct AIVisualPreset: Identifiable, Codable, Equatable, Sendable {
     var id: UUID
     var title: String
     var summary: String

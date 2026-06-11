@@ -9,6 +9,7 @@ struct DeepSeekLabSection: View {
     }
 
     @Bindable var presetStore: AIVisualPresetStore
+    @Bindable var appSettings: AppSettingsStore
     @Binding var modelTier: DeepSeekModelTier
     @Environment(\.interactionFeedback) private var feedback
     @State private var prompt = "Матрица из красивого Swift-кода, зелёное свечение, дорогой терминальный стиль."
@@ -16,6 +17,11 @@ struct DeepSeekLabSection: View {
     @State private var apiKeyInput = ""
     @State private var hasAPIKey = false
     @State private var state = GenerationState.idle
+    @State private var backupDocument: OceanKeyPresetBackupDocument?
+    @State private var backupFilename = OceanKeyPresetBackupDocument.filename()
+    @State private var isBackupExporterPresented = false
+    @State private var backupMessage: String?
+    @State private var shouldSuggestBackup = false
 
     private let client = DeepSeekClient()
     private let secretStore = KeychainSecretStore()
@@ -31,6 +37,13 @@ struct DeepSeekLabSection: View {
             refreshAPIKeyState()
             presetStore.load()
         }
+        .fileExporter(
+            isPresented: $isBackupExporterPresented,
+            document: backupDocument,
+            contentType: .oceanKeyPresetBackup,
+            defaultFilename: backupFilename,
+            onCompletion: handleBackupExportCompletion
+        )
     }
 
     private var apiKeyPanel: some View {
@@ -170,6 +183,8 @@ struct DeepSeekLabSection: View {
             title: "Сохранённые AI-пресеты",
             subtitle: "Эти записи лёгкие: JSON-параметры, а не видеофайлы."
         ) {
+            backupActions
+
             if presetStore.presets.isEmpty {
                 SettingsInfoRow(
                     title: "Пока пусто",
@@ -187,6 +202,31 @@ struct DeepSeekLabSection: View {
                         }
                     )
                 }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var backupActions: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Button(action: exportBackup) {
+                DeepSeekActionButtonLabel(
+                    title: "Сохранить backup в Файлы",
+                    systemName: "square.and.arrow.up.fill"
+                )
+            }
+            .buttonStyle(.plain)
+
+            if shouldSuggestBackup {
+                Text("Пресет сохранён. Сейчас удобно отправить backup в iCloud Drive, чтобы не потерять конфигурацию.")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(OceanKeyTheme.secondaryText)
+            }
+
+            if let backupMessage {
+                Text(backupMessage)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(OceanKeyTheme.secondaryText)
             }
         }
     }
@@ -243,6 +283,34 @@ struct DeepSeekLabSection: View {
         guard case .ready(let draft) = state else { return }
         presetStore.save(draft: draft, modelTier: modelTier, prompt: prompt)
         state = .idle
+        shouldSuggestBackup = true
+        backupMessage = "Готов backup: пресеты и текущая конфигурация заставки."
+    }
+
+    private func exportBackup() {
+        feedback.confirm()
+        presetStore.load()
+        let exportedAt = Date()
+        let payload = OceanKeyPresetBackupPayload.make(
+            presets: presetStore.presets,
+            appSettings: appSettings,
+            exportedAt: exportedAt
+        )
+        backupDocument = OceanKeyPresetBackupDocument(payload: payload)
+        backupFilename = OceanKeyPresetBackupDocument.filename(exportedAt: exportedAt)
+        isBackupExporterPresented = true
+        shouldSuggestBackup = false
+    }
+
+    private func handleBackupExportCompletion(_ result: Result<URL, Error>) {
+        switch result {
+        case .success(let url):
+            backupMessage = "Backup сохранён: \(url.lastPathComponent)"
+            feedback.confirm()
+        case .failure(let error):
+            backupMessage = "Backup не сохранён: \(error.localizedDescription)"
+            feedback.holdWarning()
+        }
     }
 
     private func refreshAPIKeyState() {

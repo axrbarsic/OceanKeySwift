@@ -34,6 +34,49 @@ func aiVisualPresetStoreReportsStorageModeExplicitly() throws {
     #expect(fallbackStore.storageMode.statusTitle == "Apple sync недоступен")
 }
 
+@MainActor
+@Test
+func presetBackupPayloadContainsPresetsAndBackgroundConfiguration() throws {
+    let preset = AIVisualPreset(
+        id: UUID(),
+        title: "Matrix",
+        summary: "Generated code rain.",
+        kind: .matrixCodeRain,
+        payload: .matrixDefault,
+        modelTier: .pro,
+        prompt: "green swift rain",
+        isFavorite: true,
+        createdAt: Date(timeIntervalSince1970: 10),
+        updatedAt: Date(timeIntervalSince1970: 11)
+    )
+    let appSettings = AppSettingsStore(
+        appBackgroundMode: .video,
+        matrixSpeed: 2.25,
+        backgroundVideoRelativePath: "Background/video-wallpaper.mov",
+        backgroundVideoBlur: 0.64,
+        backgroundVideoBrightness: -0.12,
+        backgroundVideoGreenTint: 0.91,
+        backgroundVideoGridIntensity: 0.38,
+        userDefaults: try temporaryUserDefaults()
+    )
+
+    let payload = OceanKeyPresetBackupPayload.make(
+        presets: [preset],
+        appSettings: appSettings,
+        exportedAt: Date(timeIntervalSince1970: 100)
+    )
+    let data = try JSONEncoder().encode(payload)
+    let decoded = try JSONDecoder().decode(OceanKeyPresetBackupPayload.self, from: data)
+
+    #expect(decoded.schemaVersion == 1)
+    #expect(decoded.presets == [preset])
+    #expect(decoded.background.mode == .video)
+    #expect(decoded.background.videoFilename == "video-wallpaper.mov")
+    #expect(decoded.background.videoBlur == 0.64)
+    #expect(decoded.background.videoGreenTint == 0.91)
+    #expect(decoded.background.videoGridIntensity == 0.38)
+}
+
 @Test
 func deepSeekPresetDecodeClampsPayloadAndKeepsRequestedKind() throws {
     let content = """
@@ -61,4 +104,13 @@ func deepSeekPresetDecodeClampsPayloadAndKeepsRequestedKind() throws {
     #expect(draft.payload.glow == 0)
     #expect(draft.payload.blur == 1)
     #expect(draft.payload.density == 1)
+}
+
+private func temporaryUserDefaults() throws -> UserDefaults {
+    let suiteName = "OceanKeySwiftTests.\(UUID().uuidString)"
+    guard let userDefaults = UserDefaults(suiteName: suiteName) else {
+        throw CocoaError(.fileNoSuchFile)
+    }
+    userDefaults.removePersistentDomain(forName: suiteName)
+    return userDefaults
 }
