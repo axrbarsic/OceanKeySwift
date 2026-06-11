@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (123)",
+            date: "2026-06-11",
+            changes: [
+                "Added AI Wallpaper as a real selectable app background mode for saved DeepSeek Matrix presets.",
+                "Saved DeepSeek Matrix presets can now be activated from the Background settings or directly from the DeepSeek Lab saved-presets list.",
+                "The native Matrix SpriteKit runtime now applies generated preset payload values for speed, density, glow, palette, glyph source, and seed."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (122)",
             date: "2026-06-11",
             changes: [

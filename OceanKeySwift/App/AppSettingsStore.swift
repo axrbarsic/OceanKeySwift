@@ -6,6 +6,7 @@ enum AppBackgroundMode: String, CaseIterable, Identifiable, Codable {
     case matrixRain
     case tvStaticNoise
     case video
+    case aiGenerated
 
     var id: String { rawValue }
 
@@ -19,6 +20,8 @@ enum AppBackgroundMode: String, CaseIterable, Identifiable, Codable {
             "TV"
         case .video:
             "Видео"
+        case .aiGenerated:
+            "AI"
         }
     }
 
@@ -32,6 +35,8 @@ enum AppBackgroundMode: String, CaseIterable, Identifiable, Codable {
             "Сломанный телевизор"
         case .video:
             "Видео фон"
+        case .aiGenerated:
+            "AI Wallpaper"
         }
     }
 }
@@ -51,6 +56,7 @@ final class AppSettingsStore {
         static let backgroundVideoBrightness = "backgroundVideoBrightness"
         static let backgroundVideoGreenTint = "backgroundVideoGreenTint"
         static let backgroundVideoGridIntensity = "backgroundVideoGridIntensity"
+        static let activeAIVisualPresetID = "activeAIVisualPresetID"
         static let tvStaticVariant = "tvStaticVariant"
         static let tvStaticSpeed = "tvStaticSpeed"
         static let tvStaticParticleSize = "tvStaticParticleSize"
@@ -180,6 +186,12 @@ final class AppSettingsStore {
         }
     }
 
+    var activeAIVisualPresetID: UUID? {
+        didSet {
+            userDefaults.set(activeAIVisualPresetID?.uuidString, forKey: Keys.activeAIVisualPresetID)
+        }
+    }
+
     var tvStaticVariant: TVStaticNoiseVariant {
         didSet {
             userDefaults.set(tvStaticVariant.rawValue, forKey: Keys.tvStaticVariant)
@@ -300,6 +312,7 @@ final class AppSettingsStore {
         backgroundVideoBrightness = 0.08
         backgroundVideoGreenTint = 0.34
         backgroundVideoGridIntensity = 0
+        activeAIVisualPresetID = nil
         tvStaticVariant = TVStaticNoiseConfiguration.default.variant
         tvStaticSpeed = TVStaticNoiseConfiguration.default.speed
         tvStaticParticleSize = TVStaticNoiseConfiguration.default.particleSize
@@ -328,6 +341,7 @@ final class AppSettingsStore {
         backgroundVideoBrightness: Double = 0.08,
         backgroundVideoGreenTint: Double = 0.34,
         backgroundVideoGridIntensity: Double = 0,
+        activeAIVisualPresetID: UUID? = nil,
         tvStaticVariant: TVStaticNoiseVariant = TVStaticNoiseConfiguration.default.variant,
         tvStaticSpeed: Double = TVStaticNoiseConfiguration.default.speed,
         tvStaticParticleSize: Double = TVStaticNoiseConfiguration.default.particleSize,
@@ -349,6 +363,7 @@ final class AppSettingsStore {
         self.summaryActionMenuAllowsMultiple = summaryActionMenuAllowsMultiple
         self.personalCartMarkers = personalCartMarkers.normalized()
         self.backgroundVideoRelativePath = backgroundVideoRelativePath
+        self.activeAIVisualPresetID = activeAIVisualPresetID
         self.tvStaticVariant = tvStaticVariant
         self.storedStatusPaletteSaturation = Self.normalizedStatusPaletteSaturation(statusPaletteSaturation)
         self.storedMatrixSpeed = Self.normalizedMatrixSpeed(matrixSpeed)
@@ -387,6 +402,7 @@ final class AppSettingsStore {
         let backgroundVideoBrightness = userDefaults.object(forKey: Keys.backgroundVideoBrightness) as? Double ?? 0.08
         let backgroundVideoGreenTint = userDefaults.object(forKey: Keys.backgroundVideoGreenTint) as? Double ?? 0.34
         let backgroundVideoGridIntensity = userDefaults.object(forKey: Keys.backgroundVideoGridIntensity) as? Double ?? 0
+        let activeAIVisualPresetID = userDefaults.string(forKey: Keys.activeAIVisualPresetID).flatMap(UUID.init(uuidString:))
         let tvStaticSpeed = userDefaults.object(forKey: Keys.tvStaticSpeed) as? Double
             ?? TVStaticNoiseConfiguration.default.speed
         let tvStaticParticleSize = userDefaults.object(forKey: Keys.tvStaticParticleSize) as? Double
@@ -421,6 +437,7 @@ final class AppSettingsStore {
             backgroundVideoBrightness: backgroundVideoBrightness,
             backgroundVideoGreenTint: backgroundVideoGreenTint,
             backgroundVideoGridIntensity: backgroundVideoGridIntensity,
+            activeAIVisualPresetID: activeAIVisualPresetID,
             tvStaticVariant: tvStaticVariant,
             tvStaticSpeed: tvStaticSpeed,
             tvStaticParticleSize: tvStaticParticleSize,

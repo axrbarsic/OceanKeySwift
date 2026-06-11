@@ -101,6 +101,9 @@ verification.
   separate SwiftData store prepared for CloudKit private database sync. The app
   now reports whether that preset store is truly Apple-synced or only running in
   local fallback.
+- Saved DeepSeek Matrix presets are now first-class selectable backgrounds:
+  Settings exposes an `AI` app-background mode, stores the active preset id, and
+  renders the payload through the native SpriteKit Matrix runtime.
 - Physical iPhone builds that include the real CloudKit entitlements are blocked
   until the `com.alex.oceankey.swift` provisioning profile is regenerated with
   iCloud/CloudKit, Push Notifications, and the

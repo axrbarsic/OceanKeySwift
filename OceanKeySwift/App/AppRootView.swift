@@ -33,6 +33,7 @@ struct AppRootView: View {
         .environment(\.appBackgroundVideoGridIntensity, appSettings.backgroundVideoGridIntensity)
         .environment(\.matrixRainConfiguration, appSettings.matrixConfiguration)
         .environment(\.tvStaticNoiseConfiguration, appSettings.tvStaticNoiseConfiguration)
+        .environment(\.activeAIVisualPreset, activeAIVisualPreset)
         .environment(\.experimentalCellPhysicsEnabled, appSettings.developerCellPhysicsEnabled)
         .environment(\.experimentalCellSpringIntensity, appSettings.developerCellSpringIntensity)
         .environment(\.experimentalCellSpringSpeed, appSettings.developerCellSpringSpeed)
@@ -43,5 +44,13 @@ struct AppRootView: View {
             .live(interactionFeedbackService)
         )
         .preferredColorScheme(.dark)
+        .onAppear {
+            aiVisualPresetStore.load()
+        }
+    }
+
+    private var activeAIVisualPreset: AIVisualPreset? {
+        guard let activeID = appSettings.activeAIVisualPresetID else { return nil }
+        return aiVisualPresetStore.presets.first { $0.id == activeID && $0.kind == .matrixCodeRain }
     }
 }

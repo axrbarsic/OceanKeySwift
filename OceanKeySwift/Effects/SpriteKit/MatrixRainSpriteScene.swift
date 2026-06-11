@@ -38,15 +38,15 @@ final class MatrixRainSpriteScene: SKScene, ResizableSpriteScene {
         guard size.width > 0, size.height > 0 else { return }
         removeAllChildren()
         drops.removeAll(keepingCapacity: true)
-        backgroundColor = MatrixRainMetrics.background
+        backgroundColor = configuration.backgroundColor
 
         let backgroundNode = SKShapeNode(rect: CGRect(origin: .zero, size: size))
-        backgroundNode.fillColor = MatrixRainMetrics.background
+        backgroundNode.fillColor = configuration.backgroundColor
         backgroundNode.strokeColor = .clear
         backgroundNode.zPosition = -20
         addChild(backgroundNode)
 
-        for _ in 0..<MatrixRainMetrics.highDropCount {
+        for _ in 0..<configuration.dropCount {
             spawnDrop(startY: CGFloat.random(in: -2...0, using: &random))
         }
 
@@ -61,7 +61,20 @@ final class MatrixRainSpriteScene: SKScene, ResizableSpriteScene {
 
     func apply(configuration: MatrixRainConfiguration) {
         guard self.configuration != configuration else { return }
+        let shouldRebuild = self.configuration.seed != configuration.seed ||
+            self.configuration.glyphSource != configuration.glyphSource ||
+            self.configuration.palette != configuration.palette
         self.configuration = configuration
+        if let seed = configuration.seed {
+            random = GKLinearCongruentialRandomSource(seed: UInt64(abs(seed)))
+        }
+        if shouldRebuild, size.width > 0, size.height > 0 {
+            resize(to: size)
+        } else {
+            for drop in drops {
+                drop.apply(configuration: configuration)
+            }
+        }
     }
 
     override func update(_ currentTime: TimeInterval) {
@@ -97,7 +110,7 @@ final class MatrixRainSpriteScene: SKScene, ResizableSpriteScene {
 
     private func configureScene() {
         scaleMode = .resizeFill
-        backgroundColor = MatrixRainMetrics.background
+        backgroundColor = configuration.backgroundColor
         anchorPoint = .zero
     }
 
@@ -107,7 +120,8 @@ final class MatrixRainSpriteScene: SKScene, ResizableSpriteScene {
             y: startY,
             velocity: 0.3 + CGFloat(random.nextUniform()) * 1.2,
             opacity: 0.28 + CGFloat(random.nextUniform()) * 0.58,
-            glyphs: (0..<(8 + random.nextInt(upperBound: 25))).map { _ in randomGlyph() }
+            glyphs: (0..<(8 + random.nextInt(upperBound: 25))).map { _ in randomGlyph() },
+            configuration: configuration
         )
         drops.append(drop)
         addChild(drop)
@@ -115,16 +129,17 @@ final class MatrixRainSpriteScene: SKScene, ResizableSpriteScene {
     }
 
     private func syncDropCount() {
-        while drops.count > MatrixRainMetrics.highDropCount {
+        while drops.count > configuration.dropCount {
             drops.removeLast().removeFromParent()
         }
-        while drops.count < MatrixRainMetrics.highDropCount {
+        while drops.count < configuration.dropCount {
             spawnDrop(startY: CGFloat.random(in: -1...0, using: &random))
         }
     }
 
     private func randomGlyph() -> String {
-        String(MatrixRainMetrics.glyphs[random.nextInt(upperBound: MatrixRainMetrics.glyphs.count)])
+        let glyphs = configuration.glyphSource.glyphs
+        return String(glyphs[random.nextInt(upperBound: glyphs.count)])
     }
 
     private static func makeVignetteTexture(size: CGSize) -> SKTexture {
@@ -137,7 +152,7 @@ final class MatrixRainSpriteScene: SKScene, ResizableSpriteScene {
             let colorSpace = CGColorSpaceCreateDeviceRGB()
             let colors = [
                 UIColor.clear.cgColor,
-                MatrixRainMetrics.background.withAlphaComponent(0.74).cgColor
+                UIColor(red: 2 / 255, green: 8 / 255, blue: 4 / 255, alpha: 0.74).cgColor
             ] as CFArray
             let locations: [CGFloat] = [0, 1]
             guard let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: locations) else {
@@ -164,6 +179,7 @@ private final class MatrixRainDrop: SKNode {
     let velocity: CGFloat
     let opacity: CGFloat
     private var glyphs: [String]
+    private var configuration: MatrixRainConfiguration
     private var glyphNodes: [SKSpriteNode] = []
     private var glowNodesByHead: [SKSpriteNode] = []
 
@@ -172,19 +188,27 @@ private final class MatrixRainDrop: SKNode {
         y: CGFloat,
         velocity: CGFloat,
         opacity: CGFloat,
-        glyphs: [String]
+        glyphs: [String],
+        configuration: MatrixRainConfiguration
     ) {
         self.x = x
         self.y = y
         self.velocity = velocity
         self.opacity = opacity
         self.glyphs = glyphs
+        self.configuration = configuration
         super.init()
         buildNodes()
     }
 
     required init?(coder: NSCoder) {
         nil
+    }
+
+    func apply(configuration: MatrixRainConfiguration) {
+        guard self.configuration != configuration else { return }
+        self.configuration = configuration
+        updateColors()
     }
 
     func layout(in size: CGSize) {
@@ -216,17 +240,19 @@ private final class MatrixRainDrop: SKNode {
                 ? opacity
                 : opacity * (1.0 - CGFloat(index) / CGFloat(max(glyphNodes.count, 1))) * 0.7
             let brightness: CGFloat = index < 3 ? 0.9 : 0.4
+            let glyph = configuration.palette.glyph
             node.color = UIColor(
-                red: (130 / 255) * brightness,
-                green: brightness,
-                blue: (100 / 255) * brightness,
+                red: glyph.red * brightness,
+                green: glyph.green * brightness,
+                blue: glyph.blue * brightness,
                 alpha: 1
             )
             node.alpha = alpha.clamped(to: 0...1)
         }
+        let glow = configuration.palette.glyph
         for node in glowNodesByHead {
-            node.color = UIColor(red: 128 / 255, green: 1, blue: 128 / 255, alpha: 1)
-            node.alpha = opacity * 0.6
+            node.color = UIColor(red: glow.red, green: glow.green, blue: glow.blue, alpha: 1)
+            node.alpha = opacity * 0.82 * configuration.normalizedGlow
         }
     }
 
@@ -323,6 +349,21 @@ private enum MatrixRainMetrics {
     static let charHeight = fontSize * 1.2
     static let background = UIColor(red: 2 / 255, green: 8 / 255, blue: 4 / 255, alpha: 1)
     static let highDropCount = 80
+}
+
+private extension MatrixRainConfiguration {
+    var backgroundColor: UIColor {
+        UIColor(
+            red: palette.background.red,
+            green: palette.background.green,
+            blue: palette.background.blue,
+            alpha: 1
+        )
+    }
+
+    var dropCount: Int {
+        Int((24 + normalizedDensity * 116).rounded())
+    }
 }
 
 private extension CGFloat {

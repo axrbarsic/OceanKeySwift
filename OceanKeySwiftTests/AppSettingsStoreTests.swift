@@ -70,6 +70,23 @@ func appSettingsPersistsBackgroundVideoSettings() {
 }
 
 @Test
+func appSettingsPersistsAIBackgroundPresetSelection() {
+    let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let presetID = UUID()
+
+    let settings = AppSettingsStore(userDefaults: defaults)
+    settings.appBackgroundMode = .aiGenerated
+    settings.activeAIVisualPresetID = presetID
+
+    let loaded = AppSettingsStore.load(userDefaults: defaults)
+
+    #expect(loaded.appBackgroundMode == .aiGenerated)
+    #expect(loaded.activeAIVisualPresetID == presetID)
+}
+
+@Test
 func appSettingsPersistsTVStaticBackgroundSettings() {
     let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
     let defaults = UserDefaults(suiteName: suiteName)!
@@ -225,6 +242,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     settings.statusPaletteSaturation = 1.52
     settings.matrixSpeed = 2.2
     settings.backgroundVideoRelativePath = "Background/video-wallpaper.mov"
+    settings.activeAIVisualPresetID = UUID()
     settings.backgroundVideoBlur = 0.7
     settings.backgroundVideoBrightness = 0.33
     settings.backgroundVideoGreenTint = 0.81
@@ -251,6 +269,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     #expect(loaded.statusPaletteSaturation == 1)
     #expect(loaded.matrixSpeed == MatrixRainConfiguration.default.speed)
     #expect(loaded.backgroundVideoRelativePath == nil)
+    #expect(loaded.activeAIVisualPresetID == nil)
     #expect(loaded.backgroundVideoBlur == 0.28)
     #expect(loaded.backgroundVideoBrightness == 0.08)
     #expect(loaded.backgroundVideoGreenTint == 0.34)

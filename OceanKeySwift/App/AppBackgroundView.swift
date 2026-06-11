@@ -8,12 +8,18 @@ struct AppBackgroundView: View {
     @Environment(\.appBackgroundVideoGreenTint) private var appBackgroundVideoGreenTint
     @Environment(\.appBackgroundVideoGridIntensity) private var appBackgroundVideoGridIntensity
     @Environment(\.tvStaticNoiseConfiguration) private var tvStaticNoiseConfiguration
+    @Environment(\.activeAIVisualPreset) private var activeAIVisualPreset
 
     var body: some View {
         ZStack {
             Color.black
             if appBackgroundMode == .matrixRain {
                 SpriteKitEffectView(.matrixRain)
+            } else if appBackgroundMode == .aiGenerated {
+                SpriteKitEffectView(
+                    .matrixRain,
+                    matrixConfiguration: activeAIVisualPreset.map(MatrixRainConfiguration.aiPreset) ?? .default
+                )
             } else if appBackgroundMode == .tvStaticNoise {
                 TVStaticNoiseBackgroundView(configuration: tvStaticNoiseConfiguration)
             } else if appBackgroundMode == .video, let appBackgroundVideoURL {

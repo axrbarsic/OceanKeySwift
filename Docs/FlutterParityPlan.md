@@ -215,3 +215,6 @@ Simulator unless explicitly allowed.
   cleaned up.
 - Video wallpaper controls now include stronger green tint, wider brightness,
   matte blur, scanline/grid overlay, and the playback watchdog.
+- DeepSeek-generated Matrix live wallpaper presets are no longer write-only:
+  saved presets can be activated from Background settings or DeepSeek Lab, and
+  their payload drives the native SpriteKit Matrix renderer.

@@ -106,6 +106,40 @@ func deepSeekPresetDecodeClampsPayloadAndKeepsRequestedKind() throws {
     #expect(draft.payload.density == 1)
 }
 
+@Test
+func matrixRainConfigurationUsesAIVisualPresetPayload() {
+    let preset = AIVisualPreset(
+        id: UUID(),
+        title: "Swift Rain",
+        summary: "Generated wallpaper.",
+        kind: .matrixCodeRain,
+        payload: AIVisualPresetPayload(
+            palette: "emerald_code",
+            speed: 2.4,
+            glow: 0.91,
+            blur: 0.2,
+            density: 0.36,
+            glyphSource: "swift_code",
+            motion: "downward_code_rain",
+            seed: 77
+        ),
+        modelTier: .pro,
+        prompt: "swift rain",
+        isFavorite: true,
+        createdAt: Date(),
+        updatedAt: Date()
+    )
+
+    let configuration = MatrixRainConfiguration.aiPreset(preset)
+
+    #expect(configuration.speed == 2.4)
+    #expect(configuration.glow == 0.91)
+    #expect(configuration.density == 0.36)
+    #expect(configuration.glyphSource == .swiftCode)
+    #expect(configuration.palette == .emeraldCode)
+    #expect(configuration.seed == 77)
+}
+
 private func temporaryUserDefaults() throws -> UserDefaults {
     let suiteName = "OceanKeySwiftTests.\(UUID().uuidString)"
     guard let userDefaults = UserDefaults(suiteName: suiteName) else {
