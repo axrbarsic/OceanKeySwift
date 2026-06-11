@@ -43,15 +43,22 @@ be added behind that boundary after the domain model and input flow are stable.
    - Keep the persisted SwiftData model compatible with CloudKit: don't rely on
      local-only uniqueness constraints, and keep relationships optional so
      CloudKit can process related changes in its own order.
-   - Current installed builds request SwiftData private CloudKit sync through
-     `iCloud.com.alex.oceankey.swift`; if the signed profile, iCloud account,
-     or simulator runtime cannot open CloudKit, the repository falls back to
-     persistent local SwiftData instead of in-memory storage.
-   - On Alex's current Personal Team provisioning, iCloud/Push entitlements
-     cannot be signed for a physical iPhone. The simulator target carries the
-     CloudKit entitlement for schema/runtime testing; physical-device builds
-     stay installable and report local fallback until a paid/capable Apple
-     Developer profile is available.
+   - Current AI visual preset drafts are stored as lightweight JSON in a
+     separate SwiftData store configured for private CloudKit sync through
+     `iCloud.com.alex.oceankey.swift`.
+   - The preset store must report its real storage mode. If CloudKit store
+     creation fails, UI must show local fallback instead of implying that
+     Apple sync is active.
+   - As of 2026-06-10, physical-device signing is blocked because the local
+     provisioning profile `iOS Team Provisioning Profile:
+     com.alex.oceankey.swift` contains neither `aps-environment` nor
+     `com.apple.developer.icloud-*` entitlements and does not support the
+     `iCloud.com.alex.oceankey.swift` container.
+   - To unblock real iPhone sync, enable iCloud/CloudKit and Push Notifications
+     for App ID `com.alex.oceankey.swift`, attach/create container
+     `iCloud.com.alex.oceankey.swift`, regenerate/download the development
+     provisioning profile, then run the device build again with
+     `-allowProvisioningUpdates`.
    - `SwiftDataWorkSessionRepository.SyncMode` is now the explicit boundary for
      that future switch; default app construction still uses `.localOnly`.
    - Merge/conflict rules are tracked in `Docs/AppleSyncConflictPolicy.md` and

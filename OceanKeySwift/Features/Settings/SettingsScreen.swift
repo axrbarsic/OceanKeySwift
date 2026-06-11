@@ -3,6 +3,7 @@ import SwiftUI
 
 struct SettingsScreen: View {
     @Bindable var appSettings: AppSettingsStore
+    @Bindable var aiVisualPresetStore: AIVisualPresetStore
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.interactionFeedback) private var feedback
@@ -79,6 +80,7 @@ struct SettingsScreen: View {
             workSection
         case .developer:
             experimentalSection
+            deepSeekLabSection
             developerSection
         }
     }
@@ -120,30 +122,6 @@ struct SettingsScreen: View {
                 )
             }
 
-            Toggle(isOn: $appSettings.developerVIPFlickerEnabled) {
-                SettingsInfoRow(
-                    title: "VIP-мерцание",
-                    value: appSettings.developerVIPFlickerEnabled ? "Вкл" : "Выкл",
-                    systemName: "bolt.fill",
-                    subtitle: "Быстрое статусное мерцание без чёрного шума и грубых блоков."
-                )
-            }
-            .tint(OceanKeyTheme.accent)
-            .onChange(of: appSettings.developerVIPFlickerEnabled) { _, _ in
-                feedback.confirm()
-            }
-
-            if appSettings.developerVIPFlickerEnabled {
-                SettingsSliderRow(
-                    title: "Скорость мерцания",
-                    valueLabel: "\(String(format: "%.2f", appSettings.developerVIPFlickerSpeed))x",
-                    systemName: "speedometer",
-                    range: 0.4...4.0,
-                    defaultValue: 1.6,
-                    value: $appSettings.developerVIPFlickerSpeed
-                )
-            }
-
             Toggle(isOn: $appSettings.developerVIPJellyEnabled) {
                 SettingsInfoRow(
                     title: "VIP-желе",
@@ -168,6 +146,13 @@ struct SettingsScreen: View {
                 )
             }
         }
+    }
+
+    private var deepSeekLabSection: some View {
+        DeepSeekLabSection(
+            presetStore: aiVisualPresetStore,
+            modelTier: $appSettings.deepSeekModelTier
+        )
     }
 
     private var developerSection: some View {
@@ -456,7 +441,8 @@ struct SettingsScreen: View {
 
 #Preview {
     SettingsScreen(
-        appSettings: AppSettingsStore()
+        appSettings: AppSettingsStore(),
+        aiVisualPresetStore: try! AIVisualPresetStore(inMemory: true)
     )
         .preferredColorScheme(.dark)
 }

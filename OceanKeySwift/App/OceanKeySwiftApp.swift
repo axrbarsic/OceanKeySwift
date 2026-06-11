@@ -5,6 +5,7 @@ import SwiftUI
 struct OceanKeySwiftApp: App {
     @State private var workSession: WorkSessionStore
     @State private var appSettings: AppSettingsStore
+    @State private var aiVisualPresetStore: AIVisualPresetStore
     @State private var performanceTelemetry: PerformanceTelemetryStore
     @State private var appleSyncStatus: AppleSyncStatus
     @State private var didRequestWorkSessionLoad = false
@@ -18,8 +19,19 @@ struct OceanKeySwiftApp: App {
         workSessionRepository = repository
         _workSession = State(initialValue: WorkSessionStore.bootstrapping(repository: repository))
         _appSettings = State(initialValue: AppSettingsStore.load())
+        _aiVisualPresetStore = State(initialValue: Self.makeAIVisualPresetStore())
         _performanceTelemetry = State(initialValue: PerformanceTelemetryStore())
         _appleSyncStatus = State(initialValue: .repository(repository))
+    }
+
+    @MainActor
+    private static func makeAIVisualPresetStore() -> AIVisualPresetStore {
+        do {
+            return try AIVisualPresetStore()
+        } catch {
+            return (try? AIVisualPresetStore(localFallbackReason: error.localizedDescription))
+                ?? (try! AIVisualPresetStore(inMemory: true))
+        }
     }
 
     var body: some Scene {
@@ -27,6 +39,7 @@ struct OceanKeySwiftApp: App {
             AppRootView(
                 workSession: workSession,
                 appSettings: appSettings,
+                aiVisualPresetStore: aiVisualPresetStore,
                 performanceTelemetry: performanceTelemetry,
                 interactionFeedbackService: interactionFeedback
             )

@@ -5,6 +5,7 @@ struct SummaryScreen: View {
 
     @Bindable var workSession: WorkSessionStore
     @Bindable var appSettings: AppSettingsStore
+    @Bindable var aiVisualPresetStore: AIVisualPresetStore
     @Bindable var performanceTelemetry: PerformanceTelemetryStore
     @Environment(\.interactionFeedback) private var feedback
     @Environment(\.scheduleNotifications) private var scheduleNotifications
@@ -76,7 +77,8 @@ struct SummaryScreen: View {
         }
         .sheet(isPresented: $isSettingsPresented) {
             SettingsScreen(
-                appSettings: appSettings
+                appSettings: appSettings,
+                aiVisualPresetStore: aiVisualPresetStore
             )
                 .preferredColorScheme(.dark)
         }
@@ -151,6 +153,7 @@ struct SummaryScreen: View {
     SummaryScreen(
         workSession: .preview(),
         appSettings: AppSettingsStore(),
+        aiVisualPresetStore: try! AIVisualPresetStore(inMemory: true),
         performanceTelemetry: PerformanceTelemetryStore()
     )
 }

@@ -10,6 +10,24 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (102)",
+            date: "2026-06-10",
+            changes: [
+                "Made DeepSeek visual presets report their real Apple sync mode instead of silently falling back to temporary memory storage.",
+                "Added an explicit local fallback path for AI presets with a visible warning when CloudKit provisioning is not available.",
+                "Kept generated preset storage isolated in its own SwiftData store so it cannot collide with work-session persistence."
+            ]
+        ),
+        BuildChangelogEntry(
+            version: "0.2.0 (101)",
+            date: "2026-06-10",
+            changes: [
+                "Added a developer DeepSeek Lab for generating lightweight Matrix and VIP visual presets from prompts.",
+                "Stored DeepSeek API keys in iOS Keychain instead of source code and saved generated preset JSON through SwiftData for Apple sync.",
+                "Removed the visible VIP flicker experiment from the cell rendering path so future VIP experiments go through saved AI presets."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (100)",
             date: "2026-06-10",
             changes: [

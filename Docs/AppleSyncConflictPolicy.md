@@ -36,14 +36,14 @@ rules before the CloudKit adapter exists.
 SwiftData migration keeps legacy setup selection rows active when their new
 selected/deselected flag is absent, preventing upgrade-time data loss.
 The repo now connects the CloudKit entitlement for
-`iCloud.com.alex.oceankey.swift` to simulator signing, declares
-`remote-notification` background mode, and bootstraps SwiftData through private
-CloudKit by default. Physical iPhone signing on the current Personal Team cannot
-carry iCloud/Push capabilities, so device builds remain installable by falling
-back to local storage until a capable Apple Developer profile is available.
-Local-first remains the behavioral rule: if CloudKit cannot open on a simulator,
-iCloud-signed profile, or signed-out device, the repository falls back to
-persistent local SwiftData instead of replacing newer local data.
+`iCloud.com.alex.oceankey.swift`, declares `remote-notification` background
+mode, and prepares a separate AI visual preset SwiftData store for private
+CloudKit sync. Physical iPhone signing is blocked until the
+`com.alex.oceankey.swift` development provisioning profile includes iCloud,
+CloudKit, Push Notifications, and the `iCloud.com.alex.oceankey.swift`
+container. Local-first remains the behavioral rule: if CloudKit cannot open on a
+simulator, iCloud-signed profile, or signed-out device, the app must expose that
+fallback clearly instead of pretending data is already online.
 
 Default rule:
 

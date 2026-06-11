@@ -3,6 +3,7 @@ import SwiftUI
 struct AppRootView: View {
     @Bindable var workSession: WorkSessionStore
     @Bindable var appSettings: AppSettingsStore
+    @Bindable var aiVisualPresetStore: AIVisualPresetStore
     @Bindable var performanceTelemetry: PerformanceTelemetryStore
     let interactionFeedbackService: InteractionFeedbackService
 
@@ -12,12 +13,14 @@ struct AppRootView: View {
                 SummaryScreen(
                     workSession: workSession,
                     appSettings: appSettings,
+                    aiVisualPresetStore: aiVisualPresetStore,
                     performanceTelemetry: performanceTelemetry
                 )
             } else {
                 WorkSetupScreen(
                     workSession: workSession,
                     appSettings: appSettings,
+                    aiVisualPresetStore: aiVisualPresetStore,
                     performanceTelemetry: performanceTelemetry
                 )
             }
@@ -33,8 +36,6 @@ struct AppRootView: View {
         .environment(\.experimentalCellPhysicsEnabled, appSettings.developerCellPhysicsEnabled)
         .environment(\.experimentalCellSpringIntensity, appSettings.developerCellSpringIntensity)
         .environment(\.experimentalCellSpringSpeed, appSettings.developerCellSpringSpeed)
-        .environment(\.experimentalVIPFlickerEnabled, appSettings.developerVIPFlickerEnabled)
-        .environment(\.experimentalVIPFlickerSpeed, appSettings.developerVIPFlickerSpeed)
         .environment(\.experimentalVIPJellyEnabled, appSettings.developerVIPJellyEnabled)
         .environment(\.experimentalVIPJellySpeed, appSettings.developerVIPJellySpeed)
         .environment(

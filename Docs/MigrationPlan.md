@@ -97,6 +97,14 @@ verification.
   `iCloud.com.alex.oceankey.swift`, but activation is currently blocked by the
   installed Apple Development provisioning profile, which does not yet include
   iCloud/Push capabilities.
+- DeepSeek visual preset drafts are stored as lightweight JSON payloads in a
+  separate SwiftData store prepared for CloudKit private database sync. The app
+  now reports whether that preset store is truly Apple-synced or only running in
+  local fallback.
+- Physical iPhone builds that include the real CloudKit entitlements are blocked
+  until the `com.alex.oceankey.swift` provisioning profile is regenerated with
+  iCloud/CloudKit, Push Notifications, and the
+  `iCloud.com.alex.oceankey.swift` container.
 - Physical iPhone install is active through the local Apple Development profile
   for `com.alex.oceankey.swift`
 - Project generation: XcodeGen through `project.yml`

@@ -6,8 +6,6 @@ struct RoomCellView: View {
     @Environment(\.experimentalCellPhysicsEnabled) private var experimentalCellPhysicsEnabled
     @Environment(\.experimentalCellSpringIntensity) private var experimentalCellSpringIntensity
     @Environment(\.experimentalCellSpringSpeed) private var experimentalCellSpringSpeed
-    @Environment(\.experimentalVIPFlickerEnabled) private var experimentalVIPFlickerEnabled
-    @Environment(\.experimentalVIPFlickerSpeed) private var experimentalVIPFlickerSpeed
     @Environment(\.experimentalVIPJellyEnabled) private var experimentalVIPJellyEnabled
     @Environment(\.experimentalVIPJellySpeed) private var experimentalVIPJellySpeed
 
@@ -93,11 +91,6 @@ struct RoomCellView: View {
         .frame(height: geometry.tileHeight)
         .foregroundStyle(OceanKeyTheme.roomForeground)
         .background(cellFill)
-        .vipFlickerEffect(
-            enabled: room.isVIP && experimentalVIPFlickerEnabled,
-            shape: tileShape,
-            speed: experimentalVIPFlickerSpeed
-        )
         .overlay(alignment: .bottomTrailing) {
             if let scheduleLabel = room.scheduleLabel {
                 Text(scheduleLabel)
@@ -347,25 +340,6 @@ struct RoomCellView: View {
 }
 
 private extension View {
-    @ViewBuilder
-    func vipFlickerEffect(
-        enabled: Bool,
-        shape: UnevenRoundedRectangle,
-        speed: Double
-    ) -> some View {
-        if enabled {
-            self.overlay {
-                VIPFlickerOverlay(shape: shape, speed: speed)
-                    .allowsHitTesting(false)
-            }
-        } else {
-            self
-        }
-    }
-
-}
-
-private extension View {
     /// Единый монолитный warp: ячейка уже растеризована (`compositingGroup`)
     /// вместе с заливкой, рамкой, номером, S/L/B и бейджами, и ВЕСЬ слой
     /// деформируется одним Metal-полем. Контур и содержимое по построению
@@ -554,42 +528,6 @@ private struct VIPJellyCellShape: Shape {
         let value = slow * 0.52 + medium * 0.31 + fast * 0.11 + drift * 0.06
         return CGFloat(value) * amplitude
     }
-}
-
-private struct VIPFlickerOverlay: View {
-    let shape: UnevenRoundedRectangle
-    let speed: Double
-
-    var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
-            let time = timeline.date.timeIntervalSinceReferenceDate
-            let normalizedSpeed = min(max(speed, 0.4), 4.0)
-            let shimmer = vipFlickerValue(time: time, speed: normalizedSpeed)
-            let flash = pow(shimmer, 2.2)
-            let dip = max(0, 0.5 - shimmer) * 0.42
-            ZStack {
-                shape
-                    .fill(.white.opacity(0.06 + flash * 0.42))
-                    .blendMode(.screen)
-                shape
-                    .fill(.black.opacity(dip))
-                    .blendMode(.multiply)
-                shape
-                    .stroke(.white.opacity(0.08 + flash * 0.24), lineWidth: 1.2)
-                    .blendMode(.screen)
-            }
-            .compositingGroup()
-        }
-    }
-
-}
-
-private func vipFlickerValue(time: TimeInterval, speed: Double) -> Double {
-    let fast = sin(time * 32.0 * speed)
-    let faster = sin(time * 71.0 * speed + 1.7)
-    let pulse = sin(time * 11.0 * speed + 0.4)
-    let combined = fast * 0.42 + faster * 0.34 + pulse * 0.24
-    return min(max((combined + 1) * 0.5, 0), 1)
 }
 
 private struct RoomMediaIndicator: View {

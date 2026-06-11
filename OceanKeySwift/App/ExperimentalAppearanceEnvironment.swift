@@ -12,14 +12,6 @@ private struct ExperimentalCellSpringSpeedKey: EnvironmentKey {
     static let defaultValue = 0.82
 }
 
-private struct ExperimentalVIPFlickerEnabledKey: EnvironmentKey {
-    static let defaultValue = false
-}
-
-private struct ExperimentalVIPFlickerSpeedKey: EnvironmentKey {
-    static let defaultValue = 1.6
-}
-
 private struct ExperimentalVIPJellyEnabledKey: EnvironmentKey {
     static let defaultValue = false
 }
@@ -42,16 +34,6 @@ extension EnvironmentValues {
     var experimentalCellSpringSpeed: Double {
         get { self[ExperimentalCellSpringSpeedKey.self] }
         set { self[ExperimentalCellSpringSpeedKey.self] = newValue }
-    }
-
-    var experimentalVIPFlickerEnabled: Bool {
-        get { self[ExperimentalVIPFlickerEnabledKey.self] }
-        set { self[ExperimentalVIPFlickerEnabledKey.self] = newValue }
-    }
-
-    var experimentalVIPFlickerSpeed: Double {
-        get { self[ExperimentalVIPFlickerSpeedKey.self] }
-        set { self[ExperimentalVIPFlickerSpeedKey.self] = newValue }
     }
 
     var experimentalVIPJellyEnabled: Bool {

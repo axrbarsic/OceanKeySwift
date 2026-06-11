@@ -59,6 +59,7 @@ final class AppSettingsStore {
         static let developerCellPhysicsEnabled = "developerCellPhysicsEnabled"
         static let developerCellSpringIntensity = "developerCellSpringIntensity"
         static let developerCellSpringSpeed = "developerCellSpringSpeed"
+        static let deepSeekModelTier = "deepSeekModelTier"
         static let developerVIPFlickerEnabled = "developerVIPFlickerEnabled"
         static let developerVIPFlickerSpeed = "developerVIPFlickerSpeed"
         // Keep the old key names so existing installs migrate VIP breathing into the replacement VIP jelly mode.
@@ -82,6 +83,11 @@ final class AppSettingsStore {
     private var storedDeveloperCellSpringSpeed: Double
     private var storedDeveloperVIPFlickerSpeed: Double
     private var storedDeveloperVIPJellySpeed: Double
+    var deepSeekModelTier: DeepSeekModelTier {
+        didSet {
+            userDefaults.set(deepSeekModelTier.rawValue, forKey: Keys.deepSeekModelTier)
+        }
+    }
 
     var appBackgroundMode: AppBackgroundMode {
         didSet {
@@ -302,6 +308,7 @@ final class AppSettingsStore {
         developerCellPhysicsEnabled = false
         developerCellSpringIntensity = 0.72
         developerCellSpringSpeed = 0.82
+        deepSeekModelTier = .pro
         developerVIPFlickerEnabled = false
         developerVIPFlickerSpeed = 1.6
         developerVIPJellyEnabled = true
@@ -329,6 +336,7 @@ final class AppSettingsStore {
         developerCellPhysicsEnabled: Bool = false,
         developerCellSpringIntensity: Double = 0.72,
         developerCellSpringSpeed: Double = 0.82,
+        deepSeekModelTier: DeepSeekModelTier = .pro,
         developerVIPFlickerEnabled: Bool = false,
         developerVIPFlickerSpeed: Double = 1.6,
         developerVIPJellyEnabled: Bool = true,
@@ -357,6 +365,7 @@ final class AppSettingsStore {
         self.storedDeveloperVIPFlickerSpeed = Self.normalizedDeveloperVIPFlickerSpeed(developerVIPFlickerSpeed)
         self.storedDeveloperVIPJellySpeed = Self.normalizedDeveloperVIPJellySpeed(developerVIPJellySpeed)
         self.developerCellPhysicsEnabled = developerCellPhysicsEnabled
+        self.deepSeekModelTier = deepSeekModelTier
         self.developerVIPFlickerEnabled = developerVIPFlickerEnabled
         self.developerVIPJellyEnabled = developerVIPJellyEnabled
         self.userDefaults = userDefaults
@@ -392,6 +401,9 @@ final class AppSettingsStore {
         let developerCellPhysicsEnabled = userDefaults.object(forKey: Keys.developerCellPhysicsEnabled) as? Bool ?? false
         let developerCellSpringIntensity = userDefaults.object(forKey: Keys.developerCellSpringIntensity) as? Double ?? 0.72
         let developerCellSpringSpeed = userDefaults.object(forKey: Keys.developerCellSpringSpeed) as? Double ?? 0.82
+        let deepSeekModelTier = userDefaults.string(forKey: Keys.deepSeekModelTier)
+            .flatMap(DeepSeekModelTier.init(rawValue:))
+            ?? .pro
         let developerVIPFlickerEnabled = userDefaults.object(forKey: Keys.developerVIPFlickerEnabled) as? Bool ?? false
         let developerVIPFlickerSpeed = userDefaults.object(forKey: Keys.developerVIPFlickerSpeed) as? Double ?? 1.6
         let developerVIPJellyEnabled = Self.migratedDeveloperVIPJellyEnabled(userDefaults: userDefaults)
@@ -417,6 +429,7 @@ final class AppSettingsStore {
             developerCellPhysicsEnabled: developerCellPhysicsEnabled,
             developerCellSpringIntensity: developerCellSpringIntensity,
             developerCellSpringSpeed: developerCellSpringSpeed,
+            deepSeekModelTier: deepSeekModelTier,
             developerVIPFlickerEnabled: developerVIPFlickerEnabled,
             developerVIPFlickerSpeed: developerVIPFlickerSpeed,
             developerVIPJellyEnabled: developerVIPJellyEnabled,
