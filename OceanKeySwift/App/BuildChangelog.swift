@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (122)",
+            date: "2026-06-11",
+            changes: [
+                "Restored the main OceanKey app to the last stable pre-Margaritaville code path.",
+                "Removed the multi-hotel experiment from the main installed app while preserving that work on a separate backup branch.",
+                "Kept this as a new build number so it can install over newer experimental builds on iPhone."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (104)",
             date: "2026-06-10",
             changes: [
