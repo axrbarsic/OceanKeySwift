@@ -24,6 +24,23 @@ func aiVisualPresetStoreSavesAndReloadsPreset() throws {
 
 @MainActor
 @Test
+func aiVisualPresetStoreReturnsSavedPresetForActivation() throws {
+    let store = try AIVisualPresetStore(inMemory: true)
+    let draft = AIVisualPresetDraft(
+        title: "Включаемая матрица",
+        summary: "Пресет можно сразу включить как фон.",
+        kind: .matrixCodeRain,
+        payload: .matrixDefault
+    )
+
+    let savedPreset = store.save(draft: draft, modelTier: .pro, prompt: "activate")
+
+    #expect(savedPreset?.kind == .matrixCodeRain)
+    #expect(savedPreset?.id == store.presets.first?.id)
+}
+
+@MainActor
+@Test
 func aiVisualPresetStoreReportsStorageModeExplicitly() throws {
     let memoryStore = try AIVisualPresetStore(inMemory: true)
     #expect(memoryStore.storageMode == .memoryOnly)

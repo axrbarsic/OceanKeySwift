@@ -62,7 +62,7 @@ struct SettingsBackgroundSection: View {
         case .matrixRain:
             "Matrix Rain как основной живой фон."
         case .aiGenerated:
-            "Сохранённый DeepSeek-пресет рендерится локально через native SpriteKit."
+            "Активный DeepSeek Matrix-пресет. Его можно включить сразу после генерации кнопкой «Сохранить и включить»."
         case .tvStaticNoise:
             "ShaderKit Dynamic Gray Noise: аналоговый телевизионный снег как основной фон."
         case .video:

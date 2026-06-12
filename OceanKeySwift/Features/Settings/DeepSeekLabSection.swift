@@ -155,13 +155,22 @@ struct DeepSeekLabSection: View {
         case .ready(let draft):
             VStack(alignment: .leading, spacing: 10) {
                 DeepSeekPresetCard(preset: draft)
-                Button(action: saveCurrentDraft) {
+                Button(action: { saveCurrentDraft(activate: false) }) {
                     DeepSeekActionButtonLabel(
                         title: presetStore.storageMode.isAppleSynced ? "Сохранить в Apple" : "Сохранить локально",
                         systemName: presetStore.storageMode.isAppleSynced ? "icloud.and.arrow.up.fill" : "externaldrive.fill"
                     )
                 }
                 .buttonStyle(.plain)
+                if draft.kind == .matrixCodeRain {
+                    Button(action: { saveCurrentDraft(activate: true) }) {
+                        DeepSeekActionButtonLabel(
+                            title: "Сохранить и включить",
+                            systemName: "play.circle.fill"
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
                 if !presetStore.storageMode.isAppleSynced {
                     Text("CloudKit сейчас недоступен: этот вариант сохранится только локально до исправления Apple provisioning.")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
@@ -284,13 +293,19 @@ struct DeepSeekLabSection: View {
         }
     }
 
-    private func saveCurrentDraft() {
+    private func saveCurrentDraft(activate: Bool) {
         feedback.confirm()
         guard case .ready(let draft) = state else { return }
-        presetStore.save(draft: draft, modelTier: modelTier, prompt: prompt)
+        let savedPreset = presetStore.save(draft: draft, modelTier: modelTier, prompt: prompt)
+        if activate, let savedPreset, savedPreset.kind == .matrixCodeRain {
+            appSettings.activeAIVisualPresetID = savedPreset.id
+            appSettings.appBackgroundMode = .aiGenerated
+        }
         state = .idle
         shouldSuggestBackup = true
-        backupMessage = "Готов backup: пресеты и текущая конфигурация заставки."
+        backupMessage = activate
+            ? "AI Wallpaper включён. Его также видно в Настройки → Фон приложения → AI."
+            : "Готов backup: пресеты и текущая конфигурация заставки."
     }
 
     private func exportBackup() {

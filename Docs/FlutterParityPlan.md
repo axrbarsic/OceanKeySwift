@@ -218,3 +218,6 @@ Simulator unless explicitly allowed.
 - DeepSeek-generated Matrix live wallpaper presets are no longer write-only:
   saved presets can be activated from Background settings or DeepSeek Lab, and
   their payload drives the native SpriteKit Matrix renderer.
+- DeepSeek Matrix generation now has an explicit `Сохранить и включить` path,
+  so a newly created live wallpaper becomes the active app background without
+  hunting through icon-only controls.

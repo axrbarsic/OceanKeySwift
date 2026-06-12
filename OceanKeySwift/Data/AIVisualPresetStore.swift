@@ -122,10 +122,11 @@ final class AIVisualPresetStore {
         }
     }
 
-    func save(draft: AIVisualPresetDraft, modelTier: DeepSeekModelTier, prompt: String) {
+    @discardableResult
+    func save(draft: AIVisualPresetDraft, modelTier: DeepSeekModelTier, prompt: String) -> AIVisualPreset? {
         guard let container else {
             lastError = "SwiftData store недоступен, пресет не сохранён."
-            return
+            return nil
         }
         do {
             let now = Date()
@@ -144,8 +145,10 @@ final class AIVisualPresetStore {
             context.insert(record)
             try context.save()
             load()
+            return Self.map(record)
         } catch {
             lastError = error.localizedDescription
+            return nil
         }
     }
 

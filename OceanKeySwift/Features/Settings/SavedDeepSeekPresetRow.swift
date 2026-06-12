@@ -35,12 +35,13 @@ struct SavedDeepSeekPresetRow: View {
 
             if let onActivateBackground {
                 Button(action: onActivateBackground) {
-                    Image(systemName: isActiveBackground ? "checkmark.circle.fill" : "play.circle.fill")
-                        .font(.system(size: 15, weight: .black))
-                        .frame(width: 34, height: 34)
+                    Label(isActiveBackground ? "Включён" : "Включить фон", systemImage: isActiveBackground ? "checkmark.circle.fill" : "play.circle.fill")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
                         .foregroundStyle(isActiveBackground ? OceanKeyTheme.roomForeground : OceanKeyTheme.accent)
+                        .padding(.horizontal, 9)
+                        .frame(height: 34)
                         .background(isActiveBackground ? OceanKeyTheme.accent : OceanKeyTheme.accent.opacity(0.12))
-                        .clipShape(Circle())
+                        .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
             }
