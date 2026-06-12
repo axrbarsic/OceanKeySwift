@@ -3,6 +3,7 @@ import SwiftUI
 struct SummaryHeader: View {
     let counts: SummaryCounts
     @Binding var personalCartMarkers: PersonalCartMarkers
+    let personalCartMarkerInputMode: PersonalCartMarkerInputMode
     let onOpenSettings: () -> Void
     let onOpenSelection: () -> Void
     @Environment(\.interactionFeedback) private var feedback
@@ -16,7 +17,10 @@ struct SummaryHeader: View {
 
                 PersonalCartMarkerStrip(
                     markers: personalCartMarkers,
-                    onStep: stepPersonalCartMarker
+                    inputMode: personalCartMarkerInputMode,
+                    onStep: stepPersonalCartMarker,
+                    onPreviewFloor: previewPersonalCartMarkerFloor,
+                    onSetFloor: setPersonalCartMarkerFloor
                 )
 
                 Spacer(minLength: 6)
@@ -68,6 +72,15 @@ struct SummaryHeader: View {
         personalCartMarkers = personalCartMarkers.settingFloor(nextFloor, for: slot)
         feedback.detent()
     }
+
+    private func previewPersonalCartMarkerFloor(_ slot: PersonalCartMarkerSlot, floor: Int?) {
+        feedback.detent()
+    }
+
+    private func setPersonalCartMarkerFloor(_ slot: PersonalCartMarkerSlot, floor: Int?) {
+        personalCartMarkers = personalCartMarkers.settingFloor(floor, for: slot)
+        feedback.confirm()
+    }
 }
 
 #Preview {
@@ -80,6 +93,7 @@ struct SummaryHeader: View {
     SummaryHeader(
         counts: SummaryCounts(total: 10, completed: 10, remaining: 0),
         personalCartMarkers: $markers,
+        personalCartMarkerInputMode: .swipeDetents,
         onOpenSettings: {},
         onOpenSelection: {}
     )

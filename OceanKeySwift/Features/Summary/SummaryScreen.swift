@@ -27,6 +27,7 @@ struct SummaryScreen: View {
                 SummaryHeader(
                     counts: workSession.counts,
                     personalCartMarkers: $appSettings.personalCartMarkers,
+                    personalCartMarkerInputMode: appSettings.personalCartMarkerInputMode,
                     onOpenSettings: openSettings,
                     onOpenSelection: openSelection
                 )

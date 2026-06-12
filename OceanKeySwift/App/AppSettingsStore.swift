@@ -41,6 +41,22 @@ enum AppBackgroundMode: String, CaseIterable, Identifiable, Codable {
     }
 }
 
+enum PersonalCartMarkerInputMode: String, CaseIterable, Identifiable, Codable {
+    case swipeDetents
+    case pressMenu
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .swipeDetents:
+            "Свайп"
+        case .pressMenu:
+            "Меню"
+        }
+    }
+}
+
 @Observable
 final class AppSettingsStore {
     private enum Keys {
@@ -49,6 +65,7 @@ final class AppSettingsStore {
         static let roomTaskLongPress = "roomTaskLongPress"
         static let summaryActionMenuAllowsMultiple = "summaryActionMenuAllowsMultiple"
         static let personalCartMarkers = "personalCartMarkers"
+        static let personalCartMarkerInputMode = "personalCartMarkerInputMode"
         static let statusPaletteSaturation = "statusPaletteSaturation"
         static let matrixSpeed = "matrixSpeed"
         static let backgroundVideoRelativePath = "backgroundVideoRelativePath"
@@ -122,6 +139,12 @@ final class AppSettingsStore {
     var personalCartMarkers: PersonalCartMarkers {
         didSet {
             Self.savePersonalCartMarkers(personalCartMarkers, userDefaults: userDefaults)
+        }
+    }
+
+    var personalCartMarkerInputMode: PersonalCartMarkerInputMode {
+        didSet {
+            userDefaults.set(personalCartMarkerInputMode.rawValue, forKey: Keys.personalCartMarkerInputMode)
         }
     }
 
@@ -305,6 +328,7 @@ final class AppSettingsStore {
         roomTaskLongPress = true
         summaryActionMenuAllowsMultiple = false
         personalCartMarkers = .default
+        personalCartMarkerInputMode = .swipeDetents
         statusPaletteSaturation = 1
         matrixSpeed = MatrixRainConfiguration.default.speed
         backgroundVideoRelativePath = nil
@@ -334,6 +358,7 @@ final class AppSettingsStore {
         roomTaskLongPress: Bool = true,
         summaryActionMenuAllowsMultiple: Bool = false,
         personalCartMarkers: PersonalCartMarkers = .default,
+        personalCartMarkerInputMode: PersonalCartMarkerInputMode = .swipeDetents,
         statusPaletteSaturation: Double = 1,
         matrixSpeed: Double = MatrixRainConfiguration.default.speed,
         backgroundVideoRelativePath: String? = nil,
@@ -362,6 +387,7 @@ final class AppSettingsStore {
         self.roomTaskLongPress = roomTaskLongPress
         self.summaryActionMenuAllowsMultiple = summaryActionMenuAllowsMultiple
         self.personalCartMarkers = personalCartMarkers.normalized()
+        self.personalCartMarkerInputMode = personalCartMarkerInputMode
         self.backgroundVideoRelativePath = backgroundVideoRelativePath
         self.activeAIVisualPresetID = activeAIVisualPresetID
         self.tvStaticVariant = tvStaticVariant
@@ -394,6 +420,9 @@ final class AppSettingsStore {
         let roomTaskLongPress = userDefaults.object(forKey: Keys.roomTaskLongPress) as? Bool ?? true
         let summaryActionMenuAllowsMultiple = userDefaults.object(forKey: Keys.summaryActionMenuAllowsMultiple) as? Bool ?? false
         let personalCartMarkers = Self.loadPersonalCartMarkers(userDefaults: userDefaults)
+        let personalCartMarkerInputMode = userDefaults.string(forKey: Keys.personalCartMarkerInputMode)
+            .flatMap(PersonalCartMarkerInputMode.init(rawValue:))
+            ?? .swipeDetents
         let statusPaletteSaturation = userDefaults.object(forKey: Keys.statusPaletteSaturation) as? Double ?? 1
         let matrixSpeed = userDefaults.object(forKey: Keys.matrixSpeed) as? Double
             ?? MatrixRainConfiguration.default.speed
@@ -430,6 +459,7 @@ final class AppSettingsStore {
             roomTaskLongPress: roomTaskLongPress,
             summaryActionMenuAllowsMultiple: summaryActionMenuAllowsMultiple,
             personalCartMarkers: personalCartMarkers,
+            personalCartMarkerInputMode: personalCartMarkerInputMode,
             statusPaletteSaturation: statusPaletteSaturation,
             matrixSpeed: matrixSpeed,
             backgroundVideoRelativePath: backgroundVideoRelativePath,

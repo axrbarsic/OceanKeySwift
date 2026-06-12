@@ -219,6 +219,9 @@ Simulator unless explicitly allowed.
   DeepSeek/API generation UI and AI background picker entry are currently
   hidden from Settings. If an older build left AI mode active, the visible app
   falls back to native Matrix Rain.
+- Personal yellow/gray cart markers in the fixed summary header now have a
+  persisted input-mode setting: default direct swipe detents, or an alternate
+  long-press drag menu with blank, 2, 3, 4, and 5 choices.
 - Summary startup now waits for the persisted work session before choosing the
   setup or summary route, preventing the setup screen from flashing for a
   fraction of a second on launch.

@@ -220,6 +220,24 @@ struct SettingsScreen: View {
                 .onChange(of: appSettings.roomTaskLongPress) { _, _ in
                     feedback.confirm()
                 }
+
+                Toggle(
+                    isOn: Binding(
+                        get: { appSettings.personalCartMarkerInputMode == .pressMenu },
+                        set: { appSettings.personalCartMarkerInputMode = $0 ? .pressMenu : .swipeDetents }
+                    )
+                ) {
+                    SettingsInfoRow(
+                        title: "Метки тележек",
+                        value: appSettings.personalCartMarkerInputMode.title,
+                        systemName: "hand.draw.fill",
+                        subtitle: "Вкл: удерживай метку, веди по этажам или по пустому пункту и отпускай. Выкл: свайп вверх/вниз с щелчками."
+                    )
+                }
+                .tint(OceanKeyTheme.accent)
+                .onChange(of: appSettings.personalCartMarkerInputMode) { _, _ in
+                    feedback.confirm()
+                }
             }
         }
     }

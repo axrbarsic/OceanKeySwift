@@ -185,6 +185,20 @@ func appSettingsPersistsPersonalCartMarkers() {
 }
 
 @Test
+func appSettingsPersistsPersonalCartMarkerInputMode() {
+    let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let settings = AppSettingsStore(userDefaults: defaults)
+    settings.personalCartMarkerInputMode = .pressMenu
+
+    let loaded = AppSettingsStore.load(userDefaults: defaults)
+
+    #expect(loaded.personalCartMarkerInputMode == .pressMenu)
+}
+
+@Test
 func personalCartMarkersExposeOnlyOneVisibleYellowAndGraySlot() {
     #expect(PersonalCartMarkers.visibleSlots.map(\.tone) == [.yellow, .gray])
     #expect(PersonalCartMarkers.visibleSlots.map(\.building) == [.a, .a])
@@ -259,6 +273,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     settings.roomTaskLongPress = false
     settings.summaryActionMenuAllowsMultiple = true
     settings.personalCartMarkers = PersonalCartMarkers(aYellowFloor: 3, aGrayFloor: 4, bYellowFloor: 5, bGrayFloor: 2)
+    settings.personalCartMarkerInputMode = .pressMenu
     settings.statusPaletteSaturation = 1.52
     settings.matrixSpeed = 2.2
     settings.backgroundVideoRelativePath = "Background/video-wallpaper.mov"
@@ -286,6 +301,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     #expect(loaded.roomTaskLongPress)
     #expect(!loaded.summaryActionMenuAllowsMultiple)
     #expect(loaded.personalCartMarkers == .default)
+    #expect(loaded.personalCartMarkerInputMode == .swipeDetents)
     #expect(loaded.statusPaletteSaturation == 1)
     #expect(loaded.matrixSpeed == MatrixRainConfiguration.default.speed)
     #expect(loaded.backgroundVideoRelativePath == nil)

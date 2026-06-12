@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (128)",
+            date: "2026-06-12",
+            changes: [
+                "Added a Settings toggle for personal cart markers: direct swipe detents remain the default, while the alternate mode uses long-press, drag, and release.",
+                "The long-press marker menu now offers blank, 2, 3, 4, and 5, so a yellow or gray marker can be cleared without leaving the header.",
+                "Marker input mode is persisted with the rest of the app settings and reset-to-defaults returns it to swipe detents."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (127)",
             date: "2026-06-12",
             changes: [

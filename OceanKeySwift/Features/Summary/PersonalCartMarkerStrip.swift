@@ -2,7 +2,10 @@ import SwiftUI
 
 struct PersonalCartMarkerStrip: View {
     let markers: PersonalCartMarkers
+    let inputMode: PersonalCartMarkerInputMode
     let onStep: (PersonalCartMarkerSlot, PersonalCartMarkerStepDirection) -> Void
+    let onPreviewFloor: (PersonalCartMarkerSlot, Int?) -> Void
+    let onSetFloor: (PersonalCartMarkerSlot, Int?) -> Void
 
     var body: some View {
         HStack(spacing: 6) {
@@ -10,7 +13,10 @@ struct PersonalCartMarkerStrip: View {
                 PersonalCartMarkerButton(
                     slot: slot,
                     floor: markers.floor(for: slot),
-                    onStep: { direction in onStep(slot, direction) }
+                    inputMode: inputMode,
+                    onStep: { direction in onStep(slot, direction) },
+                    onPreviewFloor: { floor in onPreviewFloor(slot, floor) },
+                    onSetFloor: { floor in onSetFloor(slot, floor) }
                 )
             }
         }
@@ -22,19 +28,55 @@ struct PersonalCartMarkerStrip: View {
 private struct PersonalCartMarkerButton: View {
     let slot: PersonalCartMarkerSlot
     let floor: Int?
+    let inputMode: PersonalCartMarkerInputMode
     let onStep: (PersonalCartMarkerStepDirection) -> Void
+    let onPreviewFloor: (Int?) -> Void
+    let onSetFloor: (Int?) -> Void
     @State private var consumedDragSteps = 0
     @State private var isExpanded = false
+    @State private var isMenuPresented = false
+    @State private var highlightedFloor: Int?
     @State private var collapseTask: Task<Void, Never>?
 
     private let stepHeight: CGFloat = 18
+    private let pressMenuTopY: CGFloat = -148
+    private let pressMenuItemHeight: CGFloat = 28
 
     var body: some View {
+        switch inputMode {
+        case .swipeDetents:
+            swipeBody
+        case .pressMenu:
+            pressMenuBody
+        }
+    }
+
+    private var swipeBody: some View {
         markerBody
             .gesture(stepGesture)
             .animation(.interactiveSpring(response: 0.22, dampingFraction: 0.68), value: isExpanded)
             .accessibilityLabel(accessibilityText)
             .accessibilityHint("Веди вверх или вниз, чтобы поменять этаж")
+            .accessibilityAdjustableAction(adjustFloor)
+            .onDisappear {
+                collapseTask?.cancel()
+            }
+    }
+
+    private var pressMenuBody: some View {
+        markerBody
+            .overlay(alignment: .top) {
+                if isMenuPresented {
+                    pressFloorMenu
+                        .offset(y: pressMenuTopY)
+                        .transition(.scale(scale: 0.86, anchor: .bottom).combined(with: .opacity))
+                }
+            }
+            .gesture(pressMenuGesture)
+            .animation(.interactiveSpring(response: 0.22, dampingFraction: 0.72), value: isExpanded)
+            .animation(.easeOut(duration: 0.16), value: isMenuPresented)
+            .accessibilityLabel(accessibilityText)
+            .accessibilityHint("Удерживай, веди по списку этажей и отпускай")
             .accessibilityAdjustableAction(adjustFloor)
             .onDisappear {
                 collapseTask?.cancel()
@@ -88,6 +130,31 @@ private struct PersonalCartMarkerButton: View {
         }
     }
 
+    private var pressFloorMenu: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(pressMenuFloors.enumerated()), id: \.offset) { _, option in
+                Text(label(for: option))
+                    .font(.system(size: 16, weight: .black, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(option == highlightedFloor ? activeMenuForeground : .white.opacity(0.82))
+                    .frame(width: 48, height: pressMenuItemHeight)
+                    .background(option == highlightedFloor ? fill.opacity(0.92) : Color.white.opacity(0.07))
+                    .overlay(alignment: .bottom) {
+                        Rectangle()
+                            .fill(.white.opacity(0.08))
+                            .frame(height: 1)
+                    }
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(fill.opacity(0.72), lineWidth: 1.2)
+        }
+        .shadow(color: .black.opacity(0.34), radius: 14, x: 0, y: 8)
+        .zIndex(20)
+    }
+
     private var stepGesture: some Gesture {
         DragGesture(minimumDistance: 7, coordinateSpace: .local)
             .onChanged { value in
@@ -97,6 +164,30 @@ private struct PersonalCartMarkerButton: View {
             .onEnded { _ in
                 consumedDragSteps = 0
                 scheduleCollapse()
+            }
+    }
+
+    private var pressMenuGesture: some Gesture {
+        LongPressGesture(minimumDuration: 0.26, maximumDistance: 18)
+            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .local))
+            .onChanged { value in
+                switch value {
+                case .first(true):
+                    presentMenu()
+                case .second(true, let drag):
+                    presentMenu()
+                    if let drag {
+                        updateMenuSelection(at: drag.location)
+                    }
+                default:
+                    break
+                }
+            }
+            .onEnded { _ in
+                if isMenuPresented {
+                    onSetFloor(highlightedFloor)
+                }
+                dismissMenu()
             }
     }
 
@@ -110,6 +201,36 @@ private struct PersonalCartMarkerButton: View {
             onStep(direction)
         }
         consumedDragSteps = rawSteps
+    }
+
+    private func presentMenu() {
+        collapseTask?.cancel()
+        collapseTask = nil
+        if !isExpanded {
+            isExpanded = true
+        }
+        if !isMenuPresented {
+            highlightedFloor = floor
+            isMenuPresented = true
+        }
+    }
+
+    private func updateMenuSelection(at location: CGPoint) {
+        guard let option = menuOption(at: location), option != highlightedFloor else { return }
+        highlightedFloor = option
+        onPreviewFloor(option)
+    }
+
+    private func dismissMenu() {
+        isMenuPresented = false
+        highlightedFloor = nil
+        scheduleCollapse()
+    }
+
+    private func menuOption(at location: CGPoint) -> Int?? {
+        let rawIndex = Int(((location.y - pressMenuTopY) / pressMenuItemHeight).rounded(.down))
+        guard pressMenuFloors.indices.contains(rawIndex) else { return nil }
+        return pressMenuFloors[rawIndex]
     }
 
     private func expandForSelection() {
@@ -164,6 +285,23 @@ private struct PersonalCartMarkerButton: View {
             Color.white
         }
     }
+
+    private var activeMenuForeground: Color {
+        switch slot.tone {
+        case .yellow:
+            Color.black.opacity(0.88)
+        case .gray:
+            Color.white
+        }
+    }
+
+    private var pressMenuFloors: [Int?] {
+        [nil] + PersonalCartMarkers.allowedFloors
+    }
+
+    private func label(for floor: Int?) -> String {
+        floor.map(String.init) ?? "-"
+    }
 }
 
 #Preview {
@@ -174,7 +312,10 @@ private struct PersonalCartMarkerButton: View {
             bYellowFloor: 5,
             bGrayFloor: 2
         ),
-        onStep: { _, _ in }
+        inputMode: .pressMenu,
+        onStep: { _, _ in },
+        onPreviewFloor: { _, _ in },
+        onSetFloor: { _, _ in }
     )
     .padding()
     .background(OceanKeyTheme.background)
