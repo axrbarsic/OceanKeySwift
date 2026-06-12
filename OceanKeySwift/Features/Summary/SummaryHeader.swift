@@ -17,7 +17,6 @@ struct SummaryHeader: View {
 
                 PersonalCartMarkerStrip(
                     markers: personalCartMarkers,
-                    building: .a,
                     onTap: openPersonalCartMarkerPicker
                 )
 
@@ -32,12 +31,7 @@ struct SummaryHeader: View {
                 .monospacedDigit()
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
-
-                PersonalCartMarkerStrip(
-                    markers: personalCartMarkers,
-                    building: .b,
-                    onTap: openPersonalCartMarkerPicker
-                )
+                .layoutPriority(1)
 
                 Spacer(minLength: 94)
             }
@@ -72,7 +66,7 @@ struct SummaryHeader: View {
             }
         } message: {
             if let slot = activePersonalCartMarkerSlot {
-                Text("Выбери этаж для \(slot.title) метки здания \(slot.building.label).")
+                Text("Выбери этаж для \(slot.title) метки.")
             }
         }
     }

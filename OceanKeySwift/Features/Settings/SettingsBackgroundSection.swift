@@ -11,10 +11,10 @@ struct SettingsBackgroundSection: View {
     var body: some View {
         SettingsPanel(
             title: "Фон приложения",
-            subtitle: "Matrix Rain, AI-пресет или локальное видео как живая заставка основного экрана."
+            subtitle: "Matrix Rain, телевизионный шум или локальное видео как живая заставка основного экрана."
         ) {
             Picker("Заставка", selection: $appSettings.appBackgroundMode) {
-                ForEach(AppBackgroundMode.allCases) { mode in
+                ForEach(visibleBackgroundModes) { mode in
                     Text(mode.title).tag(mode)
                 }
             }
@@ -32,9 +32,10 @@ struct SettingsBackgroundSection: View {
             if appSettings.appBackgroundMode == .matrixRain {
                 matrixControls
             }
-            if appSettings.appBackgroundMode == .aiGenerated {
-                aiGeneratedControls
-            }
+            // AI-generated Matrix presets are intentionally hidden from Settings for now.
+            // if appSettings.appBackgroundMode == .aiGenerated {
+            //     aiGeneratedControls
+            // }
             if appSettings.appBackgroundMode == .tvStaticNoise {
                 tvStaticControls
             }
@@ -42,6 +43,11 @@ struct SettingsBackgroundSection: View {
                 videoControls
             }
         }
+        .onAppear(perform: hideHiddenAIBackgroundIfNeeded)
+    }
+
+    private var visibleBackgroundModes: [AppBackgroundMode] {
+        AppBackgroundMode.allCases.filter { $0 != .aiGenerated }
     }
 
     private var matrixControls: some View {
@@ -62,7 +68,7 @@ struct SettingsBackgroundSection: View {
         case .matrixRain:
             "Matrix Rain как основной живой фон."
         case .aiGenerated:
-            "Активный DeepSeek Matrix-пресет. Его можно включить сразу после генерации кнопкой «Сохранить и включить»."
+            "AI Matrix-пресеты временно скрыты из настроек."
         case .tvStaticNoise:
             "ShaderKit Dynamic Gray Noise: аналоговый телевизионный снег как основной фон."
         case .video:
@@ -195,6 +201,12 @@ struct SettingsBackgroundSection: View {
         feedback.confirm()
         appSettings.activeAIVisualPresetID = preset.id
         appSettings.appBackgroundMode = .aiGenerated
+    }
+
+    private func hideHiddenAIBackgroundIfNeeded() {
+        guard appSettings.appBackgroundMode == .aiGenerated else { return }
+        appSettings.appBackgroundMode = .matrixRain
+        appSettings.activeAIVisualPresetID = nil
     }
 
     @MainActor

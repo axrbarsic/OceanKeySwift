@@ -44,9 +44,6 @@ struct SettingsScreen: View {
         } message: {
             Text("Размер ячеек, режимы меню, палитра и Matrix-настройки вернутся к значениям по умолчанию.")
         }
-        .onAppear {
-            aiVisualPresetStore.load()
-        }
     }
 
     private var header: some View {
@@ -84,7 +81,8 @@ struct SettingsScreen: View {
             workSection
         case .developer:
             experimentalSection
-            deepSeekLabSection
+            // DeepSeek/API generation remains in the codebase, but is hidden from Settings for now.
+            // deepSeekLabSection
             developerSection
         }
     }

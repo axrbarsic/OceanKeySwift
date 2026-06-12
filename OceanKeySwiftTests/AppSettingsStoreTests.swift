@@ -185,6 +185,12 @@ func appSettingsPersistsPersonalCartMarkers() {
 }
 
 @Test
+func personalCartMarkersExposeOnlyOneVisibleYellowAndGraySlot() {
+    #expect(PersonalCartMarkers.visibleSlots.map(\.tone) == [.yellow, .gray])
+    #expect(PersonalCartMarkers.visibleSlots.map(\.building) == [.a, .a])
+}
+
+@Test
 func appSettingsPersistsStatusPaletteSaturation() {
     let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
     let defaults = UserDefaults(suiteName: suiteName)!

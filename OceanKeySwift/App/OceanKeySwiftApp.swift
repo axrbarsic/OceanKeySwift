@@ -9,6 +9,7 @@ struct OceanKeySwiftApp: App {
     @State private var performanceTelemetry: PerformanceTelemetryStore
     @State private var appleSyncStatus: AppleSyncStatus
     @State private var didRequestWorkSessionLoad = false
+    @State private var isWorkSessionLoaded = false
     @State private var didRequestAppleSyncStatus = false
     private let workSessionRepository: SwiftDataWorkSessionRepository
     private let interactionFeedback = InteractionFeedbackService()
@@ -55,6 +56,7 @@ struct OceanKeySwiftApp: App {
                 appSettings: appSettings,
                 aiVisualPresetStore: aiVisualPresetStore,
                 performanceTelemetry: performanceTelemetry,
+                isWorkSessionLoaded: isWorkSessionLoaded,
                 interactionFeedbackService: interactionFeedback
             )
                 .environment(\.appleSyncStatus, appleSyncStatus)
@@ -78,6 +80,7 @@ struct OceanKeySwiftApp: App {
     private func loadWorkSessionIfNeeded() async {
         guard !didRequestWorkSessionLoad else { return }
         didRequestWorkSessionLoad = true
+        defer { isWorkSessionLoaded = true }
         switch await WorkSessionStore.loadSnapshot(repository: workSessionRepository) {
         case .success(let snapshot):
             if let snapshot {

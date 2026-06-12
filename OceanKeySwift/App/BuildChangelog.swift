@@ -10,6 +10,16 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (125)",
+            date: "2026-06-12",
+            changes: [
+                "Hid the DeepSeek/API visual generation controls from Settings while keeping the implementation in the codebase.",
+                "Disabled AI-generated Matrix backgrounds from the visible app background menu and falls back to native Matrix Rain if an old AI mode was active.",
+                "Fixed the startup flash where the setup screen could appear briefly before the saved work session loaded.",
+                "Reduced the top personal cart marker row to one yellow and one gray marker so the header no longer competes with counters and the selection handle."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (124)",
             date: "2026-06-12",
             changes: [

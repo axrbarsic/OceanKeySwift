@@ -14,7 +14,7 @@ struct PersonalCartMarkerSlot: Identifiable, Hashable, Sendable {
     }
 
     var title: String {
-        "\(building.label) \(toneTitle)"
+        toneTitle
     }
 
     private var toneTitle: String {
@@ -41,6 +41,11 @@ struct PersonalCartMarkers: Codable, Equatable, Sendable {
         PersonalCartMarkerSlot(building: .a, tone: .gray),
         PersonalCartMarkerSlot(building: .b, tone: .yellow),
         PersonalCartMarkerSlot(building: .b, tone: .gray)
+    ]
+
+    static let visibleSlots: [PersonalCartMarkerSlot] = [
+        PersonalCartMarkerSlot(building: .a, tone: .yellow),
+        PersonalCartMarkerSlot(building: .a, tone: .gray)
     ]
 
     func floor(for slot: PersonalCartMarkerSlot) -> Int? {

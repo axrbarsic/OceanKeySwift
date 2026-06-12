@@ -215,9 +215,12 @@ Simulator unless explicitly allowed.
   cleaned up.
 - Video wallpaper controls now include stronger green tint, wider brightness,
   matte blur, scanline/grid overlay, and the playback watchdog.
-- DeepSeek-generated Matrix live wallpaper presets are no longer write-only:
-  saved presets can be activated from Background settings or DeepSeek Lab, and
-  their payload drives the native SpriteKit Matrix renderer.
-- DeepSeek Matrix generation now has an explicit `Сохранить и включить` path,
-  so a newly created live wallpaper becomes the active app background without
-  hunting through icon-only controls.
+- DeepSeek-generated Matrix wallpaper code remains in the Swift app, but the
+  DeepSeek/API generation UI and AI background picker entry are currently
+  hidden from Settings. If an older build left AI mode active, the visible app
+  falls back to native Matrix Rain.
+- Summary startup now waits for the persisted work session before choosing the
+  setup or summary route, preventing the setup screen from flashing for a
+  fraction of a second on launch.
+- The summary header now exposes only one yellow and one gray personal cart
+  marker, leaving the right-side selection handle and room counters clear.
