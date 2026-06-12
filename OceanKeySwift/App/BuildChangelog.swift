@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (126)",
+            date: "2026-06-12",
+            changes: [
+                "Restored interaction sound reliability after voice note playback or recording by reactivating the shared feedback audio session before short UI sounds.",
+                "Added long-press-armed vertical swipe detents to the yellow and gray personal cart markers so floors can be changed directly in the fixed header without short-tap conflicts.",
+                "Each cart-marker floor step now plays a crisp click and haptic detent, while long-press without dragging still opens the fallback floor picker and clear action."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (125)",
             date: "2026-06-12",
             changes: [

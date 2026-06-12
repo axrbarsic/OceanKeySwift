@@ -48,6 +48,9 @@ verification.
   resumed without force-quitting the app.
 - Interaction feedback: UIKit feedback generators plus bundled local WAV sounds
   through an ambient mixed audio session
+- Interaction feedback sounds restore their ambient mixed audio session on app
+  activation and before playback, so voice note record/playback session changes
+  do not leave short UI sounds muted until the app is restarted.
 - Notifications: local UserNotifications for due scheduled room openings
 - Speech: native `AVAudioRecorder` file capture followed by
   `SFSpeechURLRecognitionRequest` Russian voice-to-text for local room/cart

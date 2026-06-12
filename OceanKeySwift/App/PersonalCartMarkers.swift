@@ -5,6 +5,11 @@ enum PersonalCartMarkerTone: String, CaseIterable, Codable, Hashable, Sendable {
     case gray
 }
 
+enum PersonalCartMarkerStepDirection: Sendable {
+    case up
+    case down
+}
+
 struct PersonalCartMarkerSlot: Identifiable, Hashable, Sendable {
     let building: Building
     let tone: PersonalCartMarkerTone
@@ -79,6 +84,16 @@ struct PersonalCartMarkers: Codable, Equatable, Sendable {
         var copy = self
         copy.setFloor(floor, for: slot)
         return copy
+    }
+
+    func steppedFloor(for slot: PersonalCartMarkerSlot, direction: PersonalCartMarkerStepDirection) -> Int {
+        let floors = Self.allowedFloors
+        guard let current = floor(for: slot), let index = floors.firstIndex(of: current) else {
+            return direction == .up ? floors.first ?? 2 : floors.last ?? 5
+        }
+        let offset = direction == .up ? 1 : -1
+        let nextIndex = (index + offset + floors.count) % floors.count
+        return floors[nextIndex]
     }
 
     func normalized() -> PersonalCartMarkers {

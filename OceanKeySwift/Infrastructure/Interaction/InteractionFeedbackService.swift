@@ -13,6 +13,7 @@ struct InteractionFeedbackClient: Sendable {
     let select: @MainActor @Sendable () -> Void
     let deselect: @MainActor @Sendable () -> Void
     let invalid: @MainActor @Sendable () -> Void
+    let detent: @MainActor @Sendable () -> Void
 
     static let noop = InteractionFeedbackClient(
         tap: {},
@@ -23,7 +24,8 @@ struct InteractionFeedbackClient: Sendable {
         holdCommit: {},
         select: {},
         deselect: {},
-        invalid: {}
+        invalid: {},
+        detent: {}
     )
 
     static func live(
@@ -40,7 +42,8 @@ struct InteractionFeedbackClient: Sendable {
             holdCommit: { service.holdCommit(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
             select: { service.select(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
             deselect: { service.deselect(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
-            invalid: { service.invalid(soundPackV2: soundPackV2, hapticsV2: hapticsV2) }
+            invalid: { service.invalid(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
+            detent: { service.detent() }
         )
     }
 }
@@ -113,6 +116,17 @@ final class InteractionFeedbackService {
         prepare()
     }
 
+    func detent() {
+        selection.selectionChanged()
+        light.impactOccurred(intensity: 0.62)
+        sounds.playDetent()
+        prepare()
+    }
+
+    func restoreAudioSession() {
+        sounds.restoreAudioSession()
+    }
+
     private func prepare() {
         selection.prepare()
         light.prepare()
@@ -177,6 +191,17 @@ private final class InteractionSoundPlayer {
         play(deselectPlayer, volume: 0.11, rate: 1.36, pan: 0.03)
     }
 
+    func playDetent() {
+        play(deselectPlayer, volume: 0.25, rate: 1.58, pan: 0)
+    }
+
+    func restoreAudioSession() {
+        configureAudioSession()
+        activateAudioSession()
+        selectPlayer?.prepareToPlay()
+        deselectPlayer?.prepareToPlay()
+    }
+
     private func configureAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -186,6 +211,14 @@ private final class InteractionSoundPlayer {
             )
         } catch {
             Self.logger.error("Failed to configure interaction audio: \(error.localizedDescription, privacy: .public)")
+        }
+    }
+
+    private func activateAudioSession() {
+        do {
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            Self.logger.error("Failed to activate interaction audio: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -212,6 +245,8 @@ private final class InteractionSoundPlayer {
         pan: Float
     ) {
         guard let player else { return }
+        configureAudioSession()
+        activateAudioSession()
         if player.isPlaying {
             player.currentTime = 0
         }

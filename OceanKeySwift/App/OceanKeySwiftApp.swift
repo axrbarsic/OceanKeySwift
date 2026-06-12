@@ -11,6 +11,7 @@ struct OceanKeySwiftApp: App {
     @State private var didRequestWorkSessionLoad = false
     @State private var isWorkSessionLoaded = false
     @State private var didRequestAppleSyncStatus = false
+    @Environment(\.scenePhase) private var scenePhase
     private let workSessionRepository: SwiftDataWorkSessionRepository
     private let interactionFeedback = InteractionFeedbackService()
     private let scheduleNotifications = LocalScheduleNotificationService()
@@ -71,6 +72,11 @@ struct OceanKeySwiftApp: App {
                 .onReceive(NotificationCenter.default.publisher(for: .CKAccountChanged)) { _ in
                     Task {
                         await refreshAppleSyncStatusIfNeeded(force: true)
+                    }
+                }
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .active {
+                        interactionFeedback.restoreAudioSession()
                     }
                 }
         }

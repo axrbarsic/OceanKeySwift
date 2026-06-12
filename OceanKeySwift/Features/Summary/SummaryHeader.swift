@@ -17,7 +17,8 @@ struct SummaryHeader: View {
 
                 PersonalCartMarkerStrip(
                     markers: personalCartMarkers,
-                    onTap: openPersonalCartMarkerPicker
+                    onTap: openPersonalCartMarkerPicker,
+                    onStep: stepPersonalCartMarker
                 )
 
                 Spacer(minLength: 6)
@@ -96,6 +97,12 @@ struct SummaryHeader: View {
         feedback.confirm()
         personalCartMarkers = personalCartMarkers.settingFloor(floor, for: slot)
         activePersonalCartMarkerSlot = nil
+    }
+
+    private func stepPersonalCartMarker(_ slot: PersonalCartMarkerSlot, direction: PersonalCartMarkerStepDirection) {
+        let nextFloor = personalCartMarkers.steppedFloor(for: slot, direction: direction)
+        personalCartMarkers = personalCartMarkers.settingFloor(nextFloor, for: slot)
+        feedback.detent()
     }
 
     private func floorPickerTitle(_ floor: Int, for slot: PersonalCartMarkerSlot) -> String {

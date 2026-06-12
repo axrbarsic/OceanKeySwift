@@ -191,6 +191,20 @@ func personalCartMarkersExposeOnlyOneVisibleYellowAndGraySlot() {
 }
 
 @Test
+func personalCartMarkersStepFloorsLikeADetentWheel() {
+    let yellow = PersonalCartMarkers.visibleSlots[0]
+    let gray = PersonalCartMarkers.visibleSlots[1]
+    var markers = PersonalCartMarkers(aYellowFloor: nil, aGrayFloor: 5, bYellowFloor: nil, bGrayFloor: nil)
+
+    #expect(markers.steppedFloor(for: yellow, direction: .up) == 2)
+    #expect(markers.steppedFloor(for: yellow, direction: .down) == 5)
+    #expect(markers.steppedFloor(for: gray, direction: .up) == 2)
+
+    markers.setFloor(2, for: gray)
+    #expect(markers.steppedFloor(for: gray, direction: .down) == 5)
+}
+
+@Test
 func appSettingsPersistsStatusPaletteSaturation() {
     let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
     let defaults = UserDefaults(suiteName: suiteName)!
