@@ -10,6 +10,14 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (127)",
+            date: "2026-06-12",
+            changes: [
+                "Changed the yellow and gray personal cart markers to pure vertical swipe detents with no long-press picker.",
+                "The active marker now expands above the fixed header while swiping, then stays visible briefly and slowly deflates after release."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (126)",
             date: "2026-06-12",
             changes: [

@@ -7,7 +7,6 @@ struct SummaryHeader: View {
     let onOpenSelection: () -> Void
     @Environment(\.interactionFeedback) private var feedback
     @State private var selectionPuzzleProgress: CGFloat = 0
-    @State private var activePersonalCartMarkerSlot: PersonalCartMarkerSlot?
 
     var body: some View {
         GeometryReader { proxy in
@@ -17,7 +16,6 @@ struct SummaryHeader: View {
 
                 PersonalCartMarkerStrip(
                     markers: personalCartMarkers,
-                    onTap: openPersonalCartMarkerPicker,
                     onStep: stepPersonalCartMarker
                 )
 
@@ -47,29 +45,6 @@ struct SummaryHeader: View {
             }
         }
         .frame(height: 48)
-        .confirmationDialog(
-            activePersonalCartMarkerSlot?.title ?? "Метка тележки",
-            isPresented: Binding(
-                get: { activePersonalCartMarkerSlot != nil },
-                set: { if !$0 { activePersonalCartMarkerSlot = nil } }
-            ),
-            titleVisibility: .visible
-        ) {
-            if let slot = activePersonalCartMarkerSlot {
-                ForEach(PersonalCartMarkers.allowedFloors, id: \.self) { floor in
-                    Button(floorPickerTitle(floor, for: slot)) {
-                        setPersonalCartMarkerFloor(floor, for: slot)
-                    }
-                }
-                Button(clearPickerTitle(for: slot), role: .destructive) {
-                    setPersonalCartMarkerFloor(nil, for: slot)
-                }
-            }
-        } message: {
-            if let slot = activePersonalCartMarkerSlot {
-                Text("Выбери этаж для \(slot.title) метки.")
-            }
-        }
     }
 
     private func softButton(systemName: String, action: @escaping () -> Void) -> some View {
@@ -88,31 +63,10 @@ struct SummaryHeader: View {
         .buttonStyle(.plain)
     }
 
-    private func openPersonalCartMarkerPicker(_ slot: PersonalCartMarkerSlot) {
-        feedback.tap()
-        activePersonalCartMarkerSlot = slot
-    }
-
-    private func setPersonalCartMarkerFloor(_ floor: Int?, for slot: PersonalCartMarkerSlot) {
-        feedback.confirm()
-        personalCartMarkers = personalCartMarkers.settingFloor(floor, for: slot)
-        activePersonalCartMarkerSlot = nil
-    }
-
     private func stepPersonalCartMarker(_ slot: PersonalCartMarkerSlot, direction: PersonalCartMarkerStepDirection) {
         let nextFloor = personalCartMarkers.steppedFloor(for: slot, direction: direction)
         personalCartMarkers = personalCartMarkers.settingFloor(nextFloor, for: slot)
         feedback.detent()
-    }
-
-    private func floorPickerTitle(_ floor: Int, for slot: PersonalCartMarkerSlot) -> String {
-        let prefix = personalCartMarkers.floor(for: slot) == floor ? "✓ " : ""
-        return "\(prefix)Этаж \(floor)"
-    }
-
-    private func clearPickerTitle(for slot: PersonalCartMarkerSlot) -> String {
-        let prefix = personalCartMarkers.floor(for: slot) == nil ? "✓ " : ""
-        return "\(prefix)Очистить"
     }
 }
 

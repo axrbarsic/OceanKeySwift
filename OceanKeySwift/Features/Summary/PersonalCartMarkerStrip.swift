@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PersonalCartMarkerStrip: View {
     let markers: PersonalCartMarkers
-    let onTap: (PersonalCartMarkerSlot) -> Void
     let onStep: (PersonalCartMarkerSlot, PersonalCartMarkerStepDirection) -> Void
 
     var body: some View {
@@ -11,7 +10,6 @@ struct PersonalCartMarkerStrip: View {
                 PersonalCartMarkerButton(
                     slot: slot,
                     floor: markers.floor(for: slot),
-                    onTap: { onTap(slot) },
                     onStep: { direction in onStep(slot, direction) }
                 )
             }
@@ -24,14 +22,26 @@ struct PersonalCartMarkerStrip: View {
 private struct PersonalCartMarkerButton: View {
     let slot: PersonalCartMarkerSlot
     let floor: Int?
-    let onTap: () -> Void
     let onStep: (PersonalCartMarkerStepDirection) -> Void
     @State private var consumedDragSteps = 0
-    @State private var didStepDuringGesture = false
+    @State private var isExpanded = false
+    @State private var collapseTask: Task<Void, Never>?
 
     private let stepHeight: CGFloat = 18
 
     var body: some View {
+        markerBody
+            .gesture(stepGesture)
+            .animation(.interactiveSpring(response: 0.22, dampingFraction: 0.68), value: isExpanded)
+            .accessibilityLabel(accessibilityText)
+            .accessibilityHint("Веди вверх или вниз, чтобы поменять этаж")
+            .accessibilityAdjustableAction(adjustFloor)
+            .onDisappear {
+                collapseTask?.cancel()
+            }
+    }
+
+    private var markerBody: some View {
         Text(label)
             .font(.system(size: 17, weight: .black, design: .rounded))
             .monospacedDigit()
@@ -43,40 +53,55 @@ private struct PersonalCartMarkerButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .stroke(.white.opacity(floor == nil ? 0.22 : 0.34), lineWidth: 1)
+                    .stroke(.white.opacity(floor == nil ? 0.22 : 0.42), lineWidth: isExpanded ? 1.6 : 1)
             }
-            .shadow(color: fill.opacity(0.28), radius: 4, x: 0, y: 2)
+            .overlay(alignment: .top, content: detentHighlight)
+            .shadow(color: fill.opacity(isExpanded ? 0.50 : 0.28), radius: isExpanded ? 14 : 4, x: 0, y: isExpanded ? 7 : 2)
+            .scaleEffect(isExpanded ? 1.88 : 1.0)
+            .offset(y: isExpanded ? -22 : 0)
+            .zIndex(isExpanded ? 10 : 0)
             .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-            .gesture(stepGesture)
-        .accessibilityLabel(accessibilityText)
-        .accessibilityHint("Удерживай и веди вверх или вниз, чтобы поменять этаж")
-        .accessibilityAddTraits(.isButton)
-        .accessibilityAction(named: Text("Выбрать этаж"), onTap)
+    }
+
+    @ViewBuilder
+    private func detentHighlight() -> some View {
+        if isExpanded {
+            Capsule()
+                .fill(.white.opacity(0.34))
+                .frame(width: 14, height: 2)
+                .offset(y: 3)
+        }
+    }
+
+    private func adjustFloor(_ direction: AccessibilityAdjustmentDirection) {
+        switch direction {
+        case .increment:
+            onStep(.up)
+            expandForSelection()
+            scheduleCollapse()
+        case .decrement:
+            onStep(.down)
+            expandForSelection()
+            scheduleCollapse()
+        default:
+            break
+        }
     }
 
     private var stepGesture: some Gesture {
-        LongPressGesture(minimumDuration: 0.24, maximumDistance: 16)
-            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .local))
+        DragGesture(minimumDistance: 7, coordinateSpace: .local)
             .onChanged { value in
-                switch value {
-                case .second(true, let drag):
-                    if let drag {
-                        handleDrag(drag)
-                    }
-                default:
-                    break
-                }
+                expandForSelection()
+                handleDrag(value)
             }
-            .onEnded { value in
-                if case .second(true, _) = value, !didStepDuringGesture {
-                    onTap()
-                }
+            .onEnded { _ in
                 consumedDragSteps = 0
-                didStepDuringGesture = false
+                scheduleCollapse()
             }
     }
 
     private func handleDrag(_ value: DragGesture.Value) {
+        guard abs(value.translation.height) >= abs(value.translation.width) else { return }
         let rawSteps = Int((-value.translation.height / stepHeight).rounded(.towardZero))
         let delta = rawSteps - consumedDragSteps
         guard delta != 0 else { return }
@@ -84,8 +109,26 @@ private struct PersonalCartMarkerButton: View {
         for _ in 0..<abs(delta) {
             onStep(direction)
         }
-        didStepDuringGesture = true
         consumedDragSteps = rawSteps
+    }
+
+    private func expandForSelection() {
+        collapseTask?.cancel()
+        collapseTask = nil
+        if !isExpanded {
+            isExpanded = true
+        }
+    }
+
+    private func scheduleCollapse() {
+        collapseTask?.cancel()
+        collapseTask = Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1.15))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 1.35)) {
+                isExpanded = false
+            }
+        }
     }
 
     private var label: String {
@@ -131,7 +174,6 @@ private struct PersonalCartMarkerButton: View {
             bYellowFloor: 5,
             bGrayFloor: 2
         ),
-        onTap: { _ in },
         onStep: { _, _ in }
     )
     .padding()

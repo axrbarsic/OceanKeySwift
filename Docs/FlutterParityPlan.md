@@ -225,9 +225,10 @@ Simulator unless explicitly allowed.
 - The summary header now exposes only one yellow and one gray personal cart
   marker, leaving the right-side selection handle and room counters clear.
 - The yellow and gray personal cart markers now behave like fixed header
-  detent wheels: long-press arms the control, vertical swipes cycle floors 2-5
-  with haptic feedback and a short click, while long-press without dragging
-  still opens the fallback picker/clear action.
+  detent wheels: direct vertical swipes cycle floors 2-5 with haptic feedback
+  and a short click. The active marker expands above the header during the
+  gesture, stays visible briefly, then slowly deflates after release so the
+  selected floor is not hidden by the finger.
 - Interaction sounds now restore the ambient mixed audio session before each
   short UI sound and when the app becomes active, preventing voice playback or
   recording session changes from muting feedback until force-quit.
