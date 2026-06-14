@@ -75,8 +75,11 @@ xcrun devicectl device process launch --device 00008140-001248C20298801C com.ale
   `Docs/SharedFoundationPlan.md` and `Docs/SharedFoundationAudit.md`: classify
   each new visual/effect/frontend feature as `shared-foundation`,
   `shared-parameterized`, `app-specific`, or `candidate`. Ask Alex before
-  sharing `candidate` features. Never let shared code depend on app bundle IDs,
-  storage paths, hotel IDs, CloudKit containers, or target-specific screens.
+  sharing `candidate` features or when a boundary choice could affect future
+  reuse, persistence, sync, app identity, screen routing, or workflow rules. Do
+  not ask for obvious one-sided cases. Never let shared code depend on app
+  bundle IDs, storage paths, hotel IDs, CloudKit containers, or target-specific
+  screens.
 
 ## Port The Idea, Not The Code (Flutter → Swift)
 
