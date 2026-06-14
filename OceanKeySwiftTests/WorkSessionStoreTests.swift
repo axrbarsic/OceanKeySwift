@@ -342,3 +342,19 @@ func cartCustomConsumableCanBeRemoved() {
     let items = CartConsumableCatalog.merged(with: store.cart(id: 7)?.consumables, includingHidden: true)
     #expect(!items.contains { $0.title == "Coffee" })
 }
+
+@Test
+func cartConsumableQuantityCanCreateGlobalCatalogItemEntryForCart() {
+    let store = WorkSessionStore.preview()
+
+    store.updateCartConsumableQuantity(
+        itemID: "custom_coffee",
+        title: "Coffee pods",
+        quantity: 6,
+        cartId: 7
+    )
+
+    let item = store.cart(id: 7)?.consumables?.first { $0.id == "custom_coffee" }
+    #expect(item?.title == "Coffee pods")
+    #expect(item?.quantity == 6)
+}

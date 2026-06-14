@@ -58,9 +58,10 @@ verification.
   path.
 - Local persistence: SwiftData is the default local-first work-session store;
   legacy JSON exists only as an import/fallback path for older installs.
-- Cart consumables include the default towel/linen catalog plus custom cart
-  rows; quantities, completion timestamps, and custom rows persist with the
-  cart graph.
+- Cart consumables use one persisted app-wide catalog for the default
+  towel/linen rows plus custom rows. Each cart keeps its own quantities and
+  completion timestamps, while add/rename/delete catalog edits apply to every
+  current and future cart after restart.
 - Room/cart multimodal notes share the native media foundation: voice
   recordings save as local playable audio bubbles with transcript text, and
   photo/video attachments use local-only metadata and vertical previews.

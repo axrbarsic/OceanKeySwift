@@ -7,6 +7,7 @@ struct CartSummarySection: View {
     let geometry: RoomCellGeometry
     let taskControlsUseLongPress: Bool
     let statusPaletteSaturation: Double
+    let consumableCatalog: [CartConsumableCatalogEntry]
     let actionMenuAllowsMultiple: Bool
     @Binding var expandedActionMenuRoomIDs: Set<RoomCell.ID>
     let onOpenCartDetails: (CartSection.ID) -> Void
@@ -81,7 +82,7 @@ struct CartSummarySection: View {
     }
 
     private var consumableTickerText: String? {
-        CartConsumableTickerFormatter.text(for: cart)
+        CartConsumableTickerFormatter.text(for: cart, catalogEntries: consumableCatalog)
     }
 }
 
@@ -93,6 +94,7 @@ struct CartSummarySection: View {
         geometry: .roomy,
         taskControlsUseLongPress: true,
         statusPaletteSaturation: 1,
+        consumableCatalog: CartConsumableCatalog.defaultEntries,
         actionMenuAllowsMultiple: false,
         expandedActionMenuRoomIDs: $expanded,
         onOpenCartDetails: { _ in },

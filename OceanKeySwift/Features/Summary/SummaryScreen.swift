@@ -40,6 +40,7 @@ struct SummaryScreen: View {
                                 geometry: appSettings.roomCellGeometry,
                                 taskControlsUseLongPress: appSettings.roomTaskLongPress,
                                 statusPaletteSaturation: appSettings.statusPaletteSaturation,
+                                consumableCatalog: appSettings.cartConsumableCatalog,
                                 actionMenuAllowsMultiple: appSettings.summaryActionMenuAllowsMultiple,
                                 expandedActionMenuRoomIDs: $expandedActionMenuRoomIDs,
                                 onOpenCartDetails: { cartID in
@@ -57,7 +58,10 @@ struct SummaryScreen: View {
                         }
 
                         CartConsumablesSummaryTable(
-                            report: CartConsumablesSummaryBuilder.report(for: workSession.carts),
+                            report: CartConsumablesSummaryBuilder.report(
+                                for: workSession.carts,
+                                catalogEntries: appSettings.cartConsumableCatalog
+                            ),
                             onQuantityChange: updateConsumableFromSummary
                         )
                     }
@@ -74,7 +78,7 @@ struct SummaryScreen: View {
                 .preferredColorScheme(.dark)
         }
         .sheet(item: $cartDetailsRoute) { route in
-            CartDetailsScreen(route: route, workSession: workSession)
+            CartDetailsScreen(route: route, workSession: workSession, appSettings: appSettings)
                 .preferredColorScheme(.dark)
         }
         .sheet(item: $scheduleRoute) { route in
@@ -146,9 +150,15 @@ struct SummaryScreen: View {
     private func updateConsumableFromSummary(
         cartID: CartSection.ID,
         itemID: CartConsumableItem.ID,
+        title: String,
         quantity: Int
     ) {
-        workSession.updateCartConsumableQuantity(itemID: itemID, quantity: quantity, cartId: cartID)
+        workSession.updateCartConsumableQuantity(
+            itemID: itemID,
+            title: title,
+            quantity: quantity,
+            cartId: cartID
+        )
     }
 
     private func closeActionMenus() {

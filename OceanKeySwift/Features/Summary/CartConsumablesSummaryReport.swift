@@ -33,13 +33,19 @@ struct CartConsumablesSummaryReport: Equatable {
 }
 
 enum CartConsumablesSummaryBuilder {
-    static func report(for carts: [CartSection]) -> CartConsumablesSummaryReport {
+    static func report(
+        for carts: [CartSection],
+        catalogEntries: [CartConsumableCatalogEntry]? = nil
+    ) -> CartConsumablesSummaryReport {
         var totalsByID: [CartConsumableItem.ID: CartConsumableTotalNeed] = [:]
         var totalOrder: [CartConsumableItem.ID] = []
         var cartSummaries: [CartConsumableCartSummary] = []
 
         for cart in carts {
-            let needs = CartConsumableCatalog.merged(with: cart.consumables)
+            let needs = CartConsumableCatalog.merged(
+                with: cart.consumables,
+                catalogEntries: catalogEntries
+            )
                 .filter { $0.quantity > 0 && !$0.isCompleted }
                 .map { item in
                     if totalsByID[item.id] == nil {

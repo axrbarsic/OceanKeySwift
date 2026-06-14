@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (133)",
+            date: "2026-06-14",
+            changes: [
+                "Moved consumable list edits into a global persisted catalog shared by every cart.",
+                "Adding, renaming, or deleting a consumable from one cart now applies to all current and future carts after restart.",
+                "Cart-specific slider quantities remain separate per cart while the item list itself is remembered globally."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (132)",
             date: "2026-06-14",
             changes: [

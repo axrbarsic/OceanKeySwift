@@ -29,18 +29,32 @@ extension WorkSessionStore {
 
     func updateCartConsumableQuantity(
         itemID: CartConsumableItem.ID,
+        title: String? = nil,
         quantity: Int,
         cartId: CartSection.ID
     ) {
         let safeQuantity = CartConsumableQuantity.clamped(quantity)
         mutateCart(cartId, history: { _, after, _ in
             let item = CartConsumableCatalog.merged(with: after.consumables, includingHidden: true).first { $0.id == itemID }
-            let title = item?.title ?? "Расходник"
-            return (.cartConsumablesChanged, "Тележка \(after.id): \(title) \(safeQuantity)")
+            let itemTitle = title ?? item?.title ?? "Расходник"
+            return (.cartConsumablesChanged, "Тележка \(after.id): \(itemTitle) \(safeQuantity)")
         }) { cart in
             let changedAt = Date()
             var items = CartConsumableCatalog.merged(with: cart.consumables, includingHidden: true)
-            guard let index = items.firstIndex(where: { $0.id == itemID }) else { return }
+            guard let index = items.firstIndex(where: { $0.id == itemID }) else {
+                guard let title else { return }
+                items.append(
+                    CartConsumableItem(
+                        id: itemID,
+                        title: title,
+                        quantity: safeQuantity,
+                        updatedAt: changedAt,
+                        completedAt: nil
+                    )
+                )
+                cart.consumables = items
+                return
+            }
             items[index].quantity = safeQuantity
             items[index].updatedAt = changedAt
             items[index].completedAt = nil

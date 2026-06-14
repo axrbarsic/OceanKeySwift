@@ -53,3 +53,40 @@ func consumablesSummaryIsEmptyWhenNeedsAreZeroOrCompleted() {
 
     #expect(report.isEmpty)
 }
+
+@Test
+func consumableCatalogEditsApplyToAllCarts() {
+    let catalog = CartConsumableCatalog.normalizedEntries([
+        CartConsumableCatalogEntry(id: "bath_towel", title: "Pool towels"),
+        CartConsumableCatalogEntry(id: "hand_towel", title: "Полотенца ручные", isHidden: true),
+        CartConsumableCatalogEntry(id: "custom_coffee", title: "Coffee pods")
+    ])
+    let carts = [
+        CartSection(
+            id: 3,
+            building: "A3",
+            rooms: [],
+            consumables: [
+                CartConsumableItem(id: "bath_towel", title: "Полотенца банные", quantity: 2),
+                CartConsumableItem(id: "hand_towel", title: "Полотенца ручные", quantity: 5),
+                CartConsumableItem(id: "custom_coffee", title: "Coffee pods", quantity: 1)
+            ]
+        ),
+        CartSection(
+            id: 5,
+            building: "B5",
+            rooms: [],
+            consumables: [
+                CartConsumableItem(id: "bath_towel", title: "Полотенца банные", quantity: 3),
+                CartConsumableItem(id: "hand_towel", title: "Полотенца ручные", quantity: 4)
+            ]
+        )
+    ]
+
+    let report = CartConsumablesSummaryBuilder.report(for: carts, catalogEntries: catalog)
+
+    #expect(report.totals.first { $0.itemID == "bath_towel" }?.title == "Pool towels")
+    #expect(report.totals.first { $0.itemID == "bath_towel" }?.quantity == 5)
+    #expect(report.totals.first { $0.itemID == "custom_coffee" }?.quantity == 1)
+    #expect(!report.totals.contains { $0.itemID == "hand_towel" })
+}

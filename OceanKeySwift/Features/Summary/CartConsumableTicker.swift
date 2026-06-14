@@ -1,8 +1,14 @@
 import SwiftUI
 
 enum CartConsumableTickerFormatter {
-    static func text(for cart: CartSection) -> String? {
-        let items = CartConsumableCatalog.merged(with: cart.consumables)
+    static func text(
+        for cart: CartSection,
+        catalogEntries: [CartConsumableCatalogEntry]? = nil
+    ) -> String? {
+        let items = CartConsumableCatalog.merged(
+            with: cart.consumables,
+            catalogEntries: catalogEntries
+        )
             .filter { $0.quantity > 0 && !$0.isCompleted }
 
         guard !items.isEmpty else { return nil }

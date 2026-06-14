@@ -3,11 +3,15 @@ import SwiftUI
 struct CartConsumablesSection: View {
     let cartID: CartSection.ID
     @Bindable var workSession: WorkSessionStore
+    @Bindable var appSettings: AppSettingsStore
     @Environment(\.interactionFeedback) private var feedback
     @State private var newConsumableTitle = ""
 
     private var items: [CartConsumableItem] {
-        CartConsumableCatalog.merged(with: workSession.cart(id: cartID)?.consumables)
+        CartConsumableCatalog.merged(
+            with: workSession.cart(id: cartID)?.consumables,
+            catalogEntries: appSettings.cartConsumableCatalog
+        )
     }
 
     var body: some View {
@@ -18,19 +22,19 @@ struct CartConsumablesSection: View {
                 CartConsumableRow(
                     item: item,
                     onRename: { title in
-                        workSession.renameCartConsumable(
+                        appSettings.renameCartConsumableCatalogItem(
                             itemID: item.id,
-                            title: title,
-                            cartId: cartID
+                            title: title
                         )
                     },
                     onDelete: {
-                        workSession.removeCartConsumable(itemID: item.id, cartId: cartID)
+                        appSettings.removeCartConsumableCatalogItem(itemID: item.id)
                         feedback.confirm()
                     },
                     onQuantityChange: { quantity in
                         workSession.updateCartConsumableQuantity(
                             itemID: item.id,
+                            title: item.title,
                             quantity: quantity,
                             cartId: cartID
                         )
@@ -81,7 +85,7 @@ struct CartConsumablesSection: View {
 
     private func addConsumable() {
         guard canAddConsumable else { return }
-        workSession.addCartConsumable(title: newConsumableTitle, cartId: cartID)
+        appSettings.addCartConsumableCatalogItem(title: newConsumableTitle)
         newConsumableTitle = ""
         feedback.confirm()
     }
@@ -203,7 +207,7 @@ private struct CartConsumableRow: View {
 }
 
 #Preview {
-    CartConsumablesSection(cartID: 7, workSession: .preview())
+    CartConsumablesSection(cartID: 7, workSession: .preview(), appSettings: AppSettingsStore())
         .padding()
         .background(OceanKeyTheme.background)
         .preferredColorScheme(.dark)

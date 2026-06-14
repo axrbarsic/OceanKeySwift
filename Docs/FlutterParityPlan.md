@@ -199,9 +199,10 @@ Simulator unless explicitly allowed.
 - Video wallpaper controls now include blur, brightness, and green tint. The
   native player container has a lightweight watchdog that resumes or rebuilds
   the loop if AV playback stalls after app/background transitions.
-- Cart consumables now support custom per-cart rows on top of the default
-  towel/linen catalog, with quantity, completion state, timestamps, history,
-  and SwiftData persistence.
+- Cart consumables now use a global persisted app catalog on top of cart-level
+  quantities. Adding, renaming, or deleting a расходник from one cart changes
+  the list for every cart, while each cart keeps its own quantity, completion
+  state, timestamps, history, and SwiftData persistence.
 - Settings now follows the Flutter category idea as native SwiftUI but is
   intentionally trimmed to active controls only: Appearance, Background, Work,
   and Developer.

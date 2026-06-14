@@ -66,6 +66,7 @@ final class AppSettingsStore {
         static let summaryActionMenuAllowsMultiple = "summaryActionMenuAllowsMultiple"
         static let personalCartMarkers = "personalCartMarkers"
         static let personalCartMarkerInputMode = "personalCartMarkerInputMode"
+        static let cartConsumableCatalog = "cartConsumableCatalog"
         static let statusPaletteSaturation = "statusPaletteSaturation"
         static let matrixSpeed = "matrixSpeed"
         static let backgroundVideoRelativePath = "backgroundVideoRelativePath"
@@ -145,6 +146,15 @@ final class AppSettingsStore {
     var personalCartMarkerInputMode: PersonalCartMarkerInputMode {
         didSet {
             userDefaults.set(personalCartMarkerInputMode.rawValue, forKey: Keys.personalCartMarkerInputMode)
+        }
+    }
+
+    var cartConsumableCatalog: [CartConsumableCatalogEntry] {
+        didSet {
+            Self.saveCartConsumableCatalog(
+                CartConsumableCatalog.normalizedEntries(cartConsumableCatalog),
+                userDefaults: userDefaults
+            )
         }
     }
 
@@ -329,6 +339,7 @@ final class AppSettingsStore {
         summaryActionMenuAllowsMultiple = false
         personalCartMarkers = .default
         personalCartMarkerInputMode = .swipeDetents
+        cartConsumableCatalog = CartConsumableCatalog.defaultEntries
         statusPaletteSaturation = 1
         matrixSpeed = MatrixRainConfiguration.default.speed
         backgroundVideoRelativePath = nil
@@ -359,6 +370,7 @@ final class AppSettingsStore {
         summaryActionMenuAllowsMultiple: Bool = false,
         personalCartMarkers: PersonalCartMarkers = .default,
         personalCartMarkerInputMode: PersonalCartMarkerInputMode = .swipeDetents,
+        cartConsumableCatalog: [CartConsumableCatalogEntry] = CartConsumableCatalog.defaultEntries,
         statusPaletteSaturation: Double = 1,
         matrixSpeed: Double = MatrixRainConfiguration.default.speed,
         backgroundVideoRelativePath: String? = nil,
@@ -388,6 +400,7 @@ final class AppSettingsStore {
         self.summaryActionMenuAllowsMultiple = summaryActionMenuAllowsMultiple
         self.personalCartMarkers = personalCartMarkers.normalized()
         self.personalCartMarkerInputMode = personalCartMarkerInputMode
+        self.cartConsumableCatalog = CartConsumableCatalog.normalizedEntries(cartConsumableCatalog)
         self.backgroundVideoRelativePath = backgroundVideoRelativePath
         self.activeAIVisualPresetID = activeAIVisualPresetID
         self.tvStaticVariant = tvStaticVariant
@@ -423,6 +436,7 @@ final class AppSettingsStore {
         let personalCartMarkerInputMode = userDefaults.string(forKey: Keys.personalCartMarkerInputMode)
             .flatMap(PersonalCartMarkerInputMode.init(rawValue:))
             ?? .swipeDetents
+        let cartConsumableCatalog = Self.loadCartConsumableCatalog(userDefaults: userDefaults)
         let statusPaletteSaturation = userDefaults.object(forKey: Keys.statusPaletteSaturation) as? Double ?? 1
         let matrixSpeed = userDefaults.object(forKey: Keys.matrixSpeed) as? Double
             ?? MatrixRainConfiguration.default.speed
@@ -460,6 +474,7 @@ final class AppSettingsStore {
             summaryActionMenuAllowsMultiple: summaryActionMenuAllowsMultiple,
             personalCartMarkers: personalCartMarkers,
             personalCartMarkerInputMode: personalCartMarkerInputMode,
+            cartConsumableCatalog: cartConsumableCatalog,
             statusPaletteSaturation: statusPaletteSaturation,
             matrixSpeed: matrixSpeed,
             backgroundVideoRelativePath: backgroundVideoRelativePath,
@@ -510,6 +525,65 @@ final class AppSettingsStore {
     private static func savePersonalCartMarkers(_ markers: PersonalCartMarkers, userDefaults: UserDefaults) {
         guard let data = try? JSONEncoder().encode(markers.normalized()) else { return }
         userDefaults.set(data, forKey: Keys.personalCartMarkers)
+    }
+
+    private static func loadCartConsumableCatalog(userDefaults: UserDefaults) -> [CartConsumableCatalogEntry] {
+        guard let data = userDefaults.data(forKey: Keys.cartConsumableCatalog),
+              let decoded = try? JSONDecoder().decode([CartConsumableCatalogEntry].self, from: data)
+        else {
+            return CartConsumableCatalog.defaultEntries
+        }
+        return CartConsumableCatalog.normalizedEntries(decoded)
+    }
+
+    private static func saveCartConsumableCatalog(
+        _ catalog: [CartConsumableCatalogEntry],
+        userDefaults: UserDefaults
+    ) {
+        guard let data = try? JSONEncoder().encode(CartConsumableCatalog.normalizedEntries(catalog)) else { return }
+        userDefaults.set(data, forKey: Keys.cartConsumableCatalog)
+    }
+
+    func addCartConsumableCatalogItem(title: String) {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        var catalog = cartConsumableCatalog
+        catalog.append(
+            CartConsumableCatalogEntry(
+                id: "custom_\(UUID().uuidString)",
+                title: trimmed
+            )
+        )
+        cartConsumableCatalog = catalog
+    }
+
+    func renameCartConsumableCatalogItem(
+        itemID: CartConsumableItem.ID,
+        title: String
+    ) {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        var catalog = cartConsumableCatalog
+        if let index = catalog.firstIndex(where: { $0.id == itemID }) {
+            guard catalog[index].title != trimmed else { return }
+            catalog[index].title = trimmed
+            catalog[index].isHidden = false
+        } else {
+            catalog.append(CartConsumableCatalogEntry(id: itemID, title: trimmed))
+        }
+        cartConsumableCatalog = catalog
+    }
+
+    func removeCartConsumableCatalogItem(itemID: CartConsumableItem.ID) {
+        var catalog = cartConsumableCatalog
+        if let index = catalog.firstIndex(where: { $0.id == itemID }) {
+            catalog[index].isHidden = true
+        } else if let defaultEntry = CartConsumableCatalog.defaultEntries.first(where: { $0.id == itemID }) {
+            var hiddenEntry = defaultEntry
+            hiddenEntry.isHidden = true
+            catalog.append(hiddenEntry)
+        }
+        cartConsumableCatalog = catalog
     }
 
     static func normalizedMatrixSpeed(_ value: Double) -> Double {

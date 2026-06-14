@@ -3,6 +3,7 @@ import SwiftUI
 struct CartDetailsScreen: View {
     let route: CartDetailsRoute
     @Bindable var workSession: WorkSessionStore
+    @Bindable var appSettings: AppSettingsStore
 
     @Environment(\.dismiss) private var dismiss
     @State private var draftNote = ""
@@ -103,7 +104,11 @@ struct CartDetailsScreen: View {
 
     private var consumablesSection: some View {
         CartDetailsPanel(title: "Расходники") {
-            CartConsumablesSection(cartID: route.cartID, workSession: workSession)
+            CartConsumablesSection(
+                cartID: route.cartID,
+                workSession: workSession,
+                appSettings: appSettings
+            )
         }
     }
 
@@ -271,6 +276,10 @@ private struct CartDetailsPanel<Content: View>: View {
 }
 
 #Preview {
-    CartDetailsScreen(route: CartDetailsRoute(cartID: 7), workSession: .preview())
+    CartDetailsScreen(
+        route: CartDetailsRoute(cartID: 7),
+        workSession: .preview(),
+        appSettings: AppSettingsStore()
+    )
         .preferredColorScheme(.dark)
 }

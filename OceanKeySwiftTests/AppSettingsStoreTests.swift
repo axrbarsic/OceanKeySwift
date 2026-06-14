@@ -302,6 +302,7 @@ func appSettingsResetRestoresDefaultsAndPersistsThem() {
     #expect(!loaded.summaryActionMenuAllowsMultiple)
     #expect(loaded.personalCartMarkers == .default)
     #expect(loaded.personalCartMarkerInputMode == .swipeDetents)
+    #expect(loaded.cartConsumableCatalog == CartConsumableCatalog.defaultEntries)
     #expect(loaded.statusPaletteSaturation == 1)
     #expect(loaded.matrixSpeed == MatrixRainConfiguration.default.speed)
     #expect(loaded.backgroundVideoRelativePath == nil)
@@ -339,4 +340,23 @@ func appSettingsMigratesVIPJellyOnForExistingDevicesOnce() {
 
     let reloaded = AppSettingsStore.load(userDefaults: defaults)
     #expect(!reloaded.developerVIPJellyEnabled)
+}
+
+@Test
+func appSettingsPersistsGlobalCartConsumableCatalog() {
+    let suiteName = "AppSettingsStoreTests-\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let settings = AppSettingsStore(userDefaults: defaults)
+    settings.renameCartConsumableCatalogItem(itemID: "bath_towel", title: "Pool towels")
+    settings.removeCartConsumableCatalogItem(itemID: "hand_towel")
+    settings.addCartConsumableCatalogItem(title: "Coffee pods")
+
+    let loaded = AppSettingsStore.load(userDefaults: defaults)
+    let catalog = loaded.cartConsumableCatalog
+
+    #expect(catalog.first { $0.id == "bath_towel" }?.title == "Pool towels")
+    #expect(catalog.first { $0.id == "hand_towel" }?.isHidden == true)
+    #expect(catalog.contains { $0.title == "Coffee pods" && !$0.isHidden })
 }

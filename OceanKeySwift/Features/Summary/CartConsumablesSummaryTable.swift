@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CartConsumablesSummaryTable: View {
     let report: CartConsumablesSummaryReport
-    let onQuantityChange: (CartSection.ID, CartConsumableItem.ID, Int) -> Void
+    let onQuantityChange: (CartSection.ID, CartConsumableItem.ID, String, Int) -> Void
 
     @Environment(\.interactionFeedback) private var feedback
 
@@ -79,7 +79,7 @@ struct CartConsumablesSummaryTable: View {
                             need: need,
                             onQuantityChange: { quantity in
                                 feedback.confirm()
-                                onQuantityChange(need.cartID, need.itemID, quantity)
+                                onQuantityChange(need.cartID, need.itemID, need.title, quantity)
                             }
                         )
                     }
