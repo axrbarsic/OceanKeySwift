@@ -4,6 +4,10 @@
 
 - Always answer Alex in Russian unless he explicitly asks otherwise.
 - This repository is the native iOS rewrite of OceanKey.
+- When the current task is scoped to OceanKeySwift, edit only this repository.
+  MargaritavilleSwift may be used as an example or reference only when Alex
+  mentions it for comparison; do not modify MargaritavilleSwift unless Alex
+  explicitly says the task targets that app.
 - The Flutter reference app is `/Users/alex/Developer/OceanKeyFlutterRun`.
 - Do not edit the Flutter app while porting unless Alex explicitly asks.
 - Android and Web are frozen for this migration track until Alex changes that.

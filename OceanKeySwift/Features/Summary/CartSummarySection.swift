@@ -18,11 +18,25 @@ struct CartSummarySection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: geometry.sectionSpacing) {
-            HStack(alignment: .firstTextBaseline) {
+            HStack(alignment: .center, spacing: 8) {
                 Label("Тележка \(cart.id)", systemImage: "circle.fill")
                     .labelStyle(.titleAndIcon)
-                Spacer()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.62)
+                    .layoutPriority(3)
+
+                if let consumableTickerText {
+                    CartConsumableTicker(text: consumableTickerText)
+                        .frame(minWidth: 72, maxWidth: .infinity)
+                        .layoutPriority(1)
+                } else {
+                    Spacer(minLength: 8)
+                }
+
                 Text(cart.building)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.58)
+                    .layoutPriority(4)
             }
             .font(.system(size: 30, weight: .black, design: .rounded))
             .foregroundStyle(.white)
@@ -64,6 +78,10 @@ struct CartSummarySection: View {
 
     private func closeActionMenu(_ roomID: RoomCell.ID) {
         expandedActionMenuRoomIDs.remove(roomID)
+    }
+
+    private var consumableTickerText: String? {
+        CartConsumableTickerFormatter.text(for: cart)
     }
 }
 

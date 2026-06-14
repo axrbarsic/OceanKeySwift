@@ -95,6 +95,7 @@
 		AB643CF5E38CEC4927C7E316 /* WorkSessionStore+Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FA8304DBB6369130113E5E /* WorkSessionStore+Selection.swift */; };
 		ABC0A671535A620304D99B74 /* RoomDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1034E32B098922B2FC6F084 /* RoomDetailsScreen.swift */; };
 		ADA805779E0A090FA473DE44 /* WorkSessionMergePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F946AED9FB90B790B07F606A /* WorkSessionMergePolicy.swift */; };
+		ADCC199AE3ED10131C069E01 /* CartConsumableTickerFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A5E7B0E346805556C5D9350 /* CartConsumableTickerFormatterTests.swift */; };
 		ADE238EEBC86AEC1A5A483B2 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85ED0B20C8238C7912F393F9 /* AVKit.framework */; };
 		BA1ECF280752FFF426599CBC /* AppBackgroundModeEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBB035F8E992FD2AF55A8FC /* AppBackgroundModeEnvironment.swift */; };
 		BFB26C1A0A7C67F26219BFA4 /* RoomActionMenuLampTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581AA4C2C21D792F644F4B08 /* RoomActionMenuLampTransition.swift */; };
@@ -110,6 +111,7 @@
 		D54E64525D20BD57CFDF32BA /* SettingsBackgroundSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0140F499B7DFDBF51DC2AA4 /* SettingsBackgroundSection.swift */; };
 		D5CD02ADB5EE620804D9D027 /* SummaryActionMenuExpansion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D340AE2F35A8796533E0460 /* SummaryActionMenuExpansion.swift */; };
 		D7C8F5EDA09CC6A0CC492A28 /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A07FDDB084B7AAC0AC13CF80 /* Speech.framework */; };
+		D91251CD1A4424FE2DBF0168 /* CartConsumableTicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1CE102C6889935EE163929 /* CartConsumableTicker.swift */; };
 		DB942E5DBC000AD9D8A734B9 /* VoiceNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1576751457D918F28F73179E /* VoiceNoteViewModel.swift */; };
 		E239F137FD94F82D7BB15630 /* VoiceTranscriptionPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287B82D451283BB546D3D7D4 /* VoiceTranscriptionPanel.swift */; };
 		E4C3E30218536D8EDB0F05A8 /* BackgroundVideoFileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32871C27FCEBEF323FDE3E1 /* BackgroundVideoFileStore.swift */; };
@@ -181,6 +183,7 @@
 		53CC2C533226B89F0CF70B87 /* SpriteKitEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteKitEffectView.swift; sourceTree = "<group>"; };
 		581AA4C2C21D792F644F4B08 /* RoomActionMenuLampTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomActionMenuLampTransition.swift; sourceTree = "<group>"; };
 		608321B44757C987209F2A54 /* BuildChangelog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildChangelog.swift; sourceTree = "<group>"; };
+		6A5E7B0E346805556C5D9350 /* CartConsumableTickerFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartConsumableTickerFormatterTests.swift; sourceTree = "<group>"; };
 		6B7CFFB5930B36918B6DF816 /* PerformanceTelemetryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceTelemetryStore.swift; sourceTree = "<group>"; };
 		6C58577B44759140A59C3B18 /* WorkSessionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSessionRepository.swift; sourceTree = "<group>"; };
 		6CD15DBDCE80476FF0F4FEC9 /* CartSummarySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartSummarySection.swift; sourceTree = "<group>"; };
@@ -197,6 +200,7 @@
 		85ED0B20C8238C7912F393F9 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		868A0FE8D28575CF2B3F8304 /* RoomCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCellView.swift; sourceTree = "<group>"; };
 		868CBF052F1B053DB4F2FBA0 /* OceanKeySwiftApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OceanKeySwiftApp.swift; sourceTree = "<group>"; };
+		8C1CE102C6889935EE163929 /* CartConsumableTicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartConsumableTicker.swift; sourceTree = "<group>"; };
 		8EE7E0CA1AD0D30B9986CADF /* VoiceTranscriptionContracts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceTranscriptionContracts.swift; sourceTree = "<group>"; };
 		8EFBAE95AF4F46E1B0BAE485 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
 		9409BE249A939DD94FA67426 /* RoomCellGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCellGeometry.swift; sourceTree = "<group>"; };
@@ -452,6 +456,7 @@
 				E715506238EC7FFF5AC1F195 /* AIVisualPresetStoreTests.swift */,
 				D14392CAF529EF78B4841747 /* AppleSyncEntitlementTests.swift */,
 				71CFB1546F72B1749BEB27E7 /* AppSettingsStoreTests.swift */,
+				6A5E7B0E346805556C5D9350 /* CartConsumableTickerFormatterTests.swift */,
 				00A45905838B30EDFC18C397 /* PerformanceTelemetryStoreTests.swift */,
 				4E3A3C8B003CBAF03504F695 /* RuntimeDiagnosticsTests.swift */,
 				C904268098CE3875C7C61698 /* SummaryActionMenuExpansionTests.swift */,
@@ -559,6 +564,7 @@
 		DB4465BBE8548B26B6954744 /* Summary */ = {
 			isa = PBXGroup;
 			children = (
+				8C1CE102C6889935EE163929 /* CartConsumableTicker.swift */,
 				6CD15DBDCE80476FF0F4FEC9 /* CartSummarySection.swift */,
 				DD8A5F3E8A1246EC011FB56F /* PersonalCartMarkerStrip.swift */,
 				581AA4C2C21D792F644F4B08 /* RoomActionMenuLampTransition.swift */,
@@ -747,6 +753,7 @@
 				83EB07869078ACDF236ED14B /* AIVisualPresetStoreTests.swift in Sources */,
 				87852D01D8D77739E19E6738 /* AppSettingsStoreTests.swift in Sources */,
 				C049A7C4CC4F9626A8CE7178 /* AppleSyncEntitlementTests.swift in Sources */,
+				ADCC199AE3ED10131C069E01 /* CartConsumableTickerFormatterTests.swift in Sources */,
 				74F755CC983F8493F4FAF4A6 /* PerformanceTelemetryStoreTests.swift in Sources */,
 				10CBAE8DA13FE056254B65D4 /* RuntimeDiagnosticsTests.swift in Sources */,
 				333A65A0C26F32AD550D5161 /* SummaryActionMenuExpansionTests.swift in Sources */,
@@ -777,6 +784,7 @@
 				93D0CE8735DD6EAA67CEB78D /* BuildChangelog.swift in Sources */,
 				A81C9CEAA6F5C0B8AB7C4BF0 /* BuildChangelogScreen.swift in Sources */,
 				0DB493EF3021829B88BE5682 /* CameraCaptureView.swift in Sources */,
+				D91251CD1A4424FE2DBF0168 /* CartConsumableTicker.swift in Sources */,
 				4090C45733427419BF97E219 /* CartConsumables.swift in Sources */,
 				CD93640CE2E2659E71DC69FE /* CartConsumablesSection.swift in Sources */,
 				0F33257171B1CD7428303898 /* CartDetailsRoute.swift in Sources */,
@@ -944,7 +952,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 128;
+				CURRENT_PROJECT_VERSION = 129;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = J6MW4855LU;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1003,7 +1011,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 128;
+				CURRENT_PROJECT_VERSION = 129;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = J6MW4855LU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

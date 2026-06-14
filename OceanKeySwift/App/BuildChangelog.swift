@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (129)",
+            date: "2026-06-13",
+            changes: [
+                "Added a running cart supply ticker on the OceanKey summary screen between the cart number and the A/B floor label.",
+                "The ticker shows only active non-completed cart consumables with positive quantities, such as towels and sheets.",
+                "Measured ticker text precisely so long supply lists scroll smoothly while the cart number and building label stay readable."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (128)",
             date: "2026-06-12",
             changes: [
