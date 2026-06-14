@@ -6,6 +6,7 @@ struct CartConsumableItem: Codable, Identifiable, Equatable, Sendable {
     var quantity: Int
     var updatedAt: Date?
     var completedAt: Date?
+    var isHidden = false
 
     var isCompleted: Bool {
         completedAt != nil
@@ -34,10 +35,16 @@ enum CartConsumableCatalog {
         CartConsumableItem(id: "tissue", title: "Салфетки бумажные", quantity: 0)
     ]
 
-    static func merged(with storedItems: [CartConsumableItem]?) -> [CartConsumableItem] {
+    static let defaultIDs = Set(defaults.map(\.id))
+
+    static func merged(
+        with storedItems: [CartConsumableItem]?,
+        includingHidden: Bool = false
+    ) -> [CartConsumableItem] {
         let storedByID = Dictionary(uniqueKeysWithValues: (storedItems ?? []).map { ($0.id, $0) })
-        let defaultIDs = Set(defaults.map(\.id))
         let customItems = (storedItems ?? []).filter { !defaultIDs.contains($0.id) }
-        return defaults.map { storedByID[$0.id] ?? $0 } + customItems
+        let items = defaults.map { storedByID[$0.id] ?? $0 } + customItems
+        guard !includingHidden else { return items }
+        return items.filter { !$0.isHidden }
     }
 }

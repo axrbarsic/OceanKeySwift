@@ -2,10 +2,21 @@ import SwiftUI
 
 struct CartConsumableQuantitySlider: View {
     let quantity: Int
+    let onQuantityPreview: (Int?) -> Void
     let onQuantityChange: (Int) -> Void
 
     @State private var draftQuantity: Int?
     @State private var dragIsHorizontal = false
+
+    init(
+        quantity: Int,
+        onQuantityPreview: @escaping (Int?) -> Void = { _ in },
+        onQuantityChange: @escaping (Int) -> Void
+    ) {
+        self.quantity = quantity
+        self.onQuantityPreview = onQuantityPreview
+        self.onQuantityChange = onQuantityChange
+    }
 
     private var visibleQuantity: Int {
         draftQuantity ?? CartConsumableQuantity.clamped(quantity)
@@ -53,15 +64,20 @@ struct CartConsumableQuantitySlider: View {
                         let horizontal = dragIsHorizontal || abs(value.translation.width) >= abs(value.translation.height)
                         dragIsHorizontal = horizontal
                         guard horizontal else { return }
-                        draftQuantity = detent(for: value.location.x, width: width)
+                        let nextQuantity = detent(for: value.location.x, width: width)
+                        guard draftQuantity != nextQuantity else { return }
+                        draftQuantity = nextQuantity
+                        onQuantityPreview(nextQuantity)
                     }
                     .onEnded { value in
                         let horizontal = dragIsHorizontal || abs(value.translation.width) >= abs(value.translation.height)
                         let finalQuantity = horizontal ? detent(for: value.location.x, width: width) : visibleQuantity
                         draftQuantity = nil
                         dragIsHorizontal = false
-                        guard finalQuantity != quantity else { return }
-                        onQuantityChange(finalQuantity)
+                        if finalQuantity != quantity {
+                            onQuantityChange(finalQuantity)
+                        }
+                        onQuantityPreview(nil)
                     }
             )
             .accessibilityElement(children: .ignore)

@@ -198,7 +198,8 @@ private func makePersistentTestSnapshot() -> WorkSessionSnapshot {
                     title: "Полотенца банные",
                     quantity: 4,
                     updatedAt: noteAt,
-                    completedAt: mediaAt
+                    completedAt: mediaAt,
+                    isHidden: true
                 )
             ]
         )

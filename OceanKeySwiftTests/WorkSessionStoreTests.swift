@@ -310,3 +310,35 @@ func cartCustomConsumableIsStoredWithHistory() {
     #expect(item?.id.hasPrefix("custom_") == true)
     #expect(store.history.first?.kind == .cartConsumablesChanged)
 }
+
+@Test
+func cartConsumableRenameAndDefaultRemovalAreStored() {
+    let store = WorkSessionStore.preview()
+
+    store.renameCartConsumable(itemID: "bath_towel", title: "Pool towels", cartId: 7)
+    store.removeCartConsumable(itemID: "bath_towel", cartId: 7)
+
+    let storedItems = CartConsumableCatalog.merged(with: store.cart(id: 7)?.consumables, includingHidden: true)
+    let visibleItems = CartConsumableCatalog.merged(with: store.cart(id: 7)?.consumables)
+    let item = storedItems.first { $0.id == "bath_towel" }
+
+    #expect(item?.title == "Pool towels")
+    #expect(item?.isHidden == true)
+    #expect(!visibleItems.contains { $0.id == "bath_towel" })
+}
+
+@Test
+func cartCustomConsumableCanBeRemoved() {
+    let store = WorkSessionStore.preview()
+
+    store.addCartConsumable(title: "Coffee", quantity: 3, cartId: 7)
+    let customID = store.cart(id: 7)?.consumables?.first { $0.title == "Coffee" }?.id
+    #expect(customID != nil)
+
+    if let customID {
+        store.removeCartConsumable(itemID: customID, cartId: 7)
+    }
+
+    let items = CartConsumableCatalog.merged(with: store.cart(id: 7)?.consumables, includingHidden: true)
+    #expect(!items.contains { $0.title == "Coffee" })
+}

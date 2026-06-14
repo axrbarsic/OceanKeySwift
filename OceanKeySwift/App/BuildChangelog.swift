@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (132)",
+            date: "2026-06-14",
+            changes: [
+                "Consumable slider rows now update their visible number and Needed label live while the finger is moving.",
+                "Consumable names can be edited directly in each row.",
+                "Consumables can now be deleted from a cart; default catalog rows are hidden for that cart while custom rows are removed."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (131)",
             date: "2026-06-14",
             changes: [

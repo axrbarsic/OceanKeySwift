@@ -17,6 +17,17 @@ struct CartConsumablesSection: View {
             ForEach(items) { item in
                 CartConsumableRow(
                     item: item,
+                    onRename: { title in
+                        workSession.renameCartConsumable(
+                            itemID: item.id,
+                            title: title,
+                            cartId: cartID
+                        )
+                    },
+                    onDelete: {
+                        workSession.removeCartConsumable(itemID: item.id, cartId: cartID)
+                        feedback.confirm()
+                    },
                     onQuantityChange: { quantity in
                         workSession.updateCartConsumableQuantity(
                             itemID: item.id,
@@ -78,17 +89,43 @@ struct CartConsumablesSection: View {
 
 private struct CartConsumableRow: View {
     let item: CartConsumableItem
+    let onRename: (String) -> Void
+    let onDelete: () -> Void
     let onQuantityChange: (Int) -> Void
+    @State private var previewQuantity: Int?
+    @State private var titleDraft: String
+    @FocusState private var titleIsFocused: Bool
+
+    init(
+        item: CartConsumableItem,
+        onRename: @escaping (String) -> Void,
+        onDelete: @escaping () -> Void,
+        onQuantityChange: @escaping (Int) -> Void
+    ) {
+        self.item = item
+        self.onRename = onRename
+        self.onDelete = onDelete
+        self.onQuantityChange = onQuantityChange
+        _titleDraft = State(initialValue: item.title)
+    }
+
+    private var visibleQuantity: Int {
+        previewQuantity ?? item.quantity
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline, spacing: 10) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(item.title)
+                    TextField("Название", text: $titleDraft)
                         .font(.system(size: 18, weight: .black, design: .rounded))
                         .foregroundStyle(.white)
                         .lineLimit(1)
                         .minimumScaleFactor(0.68)
+                        .textInputAutocapitalization(.sentences)
+                        .submitLabel(.done)
+                        .focused($titleIsFocused)
+                        .onSubmit(commitTitle)
 
                     Text(statusText)
                         .font(.system(size: 12, weight: .black, design: .rounded))
@@ -98,7 +135,18 @@ private struct CartConsumableRow: View {
 
                 Spacer(minLength: 8)
 
-                Text("\(item.quantity)")
+                Button(action: onDelete) {
+                    Image(systemName: "trash.fill")
+                        .font(.system(size: 14, weight: .black))
+                        .frame(width: 34, height: 34)
+                        .foregroundStyle(OceanKeyTheme.open)
+                        .background(.black.opacity(0.26))
+                        .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Удалить расходник")
+
+                Text("\(visibleQuantity)")
                     .font(.system(size: 30, weight: .black, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(statusColor)
@@ -107,6 +155,7 @@ private struct CartConsumableRow: View {
 
             CartConsumableQuantitySlider(
                 quantity: item.quantity,
+                onQuantityPreview: { previewQuantity = $0 },
                 onQuantityChange: onQuantityChange
             )
         }
@@ -116,20 +165,40 @@ private struct CartConsumableRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(statusColor.opacity(item.quantity == 0 ? 0.16 : 0.38), lineWidth: 1)
+                .stroke(statusColor.opacity(visibleQuantity == 0 ? 0.16 : 0.38), lineWidth: 1)
+        }
+        .onChange(of: item.quantity) { _, _ in previewQuantity = nil }
+        .onChange(of: item.title) { _, newValue in
+            guard !titleIsFocused else { return }
+            titleDraft = newValue
+        }
+        .onChange(of: titleIsFocused) { _, isFocused in
+            if !isFocused {
+                commitTitle()
+            }
         }
     }
 
     private var rowBackground: Color {
-        item.quantity == 0 ? .black.opacity(0.22) : OceanKeyTheme.accent.opacity(0.11)
+        visibleQuantity == 0 ? .black.opacity(0.22) : OceanKeyTheme.accent.opacity(0.11)
     }
 
     private var statusColor: Color {
-        item.quantity == 0 ? OceanKeyTheme.secondaryText : OceanKeyTheme.accent
+        visibleQuantity == 0 ? OceanKeyTheme.secondaryText : OceanKeyTheme.accent
     }
 
     private var statusText: String {
-        item.quantity == 0 ? "Не нужно" : "Нужно \(item.quantity)"
+        visibleQuantity == 0 ? "Не нужно" : "Нужно \(visibleQuantity)"
+    }
+
+    private func commitTitle() {
+        let trimmed = titleDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            titleDraft = item.title
+            return
+        }
+        guard trimmed != item.title else { return }
+        onRename(trimmed)
     }
 }
 

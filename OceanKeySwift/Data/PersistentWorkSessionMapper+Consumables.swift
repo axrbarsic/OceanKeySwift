@@ -10,7 +10,8 @@ extension PersistentWorkSessionMapper {
                     title: $0.title,
                     quantity: $0.quantity,
                     updatedAt: $0.updatedAt,
-                    completedAt: $0.completedAt
+                    completedAt: $0.completedAt,
+                    isHidden: $0.isHidden
                 )
             }
         return items.isEmpty ? nil : items
@@ -40,6 +41,7 @@ extension PersistentWorkSessionMapper {
                     quantity: item.quantity,
                     updatedAt: item.updatedAt,
                     completedAt: item.completedAt,
+                    isHidden: item.isHidden,
                     displayOrder: index
                 )
                 context.insert(record)
@@ -51,6 +53,7 @@ extension PersistentWorkSessionMapper {
             record.quantity = item.quantity
             record.updatedAt = item.updatedAt
             record.completedAt = item.completedAt
+            record.isHidden = item.isHidden
             record.displayOrder = index
             nextRecords.append(record)
         }

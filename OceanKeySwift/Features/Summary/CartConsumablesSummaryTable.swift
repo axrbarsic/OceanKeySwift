@@ -116,6 +116,11 @@ struct CartConsumablesSummaryTable: View {
 private struct CartConsumablesSummaryNeedRow: View {
     let need: CartConsumableCartNeed
     let onQuantityChange: (Int) -> Void
+    @State private var previewQuantity: Int?
+
+    private var visibleQuantity: Int {
+        previewQuantity ?? need.quantity
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -128,7 +133,7 @@ private struct CartConsumablesSummaryNeedRow: View {
 
                 Spacer(minLength: 8)
 
-                Text("\(need.quantity)")
+                Text("\(visibleQuantity)")
                     .font(.system(size: 22, weight: .black, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(OceanKeyTheme.accent)
@@ -137,6 +142,7 @@ private struct CartConsumablesSummaryNeedRow: View {
 
             CartConsumableQuantitySlider(
                 quantity: need.quantity,
+                onQuantityPreview: { previewQuantity = $0 },
                 onQuantityChange: onQuantityChange
             )
         }
@@ -144,5 +150,6 @@ private struct CartConsumablesSummaryNeedRow: View {
         .padding(.vertical, 9)
         .background(.black.opacity(0.24))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .onChange(of: need.quantity) { _, _ in previewQuantity = nil }
     }
 }

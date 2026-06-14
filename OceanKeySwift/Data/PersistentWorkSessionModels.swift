@@ -209,6 +209,7 @@ final class PersistentCartConsumable {
     var quantity: Int = 0
     var updatedAt: Date?
     var completedAt: Date?
+    var isHidden: Bool = false
     var displayOrder: Int = 0
     var cart: PersistentCart?
 
@@ -218,6 +219,7 @@ final class PersistentCartConsumable {
         quantity: Int,
         updatedAt: Date?,
         completedAt: Date?,
+        isHidden: Bool = false,
         displayOrder: Int
     ) {
         self.itemID = itemID
@@ -225,6 +227,7 @@ final class PersistentCartConsumable {
         self.quantity = quantity
         self.updatedAt = updatedAt
         self.completedAt = completedAt
+        self.isHidden = isHidden
         self.displayOrder = displayOrder
     }
 }
