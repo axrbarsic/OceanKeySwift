@@ -12,6 +12,7 @@ struct CartConsumablesSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            quickActionsRow
             addConsumableRow
 
             ForEach(items) { item in
@@ -31,7 +32,13 @@ struct CartConsumablesSection: View {
                             cartId: cartID
                         )
                     },
-                    onToggleComplete: {
+                    onComplete: {
+                        workSession.completeCartConsumable(
+                            itemID: item.id,
+                            cartId: cartID
+                        )
+                    },
+                    onReopen: {
                         workSession.toggleCartConsumableCompletion(
                             itemID: item.id,
                             cartId: cartID
@@ -39,6 +46,41 @@ struct CartConsumablesSection: View {
                     }
                 )
             }
+        }
+    }
+
+    private var quickActionsRow: some View {
+        HStack(spacing: 10) {
+            Label("Задания", systemImage: "shippingbox.fill")
+                .font(.system(size: 15, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+
+            Spacer(minLength: 8)
+
+            Button {
+                workSession.clearCartConsumables(cartId: cartID)
+                feedback.confirm()
+            } label: {
+                Label("Очистить всё", systemImage: "checkmark.seal.fill")
+                    .font(.system(size: 14, weight: .black, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+                    .padding(.horizontal, 12)
+                    .frame(height: 38)
+                    .foregroundStyle(OceanKeyTheme.roomForeground)
+                    .background(OceanKeyTheme.ready.opacity(canClear ? 1 : 0.28))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .disabled(!canClear)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 9)
+        .background(.black.opacity(0.18))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(OceanKeyTheme.ready.opacity(0.18), lineWidth: 1)
         }
     }
 
@@ -80,6 +122,10 @@ struct CartConsumablesSection: View {
         !newConsumableTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    private var canClear: Bool {
+        items.contains { $0.quantity > 0 || $0.isCompleted }
+    }
+
     private func addConsumable() {
         guard canAddConsumable else { return }
         workSession.addCartConsumable(title: newConsumableTitle, cartId: cartID)
@@ -92,24 +138,17 @@ private struct CartConsumableRow: View {
     let item: CartConsumableItem
     let onDecrement: () -> Void
     let onIncrement: () -> Void
-    let onToggleComplete: () -> Void
+    let onComplete: () -> Void
+    let onReopen: () -> Void
 
     var body: some View {
         HStack(spacing: 10) {
-            Button(action: onToggleComplete) {
-                Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 24, weight: .black))
-                    .frame(width: 38, height: 44)
-                    .foregroundStyle(item.isCompleted ? OceanKeyTheme.accent : OceanKeyTheme.secondaryText)
-            }
-            .buttonStyle(.plain)
-
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.title)
                     .font(.system(size: 17, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.76)
+                    .minimumScaleFactor(0.72)
 
                 Text(subtitle)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
@@ -117,7 +156,9 @@ private struct CartConsumableRow: View {
                     .lineLimit(1)
             }
 
-            Spacer(minLength: 8)
+            Spacer(minLength: 6)
+
+            completionButton
 
             HStack(spacing: 6) {
                 quantityButton(systemName: "minus", action: onDecrement)
@@ -125,7 +166,7 @@ private struct CartConsumableRow: View {
                 Text("\(item.quantity)")
                     .font(.system(size: 24, weight: .black, design: .rounded))
                     .monospacedDigit()
-                    .frame(width: 42)
+                    .frame(width: 38)
                     .foregroundStyle(.white)
 
                 quantityButton(systemName: "plus", action: onIncrement)
@@ -137,12 +178,42 @@ private struct CartConsumableRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(item.isCompleted ? OceanKeyTheme.accent.opacity(0.36) : OceanKeyTheme.accent.opacity(0.14), lineWidth: 1)
+                .stroke(item.isCompleted ? OceanKeyTheme.ready.opacity(0.42) : OceanKeyTheme.accent.opacity(0.14), lineWidth: 1)
+        }
+    }
+
+    @ViewBuilder
+    private var completionButton: some View {
+        if item.isCompleted {
+            Button(action: onReopen) {
+                Text("Вернуть")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.76)
+                    .frame(width: 62, height: 34)
+                    .foregroundStyle(.white)
+                    .background(.white.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+            }
+            .buttonStyle(.plain)
+        } else {
+            Button(action: onComplete) {
+                Text("Готово")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.76)
+                    .frame(width: 62, height: 34)
+                    .foregroundStyle(OceanKeyTheme.roomForeground)
+                    .background(OceanKeyTheme.ready.opacity(item.quantity > 0 ? 1 : 0.28))
+                    .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .disabled(item.quantity == 0)
         }
     }
 
     private var rowBackground: Color {
-        item.isCompleted ? OceanKeyTheme.accent.opacity(0.12) : .black.opacity(0.24)
+        item.isCompleted ? OceanKeyTheme.ready.opacity(0.12) : .black.opacity(0.24)
     }
 
     private var subtitle: String {

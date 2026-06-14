@@ -48,6 +48,43 @@ extension WorkSessionStore {
         }
     }
 
+    func completeCartConsumable(
+        itemID: CartConsumableItem.ID,
+        cartId: CartSection.ID
+    ) {
+        mutateCart(cartId, history: { _, after, _ in
+            let item = CartConsumableCatalog.merged(with: after.consumables).first { $0.id == itemID }
+            let title = item?.title ?? "Расходник"
+            return (.cartConsumablesChanged, "Тележка \(after.id): \(title) выполнено")
+        }) { cart in
+            let changedAt = Date()
+            var items = CartConsumableCatalog.merged(with: cart.consumables)
+            guard let index = items.firstIndex(where: { $0.id == itemID }) else { return }
+            guard items[index].quantity > 0, items[index].completedAt == nil else { return }
+            items[index].completedAt = changedAt
+            items[index].updatedAt = changedAt
+            cart.consumables = items
+        }
+    }
+
+    func clearCartConsumables(cartId: CartSection.ID) {
+        mutateCart(cartId, history: { _, after, _ in
+            (.cartConsumablesChanged, "Тележка \(after.id): расходники очищены")
+        }) { cart in
+            let changedAt = Date()
+            var items = CartConsumableCatalog.merged(with: cart.consumables)
+            var didReset = false
+            for index in items.indices where items[index].quantity > 0 || items[index].completedAt != nil {
+                items[index].quantity = 0
+                items[index].completedAt = nil
+                items[index].updatedAt = changedAt
+                didReset = true
+            }
+            guard didReset else { return }
+            cart.consumables = items
+        }
+    }
+
     func toggleCartConsumableCompletion(
         itemID: CartConsumableItem.ID,
         cartId: CartSection.ID

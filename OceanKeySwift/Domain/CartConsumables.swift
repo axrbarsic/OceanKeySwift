@@ -18,8 +18,12 @@ enum CartConsumableCatalog {
         CartConsumableItem(id: "hand_towel", title: "Полотенца ручные", quantity: 0),
         CartConsumableItem(id: "washcloth", title: "Салфетки", quantity: 0),
         CartConsumableItem(id: "bath_mat", title: "Коврики", quantity: 0),
+        CartConsumableItem(id: "king_sheet", title: "King Sheets", quantity: 0),
+        CartConsumableItem(id: "queen_sheet", title: "Queen Sheets", quantity: 0),
         CartConsumableItem(id: "sheet", title: "Простыни", quantity: 0),
-        CartConsumableItem(id: "pillowcase", title: "Наволочки", quantity: 0)
+        CartConsumableItem(id: "pillowcase", title: "Наволочки", quantity: 0),
+        CartConsumableItem(id: "toilet_paper", title: "Туалетная бумага", quantity: 0),
+        CartConsumableItem(id: "tissue", title: "Салфетки бумажные", quantity: 0)
     ]
 
     static func merged(with storedItems: [CartConsumableItem]?) -> [CartConsumableItem] {

@@ -257,12 +257,27 @@ func cartConsumableQuantityAndCompletionRecordHistory() {
     let store = WorkSessionStore.preview()
 
     store.updateCartConsumableQuantity(itemID: "bath_towel", quantity: 4, cartId: 7)
-    store.toggleCartConsumableCompletion(itemID: "bath_towel", cartId: 7)
+    store.completeCartConsumable(itemID: "bath_towel", cartId: 7)
 
     let item = store.cart(id: 7)?.consumables?.first { $0.id == "bath_towel" }
     #expect(item?.quantity == 4)
     #expect(item?.completedAt != nil)
     #expect(store.history.first?.kind == .cartConsumablesChanged)
+}
+
+@Test
+func cartConsumableClearResetsQuantitiesAndCompletion() {
+    let store = WorkSessionStore.preview()
+
+    store.updateCartConsumableQuantity(itemID: "bath_towel", quantity: 4, cartId: 7)
+    store.updateCartConsumableQuantity(itemID: "toilet_paper", quantity: 2, cartId: 7)
+    store.completeCartConsumable(itemID: "bath_towel", cartId: 7)
+    store.clearCartConsumables(cartId: 7)
+
+    let items = CartConsumableCatalog.merged(with: store.cart(id: 7)?.consumables)
+    #expect(items.allSatisfy { $0.quantity == 0 })
+    #expect(items.allSatisfy { !$0.isCompleted })
+    #expect(store.history.first?.title == "Тележка 7: расходники очищены")
 }
 
 @Test

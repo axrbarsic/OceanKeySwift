@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (130)",
+            date: "2026-06-13",
+            changes: [
+                "Added one-tap clearing for a cart's consumable requests so completed supply runs can be reset to zero immediately.",
+                "Replaced the ambiguous consumable check circle with explicit Done and Restore actions for selective item completion.",
+                "Added a bottom supply summary on the main OceanKey screen with total warehouse needs and per-cart breakdowns that can close individual items."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (129)",
             date: "2026-06-13",
             changes: [

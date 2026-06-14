@@ -55,6 +55,11 @@ struct SummaryScreen: View {
                                 onScheduleToggle: openSchedule
                             )
                         }
+
+                        CartConsumablesSummaryTable(
+                            report: CartConsumablesSummaryBuilder.report(for: workSession.carts),
+                            onComplete: completeConsumableFromSummary
+                        )
                     }
                     .padding(.horizontal, 8)
                     .padding(.bottom, 28)
@@ -136,6 +141,13 @@ struct SummaryScreen: View {
         workSession.setSchedule(nil, roomId: roomID)
         expandedActionMenuRoomIDs.remove(roomID)
         scheduleNotifications.cancelRoom(roomID)
+    }
+
+    private func completeConsumableFromSummary(
+        cartID: CartSection.ID,
+        itemID: CartConsumableItem.ID
+    ) {
+        workSession.completeCartConsumable(itemID: itemID, cartId: cartID)
     }
 
     private func closeActionMenus() {
