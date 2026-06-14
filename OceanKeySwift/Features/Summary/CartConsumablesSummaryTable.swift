@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CartConsumablesSummaryTable: View {
     let report: CartConsumablesSummaryReport
-    let onComplete: (CartSection.ID, CartConsumableItem.ID) -> Void
+    let onQuantityChange: (CartSection.ID, CartConsumableItem.ID, Int) -> Void
 
     @Environment(\.interactionFeedback) private var feedback
 
@@ -77,9 +77,9 @@ struct CartConsumablesSummaryTable: View {
                     ForEach(cart.needs) { need in
                         CartConsumablesSummaryNeedRow(
                             need: need,
-                            onComplete: {
+                            onQuantityChange: { quantity in
                                 feedback.confirm()
-                                onComplete(need.cartID, need.itemID)
+                                onQuantityChange(need.cartID, need.itemID, quantity)
                             }
                         )
                     }
@@ -115,46 +115,34 @@ struct CartConsumablesSummaryTable: View {
 
 private struct CartConsumablesSummaryNeedRow: View {
     let need: CartConsumableCartNeed
-    let onComplete: () -> Void
+    let onQuantityChange: (Int) -> Void
 
     var body: some View {
-        HStack(spacing: 10) {
-            Text(need.title)
-                .font(.system(size: 15, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-
-            Spacer(minLength: 8)
-
-            Text("\(need.quantity)")
-                .font(.system(size: 16, weight: .black, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(OceanKeyTheme.pending)
-                .frame(width: 28)
-
-            Button(action: onComplete) {
-                Label("Готово", systemImage: "checkmark")
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .labelStyle(.titleAndIcon)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Text(need.title)
+                    .font(.system(size: 15, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.76)
-                    .frame(width: 82, height: 34)
-                    .foregroundStyle(OceanKeyTheme.roomForeground)
-                    .background(OceanKeyTheme.ready)
-                    .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+                    .minimumScaleFactor(0.66)
+
+                Spacer(minLength: 8)
+
+                Text("\(need.quantity)")
+                    .font(.system(size: 22, weight: .black, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(OceanKeyTheme.accent)
+                    .frame(minWidth: 34, alignment: .trailing)
             }
-            .buttonStyle(.plain)
+
+            CartConsumableQuantitySlider(
+                quantity: need.quantity,
+                onQuantityChange: onQuantityChange
+            )
         }
-        .padding(.leading, 8)
-        .padding(.trailing, 6)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 9)
         .background(.black.opacity(0.24))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-        .contentShape(Rectangle())
-        .onLongPressGesture {
-            onComplete()
-        }
-        .accessibilityHint("Долгое нажатие или кнопка Готово закрывает эту позицию")
     }
 }

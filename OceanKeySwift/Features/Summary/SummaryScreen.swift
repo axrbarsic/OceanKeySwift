@@ -58,7 +58,7 @@ struct SummaryScreen: View {
 
                         CartConsumablesSummaryTable(
                             report: CartConsumablesSummaryBuilder.report(for: workSession.carts),
-                            onComplete: completeConsumableFromSummary
+                            onQuantityChange: updateConsumableFromSummary
                         )
                     }
                     .padding(.horizontal, 8)
@@ -143,11 +143,12 @@ struct SummaryScreen: View {
         scheduleNotifications.cancelRoom(roomID)
     }
 
-    private func completeConsumableFromSummary(
+    private func updateConsumableFromSummary(
         cartID: CartSection.ID,
-        itemID: CartConsumableItem.ID
+        itemID: CartConsumableItem.ID,
+        quantity: Int
     ) {
-        workSession.completeCartConsumable(itemID: itemID, cartId: cartID)
+        workSession.updateCartConsumableQuantity(itemID: itemID, quantity: quantity, cartId: cartID)
     }
 
     private func closeActionMenus() {

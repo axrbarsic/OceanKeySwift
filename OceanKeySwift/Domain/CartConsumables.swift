@@ -12,6 +12,14 @@ struct CartConsumableItem: Codable, Identifiable, Equatable, Sendable {
     }
 }
 
+enum CartConsumableQuantity {
+    static let maximum = 10
+
+    static func clamped(_ quantity: Int) -> Int {
+        min(max(0, quantity), maximum)
+    }
+}
+
 enum CartConsumableCatalog {
     static let defaults: [CartConsumableItem] = [
         CartConsumableItem(id: "bath_towel", title: "Полотенца банные", quantity: 0),

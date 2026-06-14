@@ -281,6 +281,25 @@ func cartConsumableClearResetsQuantitiesAndCompletion() {
 }
 
 @Test
+func cartConsumableQuantityClampsToSliderRangeAndReopensItem() {
+    let store = WorkSessionStore.preview()
+
+    store.updateCartConsumableQuantity(itemID: "bath_towel", quantity: 99, cartId: 7)
+    store.completeCartConsumable(itemID: "bath_towel", cartId: 7)
+    store.updateCartConsumableQuantity(itemID: "bath_towel", quantity: 5, cartId: 7)
+
+    var item = store.cart(id: 7)?.consumables?.first { $0.id == "bath_towel" }
+    #expect(item?.quantity == 5)
+    #expect(item?.completedAt == nil)
+
+    store.updateCartConsumableQuantity(itemID: "bath_towel", quantity: -3, cartId: 7)
+
+    item = store.cart(id: 7)?.consumables?.first { $0.id == "bath_towel" }
+    #expect(item?.quantity == 0)
+    #expect(item?.completedAt == nil)
+}
+
+@Test
 func cartCustomConsumableIsStoredWithHistory() {
     let store = WorkSessionStore.preview()
 

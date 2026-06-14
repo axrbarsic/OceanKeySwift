@@ -10,6 +10,15 @@ struct BuildChangelogEntry: Identifiable, Equatable {
 enum BuildChangelog {
     static let entries = [
         BuildChangelogEntry(
+            version: "0.2.0 (131)",
+            date: "2026-06-14",
+            changes: [
+                "Reworked cart consumables into rectangular equalizer-style quantity sliders from 0 to 10.",
+                "Dragging a consumable fully left now resets that item to zero and removes it from active ticker and warehouse summaries.",
+                "The bottom per-cart consumable summary now uses the same slider interaction while totals stay aggregated above it."
+            ]
+        ),
+        BuildChangelogEntry(
             version: "0.2.0 (130)",
             date: "2026-06-13",
             changes: [

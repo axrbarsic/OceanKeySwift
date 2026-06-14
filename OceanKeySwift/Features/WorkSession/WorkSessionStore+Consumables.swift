@@ -8,6 +8,7 @@ extension WorkSessionStore {
     ) {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
+        let safeQuantity = CartConsumableQuantity.clamped(quantity)
 
         mutateCart(cartId, history: { _, after, _ in
             (.cartConsumablesChanged, "Тележка \(after.id): добавлен расходник \(trimmed)")
@@ -17,7 +18,7 @@ extension WorkSessionStore {
                 CartConsumableItem(
                     id: "custom_\(UUID().uuidString)",
                     title: trimmed,
-                    quantity: max(0, quantity),
+                    quantity: safeQuantity,
                     updatedAt: Date(),
                     completedAt: nil
                 )
@@ -31,19 +32,18 @@ extension WorkSessionStore {
         quantity: Int,
         cartId: CartSection.ID
     ) {
+        let safeQuantity = CartConsumableQuantity.clamped(quantity)
         mutateCart(cartId, history: { _, after, _ in
             let item = CartConsumableCatalog.merged(with: after.consumables).first { $0.id == itemID }
             let title = item?.title ?? "Расходник"
-            return (.cartConsumablesChanged, "Тележка \(after.id): \(title) \(max(0, quantity))")
+            return (.cartConsumablesChanged, "Тележка \(after.id): \(title) \(safeQuantity)")
         }) { cart in
             let changedAt = Date()
             var items = CartConsumableCatalog.merged(with: cart.consumables)
             guard let index = items.firstIndex(where: { $0.id == itemID }) else { return }
-            items[index].quantity = max(0, quantity)
+            items[index].quantity = safeQuantity
             items[index].updatedAt = changedAt
-            if items[index].quantity == 0 {
-                items[index].completedAt = nil
-            }
+            items[index].completedAt = nil
             cart.consumables = items
         }
     }
