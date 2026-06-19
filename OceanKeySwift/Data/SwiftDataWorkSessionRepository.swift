@@ -21,6 +21,7 @@ final class SwiftDataWorkSessionRepository: WorkSessionRepository, @unchecked Se
 
     init(
         syncMode: SyncMode = .localOnly,
+        storeDirectory: URL? = nil,
         container: ModelContainer? = nil,
         activeSyncMode: SyncMode? = nil,
         legacyRepository: LocalWorkSessionRepository? = LocalWorkSessionRepository()
@@ -30,7 +31,10 @@ final class SwiftDataWorkSessionRepository: WorkSessionRepository, @unchecked Se
             self.container = container
             self.activeSyncMode = activeSyncMode ?? syncMode
         } else {
-            let resolved = SwiftDataWorkSessionRepository.makeDefaultContainer(requestedSyncMode: syncMode)
+            let resolved = SwiftDataWorkSessionRepository.makeDefaultContainer(
+                requestedSyncMode: syncMode,
+                storeDirectory: storeDirectory
+            )
             self.container = resolved.container
             self.activeSyncMode = resolved.activeSyncMode
         }
@@ -77,17 +81,31 @@ final class SwiftDataWorkSessionRepository: WorkSessionRepository, @unchecked Se
         return try context.fetch(descriptor).first.map(PersistentWorkSessionMapper.snapshot(from:))
     }
 
-    private static func makeDefaultContainer(requestedSyncMode: SyncMode) -> (
+    private static func makeDefaultContainer(
+        requestedSyncMode: SyncMode,
+        storeDirectory: URL? = nil
+    ) -> (
         container: ModelContainer,
         activeSyncMode: SyncMode
     ) {
         do {
-            return (try makeContainer(inMemory: false, syncMode: requestedSyncMode), requestedSyncMode)
+            return (
+                try makeContainer(
+                    inMemory: false,
+                    syncMode: requestedSyncMode,
+                    storeDirectory: storeDirectory
+                ),
+                requestedSyncMode
+            )
         } catch {
             logger.error("Requested SwiftData container failed: \(error.localizedDescription, privacy: .public)")
             if requestedSyncMode != .localOnly {
                 do {
-                    let container = try makeContainer(inMemory: false, syncMode: .localOnly)
+                    let container = try makeContainer(
+                        inMemory: false,
+                        syncMode: .localOnly,
+                        storeDirectory: storeDirectory
+                    )
                     logger.error("Falling back to persistent local SwiftData after CloudKit container failure.")
                     return (container, .localOnly)
                 } catch {
@@ -103,7 +121,11 @@ final class SwiftDataWorkSessionRepository: WorkSessionRepository, @unchecked Se
         }
     }
 
-    private static func makeContainer(inMemory: Bool, syncMode: SyncMode) throws -> ModelContainer {
+    private static func makeContainer(
+        inMemory: Bool,
+        syncMode: SyncMode,
+        storeDirectory: URL? = nil
+    ) throws -> ModelContainer {
         let schema = Schema([
             PersistentWorkSession.self,
             PersistentCartBinding.self,
@@ -124,19 +146,25 @@ final class SwiftDataWorkSessionRepository: WorkSessionRepository, @unchecked Se
         } else {
             configuration = ModelConfiguration(
                 schema: schema,
-                url: try persistentStoreURL(),
+                url: try persistentStoreURL(storeDirectory: storeDirectory),
                 cloudKitDatabase: cloudKitDatabase(for: syncMode, inMemory: false)
             )
         }
         return try ModelContainer(for: schema, configurations: [configuration])
     }
 
-    private static func persistentStoreURL() throws -> URL {
-        guard let applicationSupportURL = FileManager.default.urls(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask
-        ).first else {
-            throw CocoaError(.fileNoSuchFile)
+    private static func persistentStoreURL(storeDirectory: URL? = nil) throws -> URL {
+        let applicationSupportURL: URL
+        if let storeDirectory {
+            applicationSupportURL = storeDirectory
+        } else {
+            guard let defaultURL = FileManager.default.urls(
+                for: .applicationSupportDirectory,
+                in: .userDomainMask
+            ).first else {
+                throw CocoaError(.fileNoSuchFile)
+            }
+            applicationSupportURL = defaultURL
         }
         try FileManager.default.createDirectory(
             at: applicationSupportURL,

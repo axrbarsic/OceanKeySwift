@@ -13,6 +13,7 @@
 		06C3C3DFA01AE136CAFCD31D /* KeychainSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5F4387C50664235699ED2C /* KeychainSecretStore.swift */; };
 		06DACBC44C930BBFDE23F934 /* AppleSyncConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428699A3EF746F120DB73F4B /* AppleSyncConfiguration.swift */; };
 		094272BBB8350642EA68BD69 /* SummaryHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4FA201F6199BBB1FBE6120 /* SummaryHeader.swift */; };
+		09890D1F73D3F0F92704C8BF /* EmbeddedContainerInteractionPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60ED82348DC9F6F86DA4EA9 /* EmbeddedContainerInteractionPolicy.swift */; };
 		09D30B3BED384CE9D99707EA /* AppBuildInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC89AE31D50DA5860DBEDD53 /* AppBuildInfo.swift */; };
 		0BA150B28C32A752D35450AD /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFC643F2EF7A7E0F80CCBF53 /* CloudKit.framework */; };
 		0DB493EF3021829B88BE5682 /* CameraCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4A5B1A271E2E7404DA2C20 /* CameraCaptureView.swift */; };
@@ -90,6 +91,7 @@
 		97DE906DE602F300E58EBD25 /* PersistentAIVisualPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5FB5B5BF1C322BC8B5C892 /* PersistentAIVisualPreset.swift */; };
 		9A12B43A26BB9BB84920CC5C /* PersistentWorkSessionMapper+Consumables.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDA1FF459FA36ED5D33AEC3 /* PersistentWorkSessionMapper+Consumables.swift */; };
 		A199E38C0D372F4506DC5865 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA1A7943D626E20E20C9F481 /* SpriteKit.framework */; };
+		A1CC1EF012E60214908DAF26 /* SummaryZeroScreenPuzzleHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4283A76F9E7D61CC080785B /* SummaryZeroScreenPuzzleHandle.swift */; };
 		A28D4B3E35CDC765A6DF09ED /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB8F64AABB38A2036C634BCB /* SwiftData.framework */; };
 		A630CB74A998E3B1A321DF76 /* SwiftDataWorkSessionRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC5A6449A20B95C1537B2C9 /* SwiftDataWorkSessionRepositoryTests.swift */; };
 		A703675234FF769CF867B2BD /* MatrixRainConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C831B23410D63DEBCFBC85BF /* MatrixRainConfiguration.swift */; };
@@ -117,6 +119,7 @@
 		D7C8F5EDA09CC6A0CC492A28 /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A07FDDB084B7AAC0AC13CF80 /* Speech.framework */; };
 		D91251CD1A4424FE2DBF0168 /* CartConsumableTicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1CE102C6889935EE163929 /* CartConsumableTicker.swift */; };
 		DB942E5DBC000AD9D8A734B9 /* VoiceNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1576751457D918F28F73179E /* VoiceNoteViewModel.swift */; };
+		E19041AB60795EB8B7D1DF7D /* AppStorageDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2609C55B5E324446400FBE5A /* AppStorageDirectory.swift */; };
 		E239F137FD94F82D7BB15630 /* VoiceTranscriptionPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287B82D451283BB546D3D7D4 /* VoiceTranscriptionPanel.swift */; };
 		E4C3E30218536D8EDB0F05A8 /* BackgroundVideoFileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32871C27FCEBEF323FDE3E1 /* BackgroundVideoFileStore.swift */; };
 		E79D1EED7C47265E97AAB005 /* SummaryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F8BBFB5474764DC44B4456 /* SummaryScreen.swift */; };
@@ -156,6 +159,7 @@
 		1A96102C3B06D870C8E09F17 /* OceanKeyTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OceanKeyTheme.swift; sourceTree = "<group>"; };
 		1CF609A6F4519C8C100DE4E3 /* PersistentWorkSessionMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentWorkSessionMapper.swift; sourceTree = "<group>"; };
 		210C76CC89C65FF13A27A6C3 /* pressed.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = pressed.wav; sourceTree = "<group>"; };
+		2609C55B5E324446400FBE5A /* AppStorageDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorageDirectory.swift; sourceTree = "<group>"; };
 		287B82D451283BB546D3D7D4 /* VoiceTranscriptionPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceTranscriptionPanel.swift; sourceTree = "<group>"; };
 		2997A598AB1E6A8F5F843FE2 /* CartDetailsRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartDetailsRoute.swift; sourceTree = "<group>"; };
 		2B2E0A4851617BB7FC453CD8 /* SettingsBackgroundVideoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackgroundVideoPicker.swift; sourceTree = "<group>"; };
@@ -219,6 +223,7 @@
 		A229714857D6D952BA687014 /* AppSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsStore.swift; sourceTree = "<group>"; };
 		A3FA8304DBB6369130113E5E /* WorkSessionStore+Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorkSessionStore+Selection.swift"; sourceTree = "<group>"; };
 		A5E3CFB6CDA7132DA0EFA9B9 /* RoomCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCatalog.swift; sourceTree = "<group>"; };
+		A60ED82348DC9F6F86DA4EA9 /* EmbeddedContainerInteractionPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedContainerInteractionPolicy.swift; sourceTree = "<group>"; };
 		A683672C5983A73C2DAC800F /* WorkSessionMergePolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSessionMergePolicyTests.swift; sourceTree = "<group>"; };
 		A8D625970C1997ABD4B4AEB6 /* LocalMediaFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalMediaFileStore.swift; sourceTree = "<group>"; };
 		ACDA1FF459FA36ED5D33AEC3 /* PersistentWorkSessionMapper+Consumables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistentWorkSessionMapper+Consumables.swift"; sourceTree = "<group>"; };
@@ -237,6 +242,7 @@
 		C101C82A766E12EFA3ECB00C /* VoiceNoteViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteViewModelTests.swift; sourceTree = "<group>"; };
 		C32871C27FCEBEF323FDE3E1 /* BackgroundVideoFileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundVideoFileStore.swift; sourceTree = "<group>"; };
 		C3ED70772827CF4F9FACCE5C /* OceanKeyPresetBackupDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OceanKeyPresetBackupDocument.swift; sourceTree = "<group>"; };
+		C4283A76F9E7D61CC080785B /* SummaryZeroScreenPuzzleHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryZeroScreenPuzzleHandle.swift; sourceTree = "<group>"; };
 		C43FCE41FAC12F7171994989 /* TVStaticNoiseBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVStaticNoiseBackgroundView.swift; sourceTree = "<group>"; };
 		C53CB4860DB0F1128AAFF966 /* SummarySwipeCommitPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummarySwipeCommitPolicyTests.swift; sourceTree = "<group>"; };
 		C831B23410D63DEBCFBC85BF /* MatrixRainConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixRainConfiguration.swift; sourceTree = "<group>"; };
@@ -299,6 +305,7 @@
 		0F9E43ED7321D8CB24F874D8 /* Interaction */ = {
 			isa = PBXGroup;
 			children = (
+				A60ED82348DC9F6F86DA4EA9 /* EmbeddedContainerInteractionPolicy.swift */,
 				31317A47FB0AB2FCC1E94C8A /* HoldActionTarget.swift */,
 				B5680F4D3B4245E31F8AB215 /* InteractionFeedbackService.swift */,
 			);
@@ -434,6 +441,7 @@
 			isa = PBXGroup;
 			children = (
 				FF216385A680EB15CDC68033 /* AIVisualPresetStore.swift */,
+				2609C55B5E324446400FBE5A /* AppStorageDirectory.swift */,
 				C32871C27FCEBEF323FDE3E1 /* BackgroundVideoFileStore.swift */,
 				A8D625970C1997ABD4B4AEB6 /* LocalMediaFileStore.swift */,
 				F4BF40D409EFD665315F16C6 /* LocalWorkSessionRepository.swift */,
@@ -600,6 +608,7 @@
 				77F8BBFB5474764DC44B4456 /* SummaryScreen.swift */,
 				E7AAB559BEB598BFAB429AB4 /* SummarySelectionPuzzleHandle.swift */,
 				C930282AAFB3CC145E46D544 /* SummarySwipeCommitPolicy.swift */,
+				C4283A76F9E7D61CC080785B /* SummaryZeroScreenPuzzleHandle.swift */,
 			);
 			path = Summary;
 			sourceTree = "<group>";
@@ -798,6 +807,7 @@
 				09D30B3BED384CE9D99707EA /* AppBuildInfo.swift in Sources */,
 				856BDD1AEC33680D598CA693 /* AppRootView.swift in Sources */,
 				366D12C14372662249291AE9 /* AppSettingsStore.swift in Sources */,
+				E19041AB60795EB8B7D1DF7D /* AppStorageDirectory.swift in Sources */,
 				BFB3353CA1DF402C0F1222D5 /* AppleCloudAccountProbe.swift in Sources */,
 				06DACBC44C930BBFDE23F934 /* AppleSyncConfiguration.swift in Sources */,
 				A727B57A65048FA67FE9E425 /* AppleSyncStatusEnvironment.swift in Sources */,
@@ -817,6 +827,7 @@
 				C4D34B6FAFA91D684198AC8F /* DeepSeekClient.swift in Sources */,
 				58043B05FD377097855B0E36 /* DeepSeekLabSection.swift in Sources */,
 				279D1565C16FFBFE94CA6C81 /* DeepSeekModels.swift in Sources */,
+				09890D1F73D3F0F92704C8BF /* EmbeddedContainerInteractionPolicy.swift in Sources */,
 				7FAB39EDEDEFA522FB2DA912 /* ExperimentalAppearanceEnvironment.swift in Sources */,
 				0E858357DAB729B03EFE513A /* HoldActionTarget.swift in Sources */,
 				4618198B48949C4576C5DBF7 /* InteractionFeedbackService.swift in Sources */,
@@ -869,6 +880,7 @@
 				E79D1EED7C47265E97AAB005 /* SummaryScreen.swift in Sources */,
 				839F12922CCEDD9CD0149288 /* SummarySelectionPuzzleHandle.swift in Sources */,
 				17958B1F90F6EFE7DAC18AAC /* SummarySwipeCommitPolicy.swift in Sources */,
+				A1CC1EF012E60214908DAF26 /* SummaryZeroScreenPuzzleHandle.swift in Sources */,
 				EA1F06A3B816D8C63F06C999 /* SwiftDataWorkSessionRepository.swift in Sources */,
 				8D2078D793C208875DCC662A /* TVStaticNoiseBackgroundView.swift in Sources */,
 				8CECF869B23D86602BF9C7D9 /* VIPJellyContentWarp.metal in Sources */,

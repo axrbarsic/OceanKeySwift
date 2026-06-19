@@ -107,7 +107,6 @@ struct SummaryScreen: View {
     }
 
     private func openSettings() {
-        feedback.tap()
         isSettingsPresented = true
     }
 

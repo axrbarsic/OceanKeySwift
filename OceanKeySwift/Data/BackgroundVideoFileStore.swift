@@ -6,8 +6,7 @@ struct BackgroundVideoFileStore {
 
     init(fileManager: FileManager = .default) {
         self.fileManager = fileManager
-        let supportDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        rootDirectory = supportDirectory.appendingPathComponent("OceanKeySwift", isDirectory: true)
+        rootDirectory = AppStorageDirectory.applicationSupportSubdirectory(fileManager: fileManager)
     }
 
     func saveVideo(from sourceURL: URL) throws -> String {

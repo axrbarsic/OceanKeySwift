@@ -66,7 +66,7 @@ final class AIVisualPresetStore {
         self.lastError = lastError
     }
 
-    convenience init(inMemory: Bool = false) throws {
+    convenience init(inMemory: Bool = false, storeDirectory: URL? = nil) throws {
         let schema = Schema([PersistentAIVisualPreset.self])
         let configuration: ModelConfiguration
         let storageMode: StorageMode
@@ -80,7 +80,7 @@ final class AIVisualPresetStore {
         } else {
             configuration = ModelConfiguration(
                 schema: schema,
-                url: try Self.persistentStoreURL(),
+                url: try Self.persistentStoreURL(storeDirectory: storeDirectory),
                 cloudKitDatabase: .private(AppleSyncConfiguration.containerIdentifier)
             )
             storageMode = .cloudKit(containerIdentifier: AppleSyncConfiguration.containerIdentifier)
@@ -91,11 +91,11 @@ final class AIVisualPresetStore {
         )
     }
 
-    convenience init(localFallbackReason reason: String) throws {
+    convenience init(localFallbackReason reason: String, storeDirectory: URL? = nil) throws {
         let schema = Schema([PersistentAIVisualPreset.self])
         let configuration = ModelConfiguration(
             schema: schema,
-            url: try Self.persistentStoreURL(),
+            url: try Self.persistentStoreURL(storeDirectory: storeDirectory),
             cloudKitDatabase: .none
         )
         try self.init(
@@ -194,12 +194,18 @@ final class AIVisualPresetStore {
         )
     }
 
-    private static func persistentStoreURL() throws -> URL {
-        guard let applicationSupportURL = FileManager.default.urls(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask
-        ).first else {
-            throw CocoaError(.fileNoSuchFile)
+    private static func persistentStoreURL(storeDirectory: URL? = nil) throws -> URL {
+        let applicationSupportURL: URL
+        if let storeDirectory {
+            applicationSupportURL = storeDirectory
+        } else {
+            guard let defaultURL = FileManager.default.urls(
+                for: .applicationSupportDirectory,
+                in: .userDomainMask
+            ).first else {
+                throw CocoaError(.fileNoSuchFile)
+            }
+            applicationSupportURL = defaultURL
         }
         try FileManager.default.createDirectory(
             at: applicationSupportURL,

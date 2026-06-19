@@ -86,7 +86,6 @@ struct WorkSetupScreen: View {
     }
 
     private func openSettings() {
-        feedback.tap()
         isSettingsPresented = true
     }
 

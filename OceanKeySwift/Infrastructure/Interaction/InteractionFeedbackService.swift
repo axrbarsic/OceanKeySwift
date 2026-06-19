@@ -223,7 +223,7 @@ private final class InteractionSoundPlayer {
     }
 
     private func makePlayer(resource: String) -> AVAudioPlayer? {
-        guard let url = Bundle.main.url(forResource: resource, withExtension: "wav") else {
+        guard let url = Self.resourceURL(resource: resource) else {
             return nil
         }
         do {
@@ -236,6 +236,19 @@ private final class InteractionSoundPlayer {
             Self.logger.error("Failed to load interaction sound \(resource, privacy: .public): \(error.localizedDescription, privacy: .public)")
             return nil
         }
+    }
+
+    private static func resourceURL(resource: String) -> URL? {
+        let bundles = [
+            Bundle(for: InteractionSoundPlayer.self),
+            Bundle.main
+        ]
+        for bundle in bundles {
+            if let url = bundle.url(forResource: resource, withExtension: "wav") {
+                return url
+            }
+        }
+        return nil
     }
 
     private func play(

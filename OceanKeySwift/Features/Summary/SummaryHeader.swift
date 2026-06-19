@@ -7,13 +7,16 @@ struct SummaryHeader: View {
     let onOpenSettings: () -> Void
     let onOpenSelection: () -> Void
     @Environment(\.interactionFeedback) private var feedback
+    @Environment(\.settingsOpenRequiresLongPress) private var settingsOpenRequiresLongPress
+    @Environment(\.embeddedContainerReturnToZeroScreen) private var returnToZeroScreen
     @State private var selectionPuzzleProgress: CGFloat = 0
+    @State private var zeroScreenPuzzleProgress: CGFloat = 0
 
     var body: some View {
         GeometryReader { proxy in
             HStack(spacing: 8) {
                 softButton(systemName: "line.3.horizontal", action: onOpenSettings)
-                    .opacity(CGFloat(1) - min(selectionPuzzleProgress * CGFloat(1.65), CGFloat(1)))
+                    .opacity(settingsButtonOpacity)
 
                 PersonalCartMarkerStrip(
                     markers: personalCartMarkers,
@@ -47,12 +50,29 @@ struct SummaryHeader: View {
                     onComplete: onOpenSelection
                 )
             }
+            .overlay {
+                if let returnToZeroScreen {
+                    SummaryZeroScreenPuzzleHandle(
+                        progress: $zeroScreenPuzzleProgress,
+                        onComplete: returnToZeroScreen
+                    )
+                }
+            }
         }
         .frame(height: 48)
     }
 
+    private var settingsButtonOpacity: CGFloat {
+        CGFloat(1) - min(max(selectionPuzzleProgress, zeroScreenPuzzleProgress) * CGFloat(1.65), CGFloat(1))
+    }
+
     private func softButton(systemName: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        HoldActionTarget(
+            enabled: true,
+            useLongPress: settingsOpenRequiresLongPress,
+            semanticLabel: "Открыть настройки",
+            onActivate: action
+        ) {
             Image(systemName: systemName)
                 .font(.system(size: 24, weight: .black))
                 .frame(width: 48, height: 48)
@@ -64,7 +84,6 @@ struct SummaryHeader: View {
                         .stroke(OceanKeyTheme.accent.opacity(0.16), lineWidth: 1)
                 }
         }
-        .buttonStyle(.plain)
     }
 
     private func stepPersonalCartMarker(_ slot: PersonalCartMarkerSlot, direction: PersonalCartMarkerStepDirection) {
