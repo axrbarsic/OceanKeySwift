@@ -8,17 +8,35 @@ settings:
   base:
     SWIFT_VERSION: "6.0"
     MARKETING_VERSION: "0.2.0"
-    CURRENT_PROJECT_VERSION: "133"
+    CURRENT_PROJECT_VERSION: "134"
     DEVELOPMENT_TEAM: J6MW4855LU
+packages:
+  HospitalityFoundation:
+    path: ../HospitalityLabSwift/Packages/HospitalityFoundation
+  OceanKeyHostedRoot:
+    path: ../HospitalityLabSwift/Packages/OceanKeyHostedRoot
+  OceanKeyLabContainer:
+    path: ../HospitalityLabSwift/Packages/OceanKeyLabContainer
 targets:
   OceanKeySwift:
     type: application
     platform: iOS
     sources:
-      - OceanKeySwift
+      - path: OceanKeySwift/StandaloneApp
+      - path: OceanKeySwift/Data/OceanKeyPresetBackupDocument.swift
+      - path: OceanKeySwift/Features/CartConsumables/CartConsumableQuantitySlider.swift
+      - path: OceanKeySwift/Features/CartConsumables/CartConsumableQuantityRuler.swift
+      - path: OceanKeySwift/Features/Summary/CartConsumablesSummaryReport.swift
+      - path: OceanKeySwift/Features/Summary/CartConsumablesSummaryTable.swift
+      - path: OceanKeySwift/Features/Summary/CartConsumableTicker.swift
+      - path: ../HospitalityLabSwift/HospitalityLabSwift/Embedded/OceanKeyEmbeddedApp
     resources:
       - OceanKeySwift/Resources
+      - ../HospitalityLabSwift/HospitalityLabSwift/Resources
     dependencies:
+      - package: HospitalityFoundation
+      - package: OceanKeyHostedRoot
+      - package: OceanKeyLabContainer
       - sdk: SpriteKit.framework
       - sdk: GameplayKit.framework
       - sdk: AVKit.framework
