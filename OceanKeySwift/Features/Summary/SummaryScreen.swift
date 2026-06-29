@@ -51,7 +51,7 @@ struct SummaryScreen: View {
                                     roomDetailsRoute = RoomDetailsRoute(roomID: roomID, mode: mode)
                                 },
                                 onOpenToggle: toggleOpen,
-                                onTaskToggle: workSession.toggleTask,
+                                onTaskToggle: toggleTask,
                                 onVIPToggle: workSession.toggleVIP,
                                 onScheduleToggle: openSchedule
                             )
@@ -107,20 +107,29 @@ struct SummaryScreen: View {
     }
 
     private func openSettings() {
+        feedback.playEvent(.settingsOpen)
         isSettingsPresented = true
     }
 
     private func openSelection() {
-        feedback.confirm()
+        feedback.playEvent(.selectionOpen)
         workSession.unlockWorkdayForEditing()
     }
 
     private func toggleOpen(roomID: RoomCell.ID) {
+        let previousStatus = workSession.room(id: roomID)?.status
         let hadSchedule = workSession.room(id: roomID)?.scheduledTime != nil
         workSession.toggleOpen(roomId: roomID)
+        playRoomStatusChange(roomID: roomID, previousStatus: previousStatus)
         if hadSchedule, workSession.room(id: roomID)?.scheduledTime == nil {
             scheduleNotifications.cancelRoom(roomID)
         }
+    }
+
+    private func toggleTask(_ task: RoomTask, roomID: RoomCell.ID) {
+        let previousStatus = workSession.room(id: roomID)?.status
+        workSession.toggleTask(task, roomId: roomID)
+        playRoomStatusChange(roomID: roomID, previousStatus: previousStatus)
     }
 
     private func openSchedule(roomID: RoomCell.ID) {
@@ -131,18 +140,22 @@ struct SummaryScreen: View {
     }
 
     private func setSchedule(roomID: RoomCell.ID, dueAt: Date) {
+        let previousStatus = workSession.room(id: roomID)?.status
         workSession.setSchedule(dueAt, roomId: roomID)
         expandedActionMenuRoomIDs.remove(roomID)
         if dueAt <= Date() {
             advanceScheduledRooms()
         } else {
+            playRoomStatusChange(roomID: roomID, previousStatus: previousStatus)
             scheduleNotifications.scheduleRoom(roomID, dueAt)
         }
     }
 
     private func clearSchedule(roomID: RoomCell.ID) {
+        let previousStatus = workSession.room(id: roomID)?.status
         workSession.setSchedule(nil, roomId: roomID)
         expandedActionMenuRoomIDs.remove(roomID)
+        playRoomStatusChange(roomID: roomID, previousStatus: previousStatus)
         scheduleNotifications.cancelRoom(roomID)
     }
 
@@ -167,7 +180,27 @@ struct SummaryScreen: View {
     private func advanceScheduledRooms(now: Date = Date()) {
         let openedRoomIDs = workSession.advanceScheduledRooms(now: now)
         for roomID in openedRoomIDs {
+            playRoomStatusChange(roomID: roomID, previousStatus: .scheduled)
             scheduleNotifications.cancelRoom(roomID)
+        }
+    }
+
+    private func playRoomStatusChange(roomID: RoomCell.ID, previousStatus: RoomStatus?) {
+        guard let nextStatus = workSession.room(id: roomID)?.status,
+              nextStatus != previousStatus
+        else { return }
+        feedback.playEvent(nextStatus.interactionSoundEvent)
+    }
+}
+
+private extension RoomStatus {
+    var interactionSoundEvent: InteractionSoundEvent {
+        switch self {
+        case .pending: .roomPending
+        case .open: .roomOpen
+        case .inProgress: .roomInProgress
+        case .ready: .roomReady
+        case .scheduled: .roomScheduled
         }
     }
 }

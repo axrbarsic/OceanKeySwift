@@ -62,11 +62,13 @@ final class AppSettingsStore {
     private enum Keys {
         static let appBackgroundMode = "appBackgroundMode"
         static let roomCellGeometry = "roomCellGeometry"
+        static let transparentSurfacesEnabled = "transparentSurfacesEnabled"
         static let roomTaskLongPress = "roomTaskLongPress"
         static let summaryActionMenuAllowsMultiple = "summaryActionMenuAllowsMultiple"
         static let personalCartMarkers = "personalCartMarkers"
         static let personalCartMarkerInputMode = "personalCartMarkerInputMode"
         static let cartConsumableCatalog = "cartConsumableCatalog"
+        static let interactionSoundAssignments = "interactionSoundAssignments"
         static let statusPaletteSaturation = "statusPaletteSaturation"
         static let matrixSpeed = "matrixSpeed"
         static let backgroundVideoRelativePath = "backgroundVideoRelativePath"
@@ -125,6 +127,13 @@ final class AppSettingsStore {
         }
     }
 
+    var transparentSurfacesEnabled: Bool {
+        didSet {
+            userDefaults.set(transparentSurfacesEnabled, forKey: Keys.transparentSurfacesEnabled)
+            AppSurfaceTransparency.apply(transparentSurfacesEnabled)
+        }
+    }
+
     var roomTaskLongPress: Bool {
         didSet {
             userDefaults.set(roomTaskLongPress, forKey: Keys.roomTaskLongPress)
@@ -155,6 +164,12 @@ final class AppSettingsStore {
                 CartConsumableCatalog.normalizedEntries(cartConsumableCatalog),
                 userDefaults: userDefaults
             )
+        }
+    }
+
+    var interactionSoundAssignments: InteractionSoundAssignments {
+        didSet {
+            Self.saveInteractionSoundAssignments(interactionSoundAssignments, userDefaults: userDefaults)
         }
     }
 
@@ -335,11 +350,13 @@ final class AppSettingsStore {
     func resetToDefaults() {
         appBackgroundMode = .matrixRain
         roomCellGeometry = .roomy
+        transparentSurfacesEnabled = false
         roomTaskLongPress = true
         summaryActionMenuAllowsMultiple = false
         personalCartMarkers = .default
         personalCartMarkerInputMode = .swipeDetents
         cartConsumableCatalog = CartConsumableCatalog.defaultEntries
+        interactionSoundAssignments = InteractionSoundAssignments()
         statusPaletteSaturation = 1
         matrixSpeed = MatrixRainConfiguration.default.speed
         backgroundVideoRelativePath = nil
@@ -366,11 +383,13 @@ final class AppSettingsStore {
     init(
         appBackgroundMode: AppBackgroundMode = .matrixRain,
         roomCellGeometry: RoomCellGeometry = .roomy,
+        transparentSurfacesEnabled: Bool = false,
         roomTaskLongPress: Bool = true,
         summaryActionMenuAllowsMultiple: Bool = false,
         personalCartMarkers: PersonalCartMarkers = .default,
         personalCartMarkerInputMode: PersonalCartMarkerInputMode = .swipeDetents,
         cartConsumableCatalog: [CartConsumableCatalogEntry] = CartConsumableCatalog.defaultEntries,
+        interactionSoundAssignments: InteractionSoundAssignments = InteractionSoundAssignments(),
         statusPaletteSaturation: Double = 1,
         matrixSpeed: Double = MatrixRainConfiguration.default.speed,
         backgroundVideoRelativePath: String? = nil,
@@ -396,11 +415,13 @@ final class AppSettingsStore {
     ) {
         self.appBackgroundMode = appBackgroundMode
         self.roomCellGeometry = roomCellGeometry
+        self.transparentSurfacesEnabled = transparentSurfacesEnabled
         self.roomTaskLongPress = roomTaskLongPress
         self.summaryActionMenuAllowsMultiple = summaryActionMenuAllowsMultiple
         self.personalCartMarkers = personalCartMarkers.normalized()
         self.personalCartMarkerInputMode = personalCartMarkerInputMode
         self.cartConsumableCatalog = CartConsumableCatalog.normalizedEntries(cartConsumableCatalog)
+        self.interactionSoundAssignments = interactionSoundAssignments
         self.backgroundVideoRelativePath = backgroundVideoRelativePath
         self.activeAIVisualPresetID = activeAIVisualPresetID
         self.tvStaticVariant = tvStaticVariant
@@ -423,6 +444,7 @@ final class AppSettingsStore {
         self.developerVIPFlickerEnabled = developerVIPFlickerEnabled
         self.developerVIPJellyEnabled = developerVIPJellyEnabled
         self.userDefaults = userDefaults
+        AppSurfaceTransparency.apply(transparentSurfacesEnabled)
     }
 
     static func load(userDefaults: UserDefaults = .standard) -> AppSettingsStore {
@@ -430,6 +452,7 @@ final class AppSettingsStore {
         let appBackgroundMode = backgroundRawValue.flatMap(AppBackgroundMode.init(rawValue:)) ?? .matrixRain
         let rawValue = userDefaults.string(forKey: Keys.roomCellGeometry)
         let geometry = rawValue.flatMap(RoomCellGeometry.init(rawValue:)) ?? .roomy
+        let transparentSurfacesEnabled = userDefaults.object(forKey: Keys.transparentSurfacesEnabled) as? Bool ?? false
         let roomTaskLongPress = userDefaults.object(forKey: Keys.roomTaskLongPress) as? Bool ?? true
         let summaryActionMenuAllowsMultiple = userDefaults.object(forKey: Keys.summaryActionMenuAllowsMultiple) as? Bool ?? false
         let personalCartMarkers = Self.loadPersonalCartMarkers(userDefaults: userDefaults)
@@ -437,6 +460,7 @@ final class AppSettingsStore {
             .flatMap(PersonalCartMarkerInputMode.init(rawValue:))
             ?? .swipeDetents
         let cartConsumableCatalog = Self.loadCartConsumableCatalog(userDefaults: userDefaults)
+        let interactionSoundAssignments = Self.loadInteractionSoundAssignments(userDefaults: userDefaults)
         let statusPaletteSaturation = userDefaults.object(forKey: Keys.statusPaletteSaturation) as? Double ?? 1
         let matrixSpeed = userDefaults.object(forKey: Keys.matrixSpeed) as? Double
             ?? MatrixRainConfiguration.default.speed
@@ -470,11 +494,13 @@ final class AppSettingsStore {
         return AppSettingsStore(
             appBackgroundMode: appBackgroundMode,
             roomCellGeometry: geometry,
+            transparentSurfacesEnabled: transparentSurfacesEnabled,
             roomTaskLongPress: roomTaskLongPress,
             summaryActionMenuAllowsMultiple: summaryActionMenuAllowsMultiple,
             personalCartMarkers: personalCartMarkers,
             personalCartMarkerInputMode: personalCartMarkerInputMode,
             cartConsumableCatalog: cartConsumableCatalog,
+            interactionSoundAssignments: interactionSoundAssignments,
             statusPaletteSaturation: statusPaletteSaturation,
             matrixSpeed: matrixSpeed,
             backgroundVideoRelativePath: backgroundVideoRelativePath,
@@ -542,6 +568,23 @@ final class AppSettingsStore {
     ) {
         guard let data = try? JSONEncoder().encode(CartConsumableCatalog.normalizedEntries(catalog)) else { return }
         userDefaults.set(data, forKey: Keys.cartConsumableCatalog)
+    }
+
+    private static func loadInteractionSoundAssignments(userDefaults: UserDefaults) -> InteractionSoundAssignments {
+        guard let data = userDefaults.data(forKey: Keys.interactionSoundAssignments),
+              let decoded = try? JSONDecoder().decode(InteractionSoundAssignments.self, from: data)
+        else {
+            return InteractionSoundAssignments()
+        }
+        return decoded
+    }
+
+    private static func saveInteractionSoundAssignments(
+        _ assignments: InteractionSoundAssignments,
+        userDefaults: UserDefaults
+    ) {
+        guard let data = try? JSONEncoder().encode(assignments) else { return }
+        userDefaults.set(data, forKey: Keys.interactionSoundAssignments)
     }
 
     func addCartConsumableCatalogItem(title: String) {

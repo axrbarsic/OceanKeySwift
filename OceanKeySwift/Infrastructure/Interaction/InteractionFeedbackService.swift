@@ -1,5 +1,3 @@
-import AVFoundation
-import OSLog
 import SwiftUI
 import UIKit
 
@@ -10,10 +8,15 @@ struct InteractionFeedbackClient: Sendable {
     let holdStart: @MainActor @Sendable () -> Void
     let holdWarning: @MainActor @Sendable () -> Void
     let holdCommit: @MainActor @Sendable () -> Void
+    let holdStartHapticOnly: @MainActor @Sendable () -> Void
+    let holdWarningHapticOnly: @MainActor @Sendable () -> Void
+    let holdCommitHapticOnly: @MainActor @Sendable () -> Void
     let select: @MainActor @Sendable () -> Void
     let deselect: @MainActor @Sendable () -> Void
     let invalid: @MainActor @Sendable () -> Void
     let detent: @MainActor @Sendable () -> Void
+    let playEvent: @MainActor @Sendable (InteractionSoundEvent) -> Void
+    let previewSound: @MainActor @Sendable (InteractionSoundAsset) -> Void
 
     static let noop = InteractionFeedbackClient(
         tap: {},
@@ -22,29 +25,51 @@ struct InteractionFeedbackClient: Sendable {
         holdStart: {},
         holdWarning: {},
         holdCommit: {},
+        holdStartHapticOnly: {},
+        holdWarningHapticOnly: {},
+        holdCommitHapticOnly: {},
         select: {},
         deselect: {},
         invalid: {},
-        detent: {}
+        detent: {},
+        playEvent: { _ in },
+        previewSound: { _ in }
     )
 
     static func live(
         _ service: InteractionFeedbackService,
-        soundPackV2: Bool = false,
-        hapticsV2: Bool = false
+        hapticsV2: Bool = false,
+        soundAssignments: InteractionSoundAssignments = InteractionSoundAssignments()
     ) -> InteractionFeedbackClient {
         InteractionFeedbackClient(
-            tap: { service.tap(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
-            confirm: { service.confirm(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
-            longPress: { service.longPress(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
-            holdStart: { service.holdStart(hapticsV2: hapticsV2) },
-            holdWarning: { service.holdWarning(hapticsV2: hapticsV2) },
-            holdCommit: { service.holdCommit(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
-            select: { service.select(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
-            deselect: { service.deselect(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
-            invalid: { service.invalid(soundPackV2: soundPackV2, hapticsV2: hapticsV2) },
-            detent: { service.detent() }
+            tap: deferred { service.tap(sound: soundAssignments.asset(for: .tap), hapticsV2: hapticsV2) },
+            confirm: deferred { service.confirm(sound: soundAssignments.asset(for: .confirm), hapticsV2: hapticsV2) },
+            longPress: deferred { service.longPress(sound: soundAssignments.asset(for: .longPress), hapticsV2: hapticsV2) },
+            holdStart: deferred { service.holdStart(sound: soundAssignments.asset(for: .holdStart), hapticsV2: hapticsV2) },
+            holdWarning: deferred { service.holdWarning(sound: soundAssignments.asset(for: .holdWarning), hapticsV2: hapticsV2) },
+            holdCommit: deferred { service.holdCommit(sound: soundAssignments.asset(for: .holdCommit), hapticsV2: hapticsV2) },
+            holdStartHapticOnly: deferred { service.holdStartHapticOnly(hapticsV2: hapticsV2) },
+            holdWarningHapticOnly: deferred { service.holdWarningHapticOnly(hapticsV2: hapticsV2) },
+            holdCommitHapticOnly: deferred { service.holdCommitHapticOnly(hapticsV2: hapticsV2) },
+            select: deferred { service.select(sound: soundAssignments.asset(for: .select), hapticsV2: hapticsV2) },
+            deselect: deferred { service.deselect(sound: soundAssignments.asset(for: .deselect), hapticsV2: hapticsV2) },
+            invalid: deferred { service.invalid(sound: soundAssignments.asset(for: .invalid), hapticsV2: hapticsV2) },
+            detent: deferred { service.detent(sound: soundAssignments.asset(for: .detent)) },
+            playEvent: { event in
+                deferred { service.playSound(soundAssignments.asset(for: event), priority: event.playbackPriority) }()
+            },
+            previewSound: { sound in
+                deferred { service.previewSound(sound) }()
+            }
         )
+    }
+
+    private static func deferred(
+        _ action: @escaping @MainActor @Sendable () -> Void
+    ) -> @MainActor @Sendable () -> Void {
+        {
+            action()
+        }
     }
 }
 
@@ -55,76 +80,124 @@ final class InteractionFeedbackService {
     private let light = UIImpactFeedbackGenerator(style: .light)
     private let medium = UIImpactFeedbackGenerator(style: .medium)
     private let heavy = UIImpactFeedbackGenerator(style: .heavy)
+    private let notification = UINotificationFeedbackGenerator()
+    private var prepareTask: Task<Void, Never>?
+    private var soundFlushTask: Task<Void, Never>?
+    private var queuedSound: QueuedInteractionSound?
 
-    func tap(soundPackV2: Bool = false, hapticsV2: Bool = false) {
+    init() {
+        prepare()
+    }
+
+    func tap(sound: InteractionSoundAsset = .legacyClick, hapticsV2: Bool = false) {
         light.impactOccurred(intensity: hapticsV2 ? 0.42 : 0.55)
-        if soundPackV2 {
-            sounds.playTapAccent()
-        }
-        prepare()
+        playSound(sound, priority: InteractionSoundEvent.tap.playbackPriority)
+        schedulePrepare()
     }
 
-    func confirm(soundPackV2: Bool = false, hapticsV2: Bool = false) {
+    func confirm(sound: InteractionSoundAsset = .legacyPressed, hapticsV2: Bool = false) {
         medium.impactOccurred(intensity: hapticsV2 ? 0.96 : 0.82)
-        sounds.playSelect(variant: soundPackV2 ? .confirm : .plain)
-        prepare()
+        if hapticsV2 {
+            notification.notificationOccurred(.success)
+        }
+        playSound(sound, priority: InteractionSoundEvent.confirm.playbackPriority)
+        schedulePrepare()
     }
 
-    func longPress(soundPackV2: Bool = false, hapticsV2: Bool = false) {
+    func longPress(sound: InteractionSoundAsset = .legacyPressed, hapticsV2: Bool = false) {
         heavy.impactOccurred(intensity: hapticsV2 ? 1.0 : 0.9)
         if hapticsV2 {
             medium.impactOccurred(intensity: 0.45)
         }
-        sounds.playSelect(variant: soundPackV2 ? .deep : .plain)
-        prepare()
+        playSound(sound, priority: InteractionSoundEvent.longPress.playbackPriority)
+        schedulePrepare()
     }
 
-    func holdStart(hapticsV2: Bool = false) {
-        selection.selectionChanged()
-        if hapticsV2 {
-            light.impactOccurred(intensity: 0.25)
-        }
-        prepare()
+    func holdStart(sound: InteractionSoundAsset = .none, hapticsV2: Bool = false) {
+        performHoldStartHaptic(hapticsV2: hapticsV2)
+        playSound(sound, priority: InteractionSoundEvent.holdStart.playbackPriority)
+        schedulePrepare()
     }
 
-    func holdWarning(hapticsV2: Bool = false) {
-        light.impactOccurred(intensity: hapticsV2 ? 0.95 : 0.7)
-        prepare()
+    func holdWarning(sound: InteractionSoundAsset = .kenneyTick1, hapticsV2: Bool = false) {
+        performHoldWarningHaptic(hapticsV2: hapticsV2)
+        playSound(sound, priority: InteractionSoundEvent.holdWarning.playbackPriority)
+        schedulePrepare()
     }
 
-    func holdCommit(soundPackV2: Bool = false, hapticsV2: Bool = false) {
-        heavy.impactOccurred(intensity: hapticsV2 ? 1.0 : 0.92)
-        sounds.playSelect(variant: soundPackV2 ? .commit : .plain)
-        prepare()
+    func holdCommit(sound: InteractionSoundAsset = .legacyPressed, hapticsV2: Bool = false) {
+        performHoldCommitHaptic(hapticsV2: hapticsV2)
+        playSound(sound, priority: InteractionSoundEvent.holdCommit.playbackPriority)
+        schedulePrepare()
     }
 
-    func select(soundPackV2: Bool = false, hapticsV2: Bool = false) {
+    func holdStartHapticOnly(hapticsV2: Bool = false) {
+        performHoldStartHaptic(hapticsV2: hapticsV2)
+        schedulePrepare()
+    }
+
+    func holdWarningHapticOnly(hapticsV2: Bool = false) {
+        performHoldWarningHaptic(hapticsV2: hapticsV2)
+        schedulePrepare()
+    }
+
+    func holdCommitHapticOnly(hapticsV2: Bool = false) {
+        performHoldCommitHaptic(hapticsV2: hapticsV2)
+        schedulePrepare()
+    }
+
+    func select(sound: InteractionSoundAsset = .legacyPressed, hapticsV2: Bool = false) {
         medium.impactOccurred(intensity: hapticsV2 ? 0.86 : 0.72)
-        sounds.playSelect(variant: soundPackV2 ? .select : .plain)
-        prepare()
+        playSound(sound, priority: InteractionSoundEvent.select.playbackPriority)
+        schedulePrepare()
     }
 
-    func deselect(soundPackV2: Bool = false, hapticsV2: Bool = false) {
+    func deselect(sound: InteractionSoundAsset = .legacyClick, hapticsV2: Bool = false) {
         light.impactOccurred(intensity: hapticsV2 ? 0.36 : 0.48)
-        sounds.playDeselect(variant: soundPackV2 ? .soft : .plain)
-        prepare()
+        playSound(sound, priority: InteractionSoundEvent.deselect.playbackPriority)
+        schedulePrepare()
     }
 
-    func invalid(soundPackV2: Bool = false, hapticsV2: Bool = false) {
+    func invalid(sound: InteractionSoundAsset = .legacyClick, hapticsV2: Bool = false) {
         light.impactOccurred(intensity: hapticsV2 ? 0.18 : 0.3)
-        sounds.playDeselect(variant: soundPackV2 ? .invalid : .plain)
-        prepare()
+        if hapticsV2 {
+            notification.notificationOccurred(.error)
+        }
+        playSound(sound, priority: InteractionSoundEvent.invalid.playbackPriority)
+        schedulePrepare()
     }
 
-    func detent() {
+    func detent(sound: InteractionSoundAsset = .kenneyTick1) {
         selection.selectionChanged()
         light.impactOccurred(intensity: 0.62)
-        sounds.playDetent()
-        prepare()
+        playSound(sound, priority: InteractionSoundEvent.detent.playbackPriority)
+        schedulePrepare()
+    }
+
+    func playSound(_ sound: InteractionSoundAsset, priority: Int) {
+        queueSound(sound, priority: priority)
+        schedulePrepare()
+    }
+
+    func previewSound(_ sound: InteractionSoundAsset) {
+        soundFlushTask?.cancel()
+        soundFlushTask = nil
+        queuedSound = nil
+        sounds.playEffect(sound)
+        schedulePrepare()
     }
 
     func restoreAudioSession() {
         sounds.restoreAudioSession()
+    }
+
+    private func schedulePrepare() {
+        guard prepareTask == nil else { return }
+        prepareTask = Task { @MainActor [weak self] in
+            await Task.yield()
+            self?.prepareTask = nil
+            self?.prepare()
+        }
     }
 
     private func prepare() {
@@ -132,143 +205,58 @@ final class InteractionFeedbackService {
         light.prepare()
         medium.prepare()
         heavy.prepare()
+        notification.prepare()
+    }
+
+    private func performHoldStartHaptic(hapticsV2: Bool) {
+        selection.selectionChanged()
+        if hapticsV2 {
+            light.impactOccurred(intensity: 0.25)
+        }
+    }
+
+    private func performHoldWarningHaptic(hapticsV2: Bool) {
+        light.impactOccurred(intensity: hapticsV2 ? 0.95 : 0.7)
+        if hapticsV2 {
+            notification.notificationOccurred(.warning)
+        }
+    }
+
+    private func performHoldCommitHaptic(hapticsV2: Bool) {
+        heavy.impactOccurred(intensity: hapticsV2 ? 1.0 : 0.92)
+        if hapticsV2 {
+            notification.notificationOccurred(.success)
+        }
+    }
+
+    private func queueSound(_ sound: InteractionSoundAsset, priority: Int) {
+        guard sound != .none else { return }
+        let nextSound = QueuedInteractionSound(sound: sound, priority: priority)
+        if let queuedSound,
+           queuedSound.priority > nextSound.priority {
+            return
+        }
+        queuedSound = nextSound
+        guard soundFlushTask == nil else { return }
+        soundFlushTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(45))
+            self?.flushQueuedSound()
+        }
+    }
+
+    private func flushQueuedSound() {
+        soundFlushTask = nil
+        guard let queuedSound else { return }
+        self.queuedSound = nil
+        sounds.playEffect(queuedSound.sound)
     }
 }
 
-private final class InteractionSoundPlayer {
-    private static let logger = Logger(subsystem: "com.alex.oceankey.swift", category: "InteractionSound")
-
-    private var selectPlayer: AVAudioPlayer?
-    private var deselectPlayer: AVAudioPlayer?
-
-    enum SelectVariant {
-        case plain
-        case confirm
-        case deep
-        case commit
-        case select
-    }
-
-    enum DeselectVariant {
-        case plain
-        case soft
-        case invalid
-    }
-
-    init() {
-        configureAudioSession()
-        selectPlayer = makePlayer(resource: "pressed")
-        deselectPlayer = makePlayer(resource: "click")
-    }
-
-    func playSelect(variant: SelectVariant = .plain) {
-        switch variant {
-        case .plain:
-            play(selectPlayer, volume: 0.20, rate: 1.0, pan: 0)
-        case .confirm:
-            play(selectPlayer, volume: 0.24, rate: 1.12, pan: 0.05)
-        case .deep:
-            play(selectPlayer, volume: 0.23, rate: 0.82, pan: -0.08)
-        case .commit:
-            play(selectPlayer, volume: 0.28, rate: 1.24, pan: 0.10)
-        case .select:
-            play(selectPlayer, volume: 0.22, rate: 1.06, pan: -0.04)
-        }
-    }
-
-    func playDeselect(variant: DeselectVariant = .plain) {
-        switch variant {
-        case .plain:
-            play(deselectPlayer, volume: 0.20, rate: 1.0, pan: 0)
-        case .soft:
-            play(deselectPlayer, volume: 0.15, rate: 0.92, pan: -0.05)
-        case .invalid:
-            play(deselectPlayer, volume: 0.23, rate: 0.72, pan: 0.08)
-        }
-    }
-
-    func playTapAccent() {
-        play(deselectPlayer, volume: 0.11, rate: 1.36, pan: 0.03)
-    }
-
-    func playDetent() {
-        play(deselectPlayer, volume: 0.25, rate: 1.58, pan: 0)
-    }
-
-    func restoreAudioSession() {
-        configureAudioSession()
-        activateAudioSession()
-        selectPlayer?.prepareToPlay()
-        deselectPlayer?.prepareToPlay()
-    }
-
-    private func configureAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(
-                .ambient,
-                mode: .default,
-                options: [.mixWithOthers]
-            )
-        } catch {
-            Self.logger.error("Failed to configure interaction audio: \(error.localizedDescription, privacy: .public)")
-        }
-    }
-
-    private func activateAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            Self.logger.error("Failed to activate interaction audio: \(error.localizedDescription, privacy: .public)")
-        }
-    }
-
-    private func makePlayer(resource: String) -> AVAudioPlayer? {
-        guard let url = Self.resourceURL(resource: resource) else {
-            return nil
-        }
-        do {
-            let player = try AVAudioPlayer(contentsOf: url)
-            player.volume = 0.2
-            player.enableRate = true
-            player.prepareToPlay()
-            return player
-        } catch {
-            Self.logger.error("Failed to load interaction sound \(resource, privacy: .public): \(error.localizedDescription, privacy: .public)")
-            return nil
-        }
-    }
-
-    private static func resourceURL(resource: String) -> URL? {
-        let bundles = [
-            Bundle(for: InteractionSoundPlayer.self),
-            Bundle.main
-        ]
-        for bundle in bundles {
-            if let url = bundle.url(forResource: resource, withExtension: "wav") {
-                return url
-            }
-        }
-        return nil
-    }
-
-    private func play(
-        _ player: AVAudioPlayer?,
-        volume: Float,
-        rate: Float,
-        pan: Float
-    ) {
-        guard let player else { return }
-        configureAudioSession()
-        activateAudioSession()
-        if player.isPlaying {
-            player.currentTime = 0
-        }
-        player.volume = volume
-        player.rate = rate
-        player.pan = pan
-        player.play()
-    }
+private struct QueuedInteractionSound {
+    let sound: InteractionSoundAsset
+    let priority: Int
 }
+
 
 private struct InteractionFeedbackEnvironmentKey: EnvironmentKey {
     static let defaultValue = InteractionFeedbackClient.noop

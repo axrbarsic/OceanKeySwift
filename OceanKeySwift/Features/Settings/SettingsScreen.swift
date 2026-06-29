@@ -71,6 +71,7 @@ struct SettingsScreen: View {
         switch selectedCategory {
         case .appearance:
             appearanceSection
+            SettingsSoundSection(appSettings: appSettings)
             settingsSection
         case .background:
             SettingsBackgroundSection(
@@ -194,6 +195,19 @@ struct SettingsScreen: View {
                     systemName: "rectangle.roundedtop.fill",
                     subtitle: "Можно оставить просторный размер или вернуться ближе к компактному виду."
                 )
+
+                Toggle(isOn: $appSettings.transparentSurfacesEnabled) {
+                    SettingsInfoRow(
+                        title: "Прозрачные панели",
+                        value: appSettings.transparentSurfacesEnabled ? "AWS26" : "Обычные",
+                        systemName: "square.3.layers.3d.down.right",
+                        subtitle: "Ослабляет плотный чёрный фон у общих панелей, карточек и окон поверх живого фона."
+                    )
+                }
+                .tint(OceanKeyTheme.accent)
+                .onChange(of: appSettings.transparentSurfacesEnabled) { _, _ in
+                    feedback.confirm()
+                }
 
                 Toggle(isOn: $appSettings.vividStatusPaletteEnabled) {
                     SettingsInfoRow(

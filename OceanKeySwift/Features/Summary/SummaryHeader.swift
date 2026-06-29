@@ -8,14 +8,20 @@ struct SummaryHeader: View {
     let onOpenSelection: () -> Void
     @Environment(\.interactionFeedback) private var feedback
     @Environment(\.settingsOpenRequiresLongPress) private var settingsOpenRequiresLongPress
-    @Environment(\.embeddedContainerReturnToZeroScreen) private var returnToZeroScreen
+    @Environment(\.zeroScreenReturnAction) private var returnToZeroScreen
     @State private var selectionPuzzleProgress: CGFloat = 0
     @State private var zeroScreenPuzzleProgress: CGFloat = 0
+    @State private var zeroScreenReturnArmed = false
+    @State private var zeroScreenReturnFeedbackStarted = false
 
     var body: some View {
         GeometryReader { proxy in
             HStack(spacing: 8) {
-                softButton(systemName: "line.3.horizontal", action: onOpenSettings)
+                softButton(
+                    systemName: "line.3.horizontal",
+                    headerWidth: proxy.size.width,
+                    action: onOpenSettings
+                )
                     .opacity(settingsButtonOpacity)
 
                 PersonalCartMarkerStrip(
@@ -51,11 +57,11 @@ struct SummaryHeader: View {
                 )
             }
             .overlay {
-                if let returnToZeroScreen {
+                if returnToZeroScreen != nil {
                     SummaryZeroScreenPuzzleHandle(
-                        progress: $zeroScreenPuzzleProgress,
-                        onComplete: returnToZeroScreen
+                        progress: $zeroScreenPuzzleProgress
                     )
+                    .allowsHitTesting(false)
                 }
             }
         }
@@ -66,7 +72,11 @@ struct SummaryHeader: View {
         CGFloat(1) - min(max(selectionPuzzleProgress, zeroScreenPuzzleProgress) * CGFloat(1.65), CGFloat(1))
     }
 
-    private func softButton(systemName: String, action: @escaping () -> Void) -> some View {
+    private func softButton(
+        systemName: String,
+        headerWidth: CGFloat,
+        action: @escaping () -> Void
+    ) -> some View {
         HoldActionTarget(
             enabled: true,
             useLongPress: settingsOpenRequiresLongPress,
@@ -84,6 +94,48 @@ struct SummaryHeader: View {
                         .stroke(OceanKeyTheme.accent.opacity(0.16), lineWidth: 1)
                 }
         }
+        .simultaneousGesture(zeroScreenReturnGesture(headerWidth: headerWidth))
+    }
+
+    private func zeroScreenReturnGesture(headerWidth: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 18, coordinateSpace: .local)
+            .onChanged { value in
+                guard returnToZeroScreen != nil else { return }
+                let metrics = SummaryZeroScreenReturnMetrics(width: headerWidth)
+                let next = min(max(value.translation.width, 0), metrics.travel * 1.08)
+                guard next > 0 || zeroScreenPuzzleProgress > 0 else { return }
+                if next > 2, !zeroScreenReturnFeedbackStarted {
+                    zeroScreenReturnFeedbackStarted = true
+                    feedback.holdStart()
+                }
+                let nextArmed = next >= metrics.travel
+                if nextArmed, !zeroScreenReturnArmed {
+                    feedback.holdCommit()
+                } else if !nextArmed, next > metrics.travel * 0.82, !zeroScreenReturnArmed {
+                    feedback.holdWarning()
+                }
+                zeroScreenPuzzleProgress = metrics.progress(for: next)
+                zeroScreenReturnArmed = nextArmed
+            }
+            .onEnded { _ in
+                guard zeroScreenReturnArmed else {
+                    resetZeroScreenReturn()
+                    return
+                }
+                zeroScreenPuzzleProgress = 1
+                feedback.confirm()
+                returnToZeroScreen?()
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(160))
+                    resetZeroScreenReturn()
+                }
+            }
+    }
+
+    private func resetZeroScreenReturn() {
+        zeroScreenPuzzleProgress = 0
+        zeroScreenReturnArmed = false
+        zeroScreenReturnFeedbackStarted = false
     }
 
     private func stepPersonalCartMarker(_ slot: PersonalCartMarkerSlot, direction: PersonalCartMarkerStepDirection) {
@@ -99,6 +151,22 @@ struct SummaryHeader: View {
     private func setPersonalCartMarkerFloor(_ slot: PersonalCartMarkerSlot, floor: Int?) {
         personalCartMarkers = personalCartMarkers.settingFloor(floor, for: slot)
         feedback.confirm()
+    }
+}
+
+private struct SummaryZeroScreenReturnMetrics {
+    let width: CGFloat
+
+    private let horizontalPadding: CGFloat = 18
+    private let settingsButtonSize: CGFloat = 48
+    private let startZoneWidth: CGFloat = 86
+
+    var startCenterX: CGFloat { horizontalPadding + settingsButtonSize * 0.5 }
+    var targetCenterX: CGFloat { width - horizontalPadding - startZoneWidth * 0.5 }
+    var travel: CGFloat { max(targetCenterX - startCenterX, 1) }
+
+    func progress(for drag: CGFloat) -> CGFloat {
+        min(max(drag / travel, 0), 1)
     }
 }
 

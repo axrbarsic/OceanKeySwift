@@ -3,6 +3,7 @@ import SwiftUI
 struct HoldActionTarget<Content: View>: View {
     let enabled: Bool
     let useLongPress: Bool
+    let longPressFeedbackSoundMode: HoldActionFeedbackSoundMode
     let semanticLabel: String
     let onActivate: () -> Void
     @ViewBuilder let content: Content
@@ -10,6 +11,22 @@ struct HoldActionTarget<Content: View>: View {
     @Environment(\.interactionFeedback) private var feedback
     @State private var startTask: Task<Void, Never>?
     @State private var warningTask: Task<Void, Never>?
+
+    init(
+        enabled: Bool,
+        useLongPress: Bool,
+        longPressFeedbackSoundMode: HoldActionFeedbackSoundMode = .full,
+        semanticLabel: String,
+        onActivate: @escaping () -> Void,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.enabled = enabled
+        self.useLongPress = useLongPress
+        self.longPressFeedbackSoundMode = longPressFeedbackSoundMode
+        self.semanticLabel = semanticLabel
+        self.onActivate = onActivate
+        self.content = content()
+    }
 
     var body: some View {
         content
@@ -46,13 +63,13 @@ struct HoldActionTarget<Content: View>: View {
             startTask = Task { @MainActor in
                 try? await Task.sleep(for: .milliseconds(140))
                 if !Task.isCancelled {
-                    feedback.holdStart()
+                    holdStartFeedback()
                 }
             }
             warningTask = Task { @MainActor in
                 try? await Task.sleep(for: .milliseconds(330))
                 if !Task.isCancelled {
-                    feedback.holdWarning()
+                    holdWarningFeedback()
                 }
             }
         } else {
@@ -69,9 +86,41 @@ struct HoldActionTarget<Content: View>: View {
         startTask = nil
         warningTask?.cancel()
         warningTask = nil
-        feedback.holdCommit()
+        holdCommitFeedback()
         onActivate()
     }
+
+    private func holdStartFeedback() {
+        switch longPressFeedbackSoundMode {
+        case .full:
+            feedback.holdStart()
+        case .hapticOnly:
+            feedback.holdStartHapticOnly()
+        }
+    }
+
+    private func holdWarningFeedback() {
+        switch longPressFeedbackSoundMode {
+        case .full:
+            feedback.holdWarning()
+        case .hapticOnly:
+            feedback.holdWarningHapticOnly()
+        }
+    }
+
+    private func holdCommitFeedback() {
+        switch longPressFeedbackSoundMode {
+        case .full:
+            feedback.holdCommit()
+        case .hapticOnly:
+            feedback.holdCommitHapticOnly()
+        }
+    }
+}
+
+enum HoldActionFeedbackSoundMode: Sendable {
+    case full
+    case hapticOnly
 }
 
 private struct HoldActionGestureModifier: ViewModifier {

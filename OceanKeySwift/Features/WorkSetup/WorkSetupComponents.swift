@@ -6,7 +6,7 @@ struct WorkSetupHeader: View {
     let onOpenSettings: () -> Void
     let onStart: () -> Void
     @Environment(\.settingsOpenRequiresLongPress) private var settingsOpenRequiresLongPress
-    @Environment(\.embeddedContainerReturnToZeroScreen) private var returnToZeroScreen
+    @Environment(\.zeroScreenReturnAction) private var returnToZeroScreen
     @Environment(\.interactionFeedback) private var feedback
     @State private var zeroScreenReturnArmed = false
 
