@@ -74,7 +74,7 @@ struct RoomCellView: View {
             HoldActionTarget(
                 enabled: true,
                 useLongPress: taskControlsUseLongPress,
-                longPressFeedbackSoundMode: .hapticOnly,
+                feedbackProfile: .roomCell,
                 semanticLabel: "Room \(room.id)",
                 onActivate: activateOpenToggle
             ) {
@@ -177,7 +177,7 @@ struct RoomCellView: View {
         HoldActionTarget(
             enabled: room.opened,
             useLongPress: taskControlsUseLongPress,
-            longPressFeedbackSoundMode: .hapticOnly,
+            feedbackProfile: .roomCell,
             semanticLabel: "Room \(room.id) task \(task.rawValue)",
             onActivate: { activateTask(task) }
         ) {
