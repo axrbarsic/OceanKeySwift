@@ -82,7 +82,7 @@ struct RoomCellView: View {
                     .font(.system(size: 46, weight: .black, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(OceanKeyTheme.roomForeground)
-                    .frame(maxWidth: .infinity, minHeight: geometry.tileHeight, maxHeight: geometry.tileHeight, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             ForEach(RoomTask.allCases) { taskButton($0) }
@@ -184,7 +184,7 @@ struct RoomCellView: View {
             Text(task.rawValue)
                 .font(.system(size: 40, weight: .black, design: .rounded))
                 .foregroundStyle(taskColor(task))
-                .frame(width: 50, height: geometry.tileHeight)
+                .frame(width: 50, height: min(54, geometry.tileHeight))
         }
     }
 
@@ -293,7 +293,6 @@ struct RoomCellView: View {
         if !taskControlsUseLongPress {
             feedback.confirm()
         }
-        triggerPhysicsPulse()
         onOpenToggle()
     }
 
@@ -305,7 +304,6 @@ struct RoomCellView: View {
                 feedback.select()
             }
         }
-        triggerPhysicsPulse()
         onTaskToggle(task)
     }
 

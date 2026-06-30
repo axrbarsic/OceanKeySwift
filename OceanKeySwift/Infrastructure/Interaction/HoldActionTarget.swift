@@ -35,8 +35,8 @@ struct HoldActionFeedbackProfile: Equatable, Sendable {
     static let full = HoldActionFeedbackProfile(uniform: .full)
     static let hapticOnly = HoldActionFeedbackProfile(uniform: .hapticOnly)
     static let roomCell = HoldActionFeedbackProfile(
-        holdStart: .silent,
-        holdWarning: .silent,
+        holdStart: .hapticOnly,
+        holdWarning: .hapticOnly,
         holdCommit: .hapticOnly
     )
 }
