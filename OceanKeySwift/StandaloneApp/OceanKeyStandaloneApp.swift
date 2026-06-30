@@ -30,7 +30,7 @@ struct OceanKeyStandaloneApp: App {
             ),
             runtimeBundleIdentifier: bundleIdentifier,
             applicationSupportRoot: "OceanKeySwift",
-            interactionPolicy: .standalone
+            interactionPolicy: .standaloneLongPressSettings
         )
     }
 }
